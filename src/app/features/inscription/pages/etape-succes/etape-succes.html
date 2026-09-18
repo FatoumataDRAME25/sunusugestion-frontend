@@ -1,0 +1,37 @@
+<!-- features/inscription/pages/etape-succes/etape-succes.html -->
+<div class="min-h-screen bg-blanc-lait p-lg flex flex-col items-center justify-center text-center">
+  <div class="max-w-full w-full">
+
+    <div class="w-20 h-20 rounded-full bg-vert-foret flex items-center justify-center mx-auto mb-xl">
+      <i class="pi pi-check text-blanc-lait text-3xl"></i>
+    </div>
+
+    <h1 class="font-sans font-semibold text-2xl text-bleu-nuit mb-sm">Votre espace GIE est prêt !</h1>
+    <p class="text-sm text-anthracite/60 mb-xl">
+      Félicitations, votre espace numérique a été créé avec succès. Vous pouvez maintenant commencer à gérer votre GIE.
+    </p>
+
+    @if (service.gieFinalise(); as gie) {
+      <div class="bg-white rounded-lg p-lg text-left mb-lg">
+        <div class="flex justify-between py-sm border-b border-anthracite/10">
+          <span class="text-sm text-anthracite/60">Nom du GIE</span>
+          <span class="text-sm font-semibold text-anthracite">{{ gie.nom }}</span>
+        </div>
+        <div class="flex justify-between py-sm border-b border-anthracite/10">
+          <span class="text-sm text-anthracite/60">Code du GIE</span>
+          <span class="text-sm font-semibold text-bleu-nuit">{{ gie.code }}</span>
+        </div>
+        <div class="flex justify-between items-center py-sm">
+          <span class="text-sm text-anthracite/60">Statut</span>
+          <p-tag severity="success" value="ACTIF" />
+        </div>
+      </div>
+    }
+
+    <p class="text-xs text-anthracite/50 mb-xl">
+      Conservez votre code GIE. Il pourra être utilisé pour rejoindre votre espace.
+    </p>
+
+    <p-button label="Accéder à mon espace" icon="pi pi-arrow-right" iconPos="right" styleClass="w-full" (onClick)="accederAMonEspace()" />
+  </div>
+</div>

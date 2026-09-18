@@ -1,0 +1,92 @@
+
+<div class="p-2xl">
+
+  <div class="mb-xl">
+    <h1 class="font-sans font-semibold text-2xl text-anthracite">Espaces GIE</h1>
+    <p class="text-sm text-anthracite/60">Supervisez les espaces GIE présents sur la plateforme.</p>
+  </div>
+
+  <!-- Barre de recherche et filtres -->
+  <div class="bg-white rounded-lg p-lg mb-lg flex gap-md">
+    <p-iconfield class="flex-1">
+      <p-inputicon styleClass="pi pi-search" />
+      <input
+        type="text"
+        pInputText
+        [(ngModel)]="service.termeRecherche"
+        placeholder="Rechercher un GIE..."
+        class="w-full"
+      />
+    </p-iconfield>
+
+    <p-select
+      [options]="optionsStatut"
+      [(ngModel)]="service.filtreStatut"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Tous les statuts"
+    />
+
+    <p-select
+      [options]="service.regionsDisponibles()"
+      [(ngModel)]="service.filtreRegion"
+      placeholder="Toutes les régions"
+      [showClear]="true"
+    />
+  </div>
+
+  <!-- Tableau -->
+  <div class="bg-white rounded-lg">
+    <p-table [value]="service.gieFiltres()" [paginator]="true" [rows]="20">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>GIE (Nom)</th>
+          <th>Région</th>
+          <th>Secteur</th>
+          <th>Membres</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-gie>
+        <tr>
+          <td>
+            <div class="flex items-center gap-md">
+              <div class="w-10 h-10 rounded-lg bg-bleu-clair flex items-center justify-center font-semibold text-bleu-nuit">
+                {{ gie.nom | initiales }}
+              </div>
+              <div>
+                <p class="font-medium text-anthracite">{{ gie.nom }}</p>
+                <p class="text-xs text-anthracite/50">ID: {{ gie.code }}</p>
+              </div>
+            </div>
+          </td>
+          <td>{{ gie.region }}</td>
+          <td>
+            <p-tag [value]="gie.secteur" styleClass="bg-blanc-lait text-anthracite" />
+          </td>
+          <td>
+            <span class="flex items-center gap-xs">
+              {{ gie.nombreMembres }}
+            </span>
+          </td>
+          <td>
+            <p-tag
+              [severity]="gie.statut === 'actif' ? 'success' : 'danger'"
+              [value]="gie.statut === 'actif' ? 'Actif' : 'Inactif'"
+            />
+          </td>
+          <td>
+
+              <a class="font-medium cursor-pointer"
+              [class.text-rouge-alerte]="gie.statut === 'actif'"
+              [class.text-vert-foret]="gie.statut === 'inactif'"
+              (click)="confirmerChangementStatut(gie)">
+              {{ gie.statut === 'actif' ? 'Désactiver' : 'Activer' }}
+            </a>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

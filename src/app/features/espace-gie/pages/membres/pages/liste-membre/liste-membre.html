@@ -1,0 +1,160 @@
+<div class="min-h-screen bg-gris-fond pb-20">
+
+  <!-- En-tête bleu -->
+  <div class="bg-bleu-nuit p-lg pt-xl pb-2xl">
+    <div class="flex justify-between items-center mb-lg">
+      <div>
+        <h1 class="text-blanc-lait font-bold text-xl">Membres</h1>
+        <p class="text-blanc-lait/60 text-sm">Gérez les membres de votre GIE.</p>
+      </div>
+      <button class="text-blanc-lait/70">
+        <i class="pi pi-bell text-xl"></i>
+      </button>
+    </div>
+
+    <!-- Boutons d'action -->
+    <div class="flex flex-col gap-sm">
+      <a routerLink="/mon-espace/membres/ajouter"
+        class="w-full bg-blanc-lait text-bleu-nuit font-semibold rounded-xl py-md flex items-center justify-center gap-sm">
+        <i class="pi pi-plus"></i>
+        Ajouter un membre
+      </a>
+      <a routerLink="/mon-espace/membres/importer"
+        class="w-full border border-blanc-lait/40 text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm">
+        <i class="pi pi-file-excel"></i>
+        Importer un fichier excel
+      </a>
+    </div>
+  </div>
+
+  <!-- Statistiques — chevauchement sur l'en-tête -->
+  <div class="mx-lg -mt-lg bg-white rounded-xl p-lg shadow-sm flex justify-around mb-lg">
+    <div class="text-center">
+      <p class="text-xs text-anthracite/50 uppercase">Total</p>
+      <p class="text-2xl font-bold text-anthracite">{{ service.statsMembres()?.total ?? '—' }}</p>
+    </div>
+    <div class="w-px bg-anthracite/10"></div>
+    <div class="text-center">
+      <p class="text-xs text-anthracite/40 uppercase">Actifs</p>
+      <p class="text-2xl font-bold text-anthracite">{{ service.statsMembres()?.actifs ?? '—' }}</p>
+    </div>
+    <div class="w-px bg-anthracite/10"></div>
+    <div class="text-center">
+      <p class="text-xs text-anthracite/40 uppercase">Inactifs</p>
+      <p class="text-2xl font-bold text-anthracite">{{ service.statsMembres()?.inactifs ?? '—' }}</p>
+    </div>
+    <div class="w-px bg-anthracite/10"></div>
+    <div class="text-center">
+      <p class="text-xs text-anthracite/40 uppercase">En attente</p>
+      <p class="text-2xl font-bold text-anthracite">{{ service.statsMembres()?.enAttente ?? '—' }}</p>
+    </div>
+  </div>
+
+  <div class="mx-lg flex flex-col gap-md">
+
+    <!-- Barre de recherche -->
+    <div class="flex items-center gap-sm bg-white rounded-xl px-md py-sm shadow-sm">
+      <i class="pi pi-search text-anthracite/40"></i>
+      <input
+        type="text"
+        [ngModel]="service.termeRecherche()"
+        (ngModelChange)="service.termeRecherche.set($event)"
+        placeholder="Rechercher un membre..."
+        class="flex-1 bg-transparent outline-none text-sm text-anthracite placeholder:text-anthracite/40"
+      />
+    </div>
+
+    <!-- Filtre statut -->
+    <div class="flex justify-between items-center">
+      <p class="text-sm font-semibold text-anthracite">Liste des membres</p>
+
+      <div class="relative">
+        <button
+          class="flex items-center gap-sm text-sm text-anthracite/70 bg-white rounded-lg px-md py-sm shadow-sm"
+          onclick="this.nextElementSibling.classList.toggle('hidden')"
+        >
+          <i class="pi pi-sliders-h"></i>
+          Statut : {{ statutActuel }}
+        </button>
+        <div class="hidden absolute right-0 top-full mt-xs bg-white rounded-xl shadow-lg z-10 min-w-32 overflow-hidden">
+          @for (option of optionsStatut; track option.label) {
+            <button
+              (click)="changerStatut(option.value, option.label)"
+              class="w-full text-left px-md py-sm text-sm text-anthracite hover:bg-gris-fond"
+            >
+              {{ option.label }}
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    @if (service.isLoading()) {
+      <div class="flex justify-center py-2xl">
+        <i class="pi pi-spin pi-spinner text-2xl text-bleu-nuit"></i>
+      </div>
+    }
+
+    <!-- Liste -->
+    @if (!service.isLoading()) {
+      <div class="flex flex-col gap-sm">
+
+    @if (service.membresFiltres().length === 0) {
+      <div class="flex flex-col items-center justify-center py-2xl text-center">
+
+        <p class="font-semibold text-anthracite/60">Aucun membre trouvé</p>
+        @if (service.termeRecherche() || service.filtreStatut()) {
+          <p class="text-sm text-anthracite/40 mt-xs">Essayez de modifier vos filtres</p>
+        } @else {
+          <p class="text-sm text-anthracite/40 mt-xs">Commencez par ajouter un membre</p>
+          <a routerLink="/mon-espace/membres/ajouter/"
+            class="mt-lg bg-bleu-nuit text-blanc-lait font-semibold rounded-xl px-xl py-md text-sm flex items-center gap-sm">
+            <i class="pi pi-plus"></i>
+            Ajouter un membre
+          </a>
+        }
+      </div>
+    } @else {
+      @for (membre of service.membresFiltres(); track membre.id) {
+        <div class="bg-white rounded-xl p-md shadow-sm flex items-center gap-md">
+          <!-- Avatar -->
+
+            <div class="w-12 h-12 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-bleu-nuit shrink-0">
+              {{ (membre.prenom + ' ' + membre.nom) | initiales }}
+            </div>
+
+          <!-- Infos -->
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-anthracite truncate">{{ membre.prenom }} {{ membre.nom }}</p>
+            <p class="text-xs text-anthracite/50">{{ membre.telephone }}</p>
+            <div class="mt-xs">
+              <span [class]="
+                membre.statut === 'actif'     ? 'inline-flex items-center gap-xs text-xs text-vert-foret' :
+                membre.statut === 'inactif'   ? 'inline-flex items-center gap-xs text-xs text-rouge-alerte' :
+                                                'inline-flex items-center gap-xs text-xs text-anthracite/40'">
+                <span [class]="
+                  membre.statut === 'actif'   ? 'w-2 h-2 rounded-full bg-vert-foret inline-block' :
+                  membre.statut === 'inactif' ? 'w-2 h-2 rounded-full bg-rouge-alerte inline-block' :
+                                                'w-2 h-2 rounded-full bg-anthracite/30 inline-block'"></span>
+                {{ membre.statut === 'actif' ? 'Actif' : membre.statut === 'inactif' ? 'Inactif' : 'En attente' }}
+              </span>
+            </div>
+
+          </div>
+          <!-- Menu action -->
+        <button class="text-anthracite/30 px-sm">
+          <i class="pi pi-chevron-right"></i>
+        </button>
+
+        </div>
+      }
+    }
+      </div>
+    }
+
+  </div>
+
+</div>
+
+<app-bottom-nav />

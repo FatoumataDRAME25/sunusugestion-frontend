@@ -1,0 +1,70 @@
+
+<div class="min-h-screen bg-blanc-lait p-lg">
+  <div class="max-w-full mx-auto">
+
+    <div class="flex items-center gap-md mb-xl">
+      <button routerLink="/" class="text-anthracite">
+        <i class="pi pi-chevron-left"></i>
+      </button>
+      <span class="bg-bleu-clair text-bleu-nuit text-xs font-medium px-md py-xs rounded-full">
+        Étape 1 sur 3
+      </span>
+    </div>
+
+    <h1 class="font-sans font-semibold text-2xl text-anthracite mb-xs">Créez votre espace GIE</h1>
+    <p class="text-sm text-anthracite/60 mb-xl">Renseignez les informations de votre organisation.</p>
+
+    @if (service.errorMessage()) {
+      <p class="text-sm text-rouge-alerte mb-lg">{{ service.errorMessage() }}</p>
+    }
+
+    <div class="flex flex-col items-center mb-xl">
+      <div class="w-20 h-20 rounded-full border-2 border-dashed border-anthracite/20 flex flex-col items-center justify-center text-anthracite/40">
+        <i class="pi pi-camera mb-xs"></i>
+        <span class="text-xs">Ajouter<br>le logo</span>
+      </div>
+    </div>
+
+    <form (ngSubmit)="continuer()" class="flex flex-col gap-lg">
+
+      <div>
+        <label class="block text-sm font-medium text-anthracite mb-sm">Nom du GIE</label>
+        <input type="text" pInputText [(ngModel)]="nom" name="nom" placeholder="Exemple : GIE And Defar" class="w-full" required />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-anthracite mb-sm">Région</label>
+        <p-select [options]="regions" [(ngModel)]="region" name="region" placeholder="Sélectionnez votre région" class="w-full" required />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-anthracite mb-sm">Secteur d'activité</label>
+        <p-select
+          [options]="secteurs"
+          [(ngModel)]="secteur"
+          name="secteur"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Choisir un secteur"
+          class="w-full"
+          required
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-anthracite mb-sm">Numéro de téléphone du GIE</label>
+        <div class="flex gap-sm">
+          <span class="bg-white border border-anthracite/10 rounded-md px-md flex items-center">+221</span>
+          <input type="text" pInputText [(ngModel)]="telephone" name="telephone" placeholder="77 000 00 00" class="w-full" />
+        </div>
+      </div>
+
+      <div class="bg-bleu-clair text-bleu-nuit text-sm rounded-md p-md flex gap-sm">
+        <i class="pi pi-info-circle mt-xs"></i>
+        <p>Votre espace GIE sera privé. Seuls les membres autorisés pourront accéder aux informations de votre organisation.</p>
+      </div>
+
+      <p-button type="submit" label="Créer mon espace GIE" styleClass="w-full" [loading]="service.isLoading()" />
+    </form>
+  </div>
+</div>

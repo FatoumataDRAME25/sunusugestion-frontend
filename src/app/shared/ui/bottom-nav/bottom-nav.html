@@ -1,0 +1,35 @@
+<nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-anthracite/10 flex justify-around py-sm px-md">
+
+  <a routerLink="/mon-espace"
+    routerLinkActive="text-bleu-nuit"
+    [routerLinkActiveOptions]="{ exact: true }"
+    class="flex flex-col items-center gap-xs text-anthracite/40 text-xs"
+  >
+    <i class="pi pi-home text-lg"></i>
+    Accueil
+  </a>
+
+  <a routerLink="/mon-espace/historiques"
+    routerLinkActive="text-bleu-nuit"
+    class="flex flex-col items-center gap-xs text-anthracite/40 text-xs"
+  >
+    <i class="pi pi-wallet text-lg"></i>
+    Opérations
+  </a>
+
+  <a routerLink="/mon-espace/membres"
+    routerLinkActive="text-bleu-nuit"
+    class="flex flex-col items-center gap-xs text-anthracite/40 text-xs"
+  >
+    <i class="pi pi-users text-lg"></i>
+    Membres
+  </a>
+
+  <a routerLink="/mon-espace/profil-membre"
+    routerLinkActive="text-bleu-nuit"
+    class="flex flex-col items-center gap-xs text-anthracite/40 text-xs"
+  >
+    <i class="pi pi-user text-lg"></i>
+    Profil
+  </a>
+</nav>

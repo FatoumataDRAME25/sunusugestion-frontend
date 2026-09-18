@@ -1,0 +1,219 @@
+<div class="min-h-screen bg-gris-fond pb-20">
+<div class="p-lg pb-2xl">
+
+  <!-- En-tête -->
+  <div class="flex justify-between items-center mb-xl">
+    <div>
+      <h1 class="font-semibold text-xl text-anthracite">
+        Bonjour, {{ authService.currentUser()?.prenom }}
+      </h1>
+      <p class="text-sm text-anthracite/60">
+        {{ espaceService.nomGie() }} •
+        <span class="uppercase font-medium">{{ authService.currentUser()?.role }}</span>
+      </p>
+    </div>
+
+    <div class="flex items-center gap-md">
+
+      <!-- Cloche -->
+      <div class="relative">
+        <i class="pi pi-bell text-xl text-anthracite/60"></i>
+        <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-rouge-alerte"></span>
+      </div>
+
+      <!-- Dropdown avatar -->
+      <div class="relative">
+        <button (click)="toggleDropdown()"
+          class="w-10 h-10 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-sm text-bleu-nuit">
+          @if (authService.currentUser(); as u) {
+            {{ (u.prenom + ' ' + u.nom) | initiales }}
+          }
+        </button>
+
+        @if (dropdownVisible()) {
+          <!-- Overlay pour fermer -->
+          <div class="fixed inset-0 z-10" (click)="fermerDropdown()"></div>
+
+          <div class="absolute right-0 top-full mt-xs bg-white rounded-xl shadow-lg z-20 min-w-48 overflow-hidden">
+            <a routerLink="/mon-espace/cotisations" (click)="fermerDropdown()"
+              class="flex items-center gap-md px-md py-sm text-sm text-anthracite hover:bg-gris-fond">
+              <i class="pi pi-wallet text-bleu-nuit"></i>
+              Cotisations
+            </a>
+            <a routerLink="/mon-espace/prets" (click)="fermerDropdown()"
+              class="flex items-center gap-md px-md py-sm text-sm text-anthracite hover:bg-gris-fond">
+              <i class="pi pi-credit-card text-bleu-nuit"></i>
+              Prêts
+            </a>
+            <a routerLink="/mon-espace/historiques" (click)="fermerDropdown()"
+              class="flex items-center gap-md px-md py-sm text-sm text-anthracite hover:bg-gris-fond">
+              <i class="pi pi-history text-bleu-nuit"></i>
+              Activités
+            </a>
+          </div>
+        }
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Situation financière -->
+  <h2 class="font-semibold text-lg text-anthracite mb-md">Situation Financière</h2>
+  <div class="bg-bleu-nuit rounded-xl p-lg mb-md">
+    <p class="text-blanc-lait/60 text-xs uppercase tracking-wide">Solde actuel</p>
+    <p class="text-blanc-lait font-bold text-3xl mt-xs">
+      {{ (solde()?.solde ?? 0) | number:'1.0-0' }}
+      <span class="text-lg font-normal">FCFA</span>
+    </p>
+    <div class="flex gap-xl mt-md">
+      <div>
+        <span class="w-2 h-2 rounded-full bg-vert-foret inline-block mr-xs"></span>
+        <span class="text-blanc-lait/60 text-xs">Entrées</span>
+        <p class="text-vert-foret font-semibold text-sm">
+          +{{ (solde()?.totalEntrees ?? 0) | number:'1.0-0' }} FCFA
+        </p>
+      </div>
+      <div>
+        <span class="w-2 h-2 rounded-full bg-rouge-alerte inline-block mr-xs"></span>
+        <span class="text-blanc-lait/60 text-xs">Sorties</span>
+        <p class="text-rouge-alerte font-semibold text-sm">
+          -{{ (solde()?.totalSorties ?? 0) | number:'1.0-0' }} FCFA
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions rapides -->
+  <div class="grid grid-cols-2 gap-md mb-xl">
+    <a routerLink="/mon-espace/cotisations/nouvelle-session"
+      class="bg-bleu-clair/30 rounded-xl p-md flex flex-col items-center gap-sm text-center">
+      <div class="w-10 h-10 rounded-lg bg-bleu-clair flex items-center justify-center">
+        <i class="pi pi-plus text-bleu-nuit"></i>
+      </div>
+      <p class="text-xs font-semibold text-bleu-nuit">Nouvelle cotisation</p>
+    </a>
+    <a routerLink="/mon-espace/historiques/nouvelle-operation"
+      class="bg-vert-clair/30 rounded-xl p-md flex flex-col items-center gap-sm text-center">
+      <div class="w-10 h-10 rounded-lg bg-vert-clair flex items-center justify-center">
+        <i class="pi pi-plus text-vert-foret"></i>
+      </div>
+      <p class="text-xs font-semibold text-vert-foret">Nouvelle entrée</p>
+    </a>
+    <a routerLink="/mon-espace/historiques/nouvelle-operation"
+      class="bg-rouge-clair/30 rounded-xl p-md flex flex-col items-center gap-sm text-center">
+      <div class="w-10 h-10 rounded-lg bg-rouge-clair flex items-center justify-center">
+        <i class="pi pi-minus text-rouge-alerte"></i>
+      </div>
+      <p class="text-xs font-semibold text-rouge-alerte">Nouvelle sortie</p>
+    </a>
+    <a routerLink="/mon-espace/prets"
+      class="bg-or-clair/30 rounded-xl p-md flex flex-col items-center gap-sm text-center">
+      <div class="w-10 h-10 rounded-lg bg-or-clair flex items-center justify-center">
+        <i class="pi pi-credit-card text-or-senegal"></i>
+      </div>
+      <p class="text-xs font-semibold text-or-senegal">Nouveau prêt</p>
+    </a>
+  </div>
+
+  <!-- Section Cotisations -->
+  @if (cotisationService.sessionActive(); as session) {
+    <div class="flex justify-between items-center mb-md">
+      <h2 class="font-semibold text-lg text-anthracite">Cotisations</h2>
+      <a routerLink="/mon-espace/cotisations" class="text-sm text-bleu-nuit font-medium">Voir tout</a>
+    </div>
+    <div class="bg-white rounded-xl p-lg shadow-sm mb-xl">
+      <p class="text-xs text-anthracite/50 mb-md">Session : {{ session.libelle }}</p>
+      <div class="grid grid-cols-2 gap-md mb-md">
+        <div>
+          <p class="text-xs text-anthracite/50">ATTENDU</p>
+          <p class="font-bold text-anthracite">{{ session.totalAttendu | number:'1.0-0' }} FCFA</p>
+        </div>
+        <div>
+          <p class="text-xs text-anthracite/50">COLLECTÉ</p>
+          <p class="font-bold text-vert-foret">{{ session.totalCollecte | number:'1.0-0' }} FCFA</p>
+        </div>
+        <div>
+          <p class="text-xs text-anthracite/50">MEMBRES PAYÉS</p>
+          <p class="font-bold text-anthracite">{{ session.nombrePaies }} / {{ session.nombreMembres }}</p>
+        </div>
+        <div>
+          <p class="text-xs text-anthracite/50">EN ATTENTE</p>
+          <p class="font-bold text-rouge-alerte">{{ session.nombreEnAttente }} membres</p>
+        </div>
+      </div>
+      <a routerLink="/mon-espace/cotisations"
+        class="w-full border border-anthracite/20 text-anthracite font-semibold rounded-xl py-sm flex items-center justify-center text-sm">
+        Voir les cotisations
+      </a>
+    </div>
+  } @else {
+    <div class="flex justify-between items-center mb-md">
+      <h2 class="font-semibold text-lg text-anthracite">Cotisations</h2>
+    </div>
+    <div class="bg-white rounded-xl p-lg shadow-sm mb-xl text-center">
+      <p class="text-sm text-anthracite/60 mb-md">Aucune session active</p>
+      <a routerLink="/mon-espace/cotisations/nouvelle-session"
+        class="text-sm text-bleu-nuit font-semibold">
+        Lancer une session →
+      </a>
+    </div>
+  }
+
+  <!-- Section Prêts (placeholder jusqu'à l'implémentation) -->
+  <div class="flex justify-between items-center mb-md">
+    <h2 class="font-semibold text-lg text-anthracite">Prêts</h2>
+    <a routerLink="/mon-espace/prets" class="text-sm text-bleu-nuit font-medium">Gérer</a>
+  </div>
+  <div class="bg-white rounded-xl p-lg shadow-sm mb-xl">
+    <div class="flex items-center gap-md mb-sm">
+      <div class="w-8 h-8 rounded-lg bg-or-clair flex items-center justify-center">
+        <i class="pi pi-clock text-or-senegal text-sm"></i>
+      </div>
+      <p class="text-sm text-anthracite">En attente d'approbation</p>
+      <span class="ml-auto bg-rouge-clair text-rouge-alerte text-xs font-semibold w-6 h-6 rounded-full flex items-center justify-center">
+        {{ espaceService.stats().demandesApprobationPrets }}
+      </span>
+    </div>
+    <div class="flex items-center gap-md">
+      <div class="w-8 h-8 rounded-lg bg-vert-clair flex items-center justify-center">
+        <i class="pi pi-check text-vert-foret text-sm"></i>
+      </div>
+      <p class="text-sm text-anthracite">Prêts en cours</p>
+      <span class="ml-auto font-semibold text-anthracite text-sm">
+        {{ espaceService.stats().pretsEnCours }}
+      </span>
+    </div>
+    <a routerLink="/mon-espace/prets"
+      class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-sm flex items-center justify-center text-sm mt-md">
+      Voir les prêts
+    </a>
+  </div>
+
+  <!-- Activités récentes -->
+  <div class="flex justify-between items-center mb-md">
+    <h2 class="font-semibold text-lg text-anthracite">Activités récentes</h2>
+    <a routerLink="/mon-espace/historiques" class="text-sm text-bleu-nuit font-medium">Tout voir</a>
+  </div>
+  <div class="flex flex-col gap-sm">
+    @for (op of activitesRecentes(); track op.id) {
+      <div class="bg-white rounded-xl p-md flex items-center gap-md shadow-sm">
+        <div [class]="op.typeOperation === 'entree'
+          ? 'w-8 h-8 rounded-full bg-vert-clair flex items-center justify-center'
+          : 'w-8 h-8 rounded-full bg-rouge-clair flex items-center justify-center'">
+          <i [class]="op.typeOperation === 'entree' ? 'pi pi-plus text-vert-foret text-xs' : 'pi pi-minus text-rouge-alerte text-xs'"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-anthracite truncate">{{ op.libelle }}</p>
+          <p class="text-xs text-anthracite/50">{{ op.dateOperation }}</p>
+        </div>
+        <p [class]="op.typeOperation === 'entree' ? 'font-bold text-sm text-vert-foret' : 'font-bold text-sm text-rouge-alerte'">
+          {{ op.typeOperation === 'entree' ? '+' : '-' }}{{ op.montant | number:'1.0-0' }} FCFA
+        </p>
+      </div>
+    }
+  </div>
+
+</div>
+</div>
+
+<app-bottom-nav />

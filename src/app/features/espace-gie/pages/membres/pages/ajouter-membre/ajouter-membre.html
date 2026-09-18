@@ -1,0 +1,180 @@
+<div class="min-h-screen bg-gris-fond pb-20">
+
+  <!-- En-tête -->
+  <div class="p-lg pt-xl">
+    <button routerLink="/mon-espace/membres" class="text-anthracite/60 mb-lg block">
+      <i class="pi pi-chevron-left text-lg"></i>
+    </button>
+    <h1 class="font-sans font-bold text-2xl text-anthracite">Ajouter un membre</h1>
+    <p class="text-sm text-bleu-nuit mt-xs">Renseignez les informations du nouveau membre.</p>
+  </div>
+
+  <!-- Formulaire -->
+  <form [formGroup]="form" class="mx-lg bg-white rounded-xl p-lg flex flex-col gap-lg shadow-sm">
+
+    @if (service.errorMessage()) {
+      <div class="bg-rouge-clair text-rouge-alerte text-sm rounded-lg p-md">
+        {{ service.errorMessage() }}
+      </div>
+    }
+
+    <!-- Prénom -->
+    <div class="flex flex-col gap-xs">
+      <label class="text-sm font-semibold text-anthracite">
+        Prénom <span class="text-rouge-alerte">*</span>
+      </label>
+      <input pInputText formControlName="prenom"
+        placeholder="Exemple : Fatou" class="w-full" />
+      @if (prenom.invalid && prenom.touched) {
+        @if (prenom.errors?.['required']) {
+          <span class="text-xs text-rouge-alerte">Le prénom est obligatoire</span>
+        } @else if (prenom.errors?.['pattern']) {
+          <span class="text-xs text-rouge-alerte">Lettres uniquement (accents, tirets et apostrophes acceptés)</span>
+        }
+      }
+    </div>
+
+    <!-- Nom -->
+    <div class="flex flex-col gap-xs">
+      <label class="text-sm font-semibold text-anthracite">
+        Nom <span class="text-rouge-alerte">*</span>
+      </label>
+      <input pInputText formControlName="nom"
+        placeholder="Exemple : Diop" class="w-full" />
+      @if (nom.invalid && nom.touched) {
+        @if (nom.errors?.['required']) {
+          <span class="text-xs text-rouge-alerte">Le nom est obligatoire</span>
+        } @else if (nom.errors?.['pattern']) {
+          <span class="text-xs text-rouge-alerte">Lettres uniquement (accents, tirets et apostrophes acceptés)</span>
+        }
+      }
+    </div>
+
+    <!-- Téléphone -->
+    <div class="flex flex-col gap-xs">
+      <label class="text-sm font-semibold text-anthracite">
+        Téléphone <span class="text-rouge-alerte">*</span>
+      </label>
+      <p-iconfield>
+        <p-inputicon styleClass="pi pi-phone" />
+        <input pInputText formControlName="telephone"
+          placeholder="Exemple : 77 123 45 67" type="tel" class="w-full" />
+      </p-iconfield>
+      @if (telephone.invalid && telephone.touched) {
+        @if (telephone.errors?.['required']) {
+          <span class="text-xs text-rouge-alerte">Le téléphone est obligatoire</span>
+        } @else if (telephone.errors?.['pattern']) {
+          <span class="text-xs text-rouge-alerte">Doit commencer par 70, 71, 75, 76, 77 ou 78 et contenir 9 chiffres</span>
+        }
+      }
+    </div>
+
+    <!-- Email -->
+    <div class="flex flex-col gap-xs">
+      <label class="text-sm font-semibold text-anthracite">
+        Email <span class="text-anthracite/40 font-normal">(Optionnel)</span>
+      </label>
+      <p-iconfield>
+        <p-inputicon styleClass="pi pi-envelope" />
+        <input pInputText formControlName="email"
+          placeholder="Exemple : fatou@email.com" type="email" class="w-full" />
+      </p-iconfield>
+      @if (email.invalid && email.touched) {
+        @if (email.errors?.['email']) {
+          <span class="text-xs text-rouge-alerte">Format d'email invalide</span>
+        }
+      }
+    </div>
+
+    <!-- Rôle -->
+    <div class="flex flex-col gap-xs">
+      <label class="text-sm font-semibold text-anthracite">
+        Rôle <span class="text-rouge-alerte">*</span>
+      </label>
+      <p-select
+        formControlName="role"
+        [options]="rolesDisponibles"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Exemple : Membre simple"
+        styleClass="w-full"
+      />
+      @if (role.invalid && role.touched) {
+        <span class="text-xs text-rouge-alerte">Le rôle est obligatoire</span>
+      }
+    </div>
+
+  </form>
+
+  <!-- Actions -->
+  <div class="mx-lg mt-xl flex flex-col gap-md">
+    <button
+      (click)="soumettre()"
+      [disabled]="service.isLoading()"
+      class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md disabled:opacity-50 flex items-center justify-center gap-sm"
+    >
+      @if (service.isLoading()) {
+        <i class="pi pi-spin pi-spinner"></i>
+      }
+      Ajouter le membre
+    </button>
+
+    <button routerLink="/mon-espace/membres"
+      class="w-full text-bleu-nuit font-semibold py-md text-center">
+      Annuler
+    </button>
+  </div>
+
+</div>
+
+<!-- Modal de succès -->
+<p-dialog
+  [(visible)]="modalSuccesVisible"
+  [modal]="true"
+  [closable]="false"
+  [draggable]="false"
+  [style]="{ width: '90vw', 'max-width': '400px', 'border-radius': '1rem' }"
+>
+  <div class="flex flex-col items-center text-center px-md pt-xl pb-lg gap-lg">
+
+    <div class="w-20 h-20 rounded-full bg-vert-succes flex items-center justify-center">
+      <i class="pi pi-check text-3xl text-blanc-lait"></i>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-xl text-anthracite">Membre ajouté avec succès</h2>
+      <p class="text-sm text-anthracite/60 mt-xs">Le membre a bien été ajouté à votre GIE.</p>
+    </div>
+
+    @if (service.dernierMembreAjoute(); as membre) {
+      <div class="w-full bg-gris-fond rounded-xl p-md flex items-center gap-md">
+        <div class="w-12 h-12 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-bleu-nuit">
+          {{ membre.prenom[0] }}{{ membre.nom[0] }}
+        </div>
+        <div class="flex-1 text-left">
+          <p class="text-xs text-anthracite/50 uppercase font-medium">Nouveau membre</p>
+          <p class="font-semibold text-anthracite">{{ membre.prenom }} {{ membre.nom }}</p>
+        </div>
+        <span class="bg-anthracite/20 text-anthracite text-xs font-semibold px-sm py-xs rounded-full">
+          En attente
+        </span>
+      </div>
+    }
+
+    <div class="w-full flex flex-col gap-md mt-sm">
+      <button (click)="voirLesMembres()"
+        class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm">
+        <i class="pi pi-users"></i>
+        Voir les membres
+      </button>
+      <button (click)="ajouterUnAutre()"
+        class="w-full border border-bleu-nuit text-bleu-nuit font-semibold rounded-xl py-md flex items-center justify-center gap-sm">
+        <i class="pi pi-user-plus"></i>
+        Ajouter un autre membre
+      </button>
+    </div>
+
+  </div>
+</p-dialog>
+
+<app-bottom-nav />

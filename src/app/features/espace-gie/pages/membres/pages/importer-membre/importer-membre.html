@@ -1,0 +1,227 @@
+<div class="min-h-screen bg-gris-fond pb-20">
+
+  <!-- En-tête commun aux deux étapes -->
+  <div class="p-lg pt-xl">
+    <button (click)="etape() === 'selection' ? null : retourSelection()"
+      [routerLink]="etape() === 'selection' ? '/mon-espace/membres' : null"
+      class="text-anthracite/60 mb-lg block">
+      <i class="pi pi-chevron-left text-lg"></i>
+    </button>
+
+    @if (etape() === 'selection') {
+      <h1 class="font-sans font-bold text-2xl text-anthracite">Importer des membres</h1>
+      <p class="text-sm text-bleu-nuit mt-xs">Ajoutez rapidement plusieurs membres via un fichier Excel.</p>
+    } @else {
+      <h1 class="font-sans font-bold text-2xl text-anthracite">Vérifier les membres</h1>
+      <p class="text-sm text-anthracite/60 mt-xs">Vérifiez les informations avant l'importation.</p>
+    }
+  </div>
+
+  @if (service.errorMessage()) {
+    <div class="mx-lg mb-md bg-rouge-clair text-rouge-alerte text-sm rounded-lg p-md">
+      {{ service.errorMessage() }}
+    </div>
+  }
+
+  <!-- ===== ÉTAPE 1 : SÉLECTION ===== -->
+  @if (etape() === 'selection') {
+    <div class="mx-lg flex flex-col gap-lg">
+
+      <!-- Étape 1 : Préparer -->
+      <div class="bg-white rounded-xl p-lg shadow-sm">
+        <div class="flex items-center gap-md mb-md">
+          <div class="w-8 h-8 rounded-full bg-bleu-nuit flex items-center justify-center text-blanc-lait text-sm font-bold">1</div>
+          <h2 class="font-semibold text-anthracite">Préparer le fichier</h2>
+        </div>
+        <p class="text-sm text-anthracite/60">
+          Utilisez notre format standard pour assurer une importation sans erreurs de vos données membres.
+        </p>
+      </div>
+
+      <!-- Étape 2 : Importer -->
+      <div class="bg-white rounded-xl p-lg shadow-sm">
+        <div class="flex items-center gap-md mb-lg">
+          <div class="w-8 h-8 rounded-full bg-bleu-nuit flex items-center justify-center text-blanc-lait text-sm font-bold">2</div>
+          <h2 class="font-semibold text-anthracite">Importer le fichier</h2>
+        </div>
+
+        <!-- Zone de dépôt -->
+        <label for="fichier-excel"
+          class="flex flex-col items-center justify-center gap-md border-2 border-dashed border-bleu-nuit/30 rounded-xl p-xl cursor-pointer mb-lg">
+          <!-- Icône fichier Excel -->
+          <div class="w-16 h-16 bg-vert-clair rounded-xl flex items-center justify-center relative">
+            <i class="pi pi-file text-3xl text-vert-foret"></i>
+            <span class="absolute bottom-1 right-1 bg-vert-foret text-blanc-lait text-xs font-bold px-xs rounded">X</span>
+          </div>
+
+          @if (nomFichier()) {
+            <p class="font-semibold text-anthracite text-center">{{ nomFichier() }}</p>
+            <p class="text-xs text-anthracite/50">Cliquer pour changer</p>
+          } @else {
+            <p class="font-semibold text-anthracite text-center">Sélectionnez votre fichier</p>
+            <p class="text-xs text-anthracite/50 text-center">Glissez-déposez ou parcourez vos documents.<br>Formats acceptés : .xlsx, .xls</p>
+          }
+
+          <button type="button"
+            class="bg-bleu-nuit text-blanc-lait font-semibold rounded-xl px-xl py-md text-sm pointer-events-none">
+            Choisir un fichier
+          </button>
+        </label>
+        <input id="fichier-excel" type="file" accept=".xlsx,.xls"
+          (change)="onFichierChange($event)" class="hidden" />
+
+        <!-- Conseil -->
+        <div class="bg-or-clair/30 rounded-xl p-md flex gap-md items-start">
+          <span class="text-xl">💡</span>
+          <div>
+            <p class="text-sm font-semibold text-anthracite">Conseil</p>
+            <p class="text-xs text-anthracite/60">
+              Assurez-vous que les colonnes obligatoires (Nom, Prénom, rôle) sont correctement remplies avant l'envoi.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <button
+        (click)="analyser()"
+        [disabled]="service.isLoading() || !fichierSelectionne()"
+        class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-50">
+        @if (service.isLoading()) {
+          <i class="pi pi-spin pi-spinner"></i>
+        }
+        Analyser le fichier
+      </button>
+
+    </div>
+  }
+
+  <!-- ===== ÉTAPE 2 : VÉRIFICATION ===== -->
+  @if (etape() === 'verification') {
+    <div class="mx-lg flex flex-col gap-lg">
+
+      <!-- Stats globales -->
+      <div class="bg-white rounded-xl p-lg shadow-sm">
+        <div class="flex items-center gap-md mb-md">
+          <div class="w-12 h-12 rounded-full bg-bleu-clair flex items-center justify-center">
+            <i class="pi pi-users text-bleu-nuit text-xl"></i>
+          </div>
+          <div>
+            <p class="text-xs text-anthracite/50 uppercase">Total détecté</p>
+            <p class="text-2xl font-bold text-anthracite">{{ service.statsAnalyse()?.total }} membres</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-md">
+          <div class="bg-vert-clair/30 rounded-lg p-md">
+            <p class="text-xs text-anthracite/50 uppercase">Valides</p>
+            <div class="flex items-center gap-sm">
+              <p class="text-xl font-bold text-vert-foret">{{ service.statsAnalyse()?.valides }}</p>
+              <i class="pi pi-check-circle text-vert-foret"></i>
+            </div>
+          </div>
+          <div class="bg-rouge-clair/30 rounded-lg p-md">
+            <p class="text-xs text-anthracite/50 uppercase">Erreurs</p>
+            <div class="flex items-center gap-sm">
+              <p class="text-xl font-bold text-rouge-alerte">{{ service.statsAnalyse()?.erreurs }}</p>
+              <i class="pi pi-exclamation-circle text-rouge-alerte"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Liste membres -->
+      <div>
+        <div class="flex justify-between items-center mb-md">
+          <p class="font-semibold text-anthracite">Détails de l'import</p>
+          <button class="text-sm text-bleu-nuit">voir plus</button>
+        </div>
+
+        <div class="flex flex-col gap-sm">
+          @for (membre of service.membresAnalyses(); track $index) {
+            <div class="bg-white rounded-xl p-md shadow-sm">
+              <div class="flex items-center gap-md">
+                <div class="w-10 h-10 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-sm text-bleu-nuit shrink-0">
+                  {{ membre.prenom[0] | uppercase }}{{ membre.nom[0] | uppercase }}
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="font-semibold text-anthracite truncate">{{ membre.prenom }} {{ membre.nom }}</p>
+                  <p class="text-xs text-anthracite/50">{{ membre.telephone || 'Non spécifié' }}</p>
+                </div>
+                <span
+                  [class]="membre.statut === 'valide'
+                    ? 'text-xs font-semibold px-sm py-xs rounded-full bg-vert-clair text-vert-foret'
+                    : 'text-xs font-semibold px-sm py-xs rounded-full bg-rouge-clair text-rouge-alerte'"
+                >
+                  {{ membre.statut === 'valide' ? 'VALIDE' : 'ERREUR' }}
+                </span>
+              </div>
+
+              @if (membre.statut === 'erreur' && membre.erreurs?.length) {
+                <div class="mt-sm flex flex-col gap-xs bg-rouge-clair/30 rounded-lg p-sm">
+                  @for (erreur of membre.erreurs; track $index) {
+                    <div class="flex items-center gap-sm text-rouge-alerte text-xs">
+                      <i class="pi pi-exclamation-triangle shrink-0"></i>
+                      {{ erreur }}
+                    </div>
+                  }
+                </div>
+              }
+
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex flex-col gap-md pb-lg">
+        <button
+          (click)="importer()"
+          [disabled]="service.isLoading() || membresValides().length === 0"
+          class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-50">
+          @if (service.isLoading()) {
+            <i class="pi pi-spin pi-spinner"></i>
+          }
+          Importer les membres valides ({{ membresValides().length }})
+        </button>
+        <button (click)="retourSelection()"
+          class="w-full text-bleu-nuit font-semibold py-md text-center">
+          Annuler
+        </button>
+      </div>
+
+    </div>
+  }
+
+</div>
+
+<!-- Modal de succès Excel -->
+<p-dialog
+  [(visible)]="modalSuccesVisible"
+  [modal]="true"
+  [closable]="false"
+  [draggable]="false"
+  styleClass="w-[90vw] max-w-sm rounded-2xl"
+>
+  <div class="flex flex-col items-center text-center px-md pt-xl pb-lg gap-lg">
+
+    <div class="w-20 h-20 rounded-full bg-vert-succes flex items-center justify-center">
+      <i class="pi pi-check text-3xl text-blanc-lait"></i>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-xl text-anthracite">Import réussi</h2>
+      <p class="text-sm text-anthracite/60 mt-xs">
+        <span class="font-bold text-anthracite">{{ service.nombreMembresImportes() }} membres</span>
+        ont été ajoutés à votre GIE.
+      </p>
+    </div>
+
+    <button (click)="voirLesMembres()"
+      class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm">
+      <i class="pi pi-users"></i>
+      Voir les membres
+    </button>
+
+  </div>
+</p-dialog>
+
+<app-bottom-nav />

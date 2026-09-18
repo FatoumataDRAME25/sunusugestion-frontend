@@ -1,0 +1,87 @@
+<div class="min-h-screen bg-gris-fond pb-24">
+
+  <!-- En-tête -->
+  <div class="bg-bleu-nuit p-lg pt-xl pb-xl">
+    <h1 class="text-blanc-lait font-bold text-xl mb-lg">Cotisations</h1>
+    <div class="flex items-center gap-sm bg-blanc-lait/10 rounded-xl px-md py-sm">
+      <i class="pi pi-search text-blanc-lait/50"></i>
+      <input type="text"
+        [ngModel]="termeRecherche()" (ngModelChange)="termeRecherche.set($event)"
+        placeholder="Rechercher une opération..."
+        class="flex-1 bg-transparent outline-none text-sm text-blanc-lait placeholder:text-blanc-lait/40" />
+    </div>
+  </div>
+
+  <div class="p-lg flex flex-col gap-lg">
+
+    <!-- Filtres -->
+    <div class="flex gap-sm overflow-x-auto pb-xs">
+      @for (option of optionsFiltres; track option.label) {
+        <button
+          (click)="filtreStatut.set(option.value)"
+          [class]="filtreStatut() === option.value
+            ? 'px-lg py-sm rounded-full bg-bleu-nuit text-blanc-lait font-semibold text-sm whitespace-nowrap'
+            : 'px-lg py-sm rounded-full bg-white text-anthracite/60 text-sm border border-anthracite/10 whitespace-nowrap'">
+          {{ option.label }}
+        </button>
+      }
+    </div>
+
+    <!-- Liste -->
+    @if (cotisationsFiltrees().length === 0) {
+      <div class="flex flex-col items-center py-2xl text-center">
+        <i class="pi pi-inbox text-4xl text-anthracite/30 mb-md"></i>
+        <p class="font-semibold text-anthracite/60">Aucune cotisation trouvée</p>
+      </div>
+    }
+
+    @for (cotisation of cotisationsFiltrees(); track cotisation.id) {
+      <div class="bg-white rounded-xl p-md shadow-sm">
+        <div class="flex items-center gap-md mb-md">
+          <!-- Avatar -->
+          <div class="w-10 h-10 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-sm text-bleu-nuit shrink-0">
+            {{ (cotisation.membre.prenom + ' ' + cotisation.membre.nom) | initiales }}
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-anthracite truncate">
+              {{ cotisation.membre.prenom }} {{ cotisation.membre.nom }}
+            </p>
+            <p class="text-xs text-anthracite/50">ID: SG-{{ cotisation.id.toString().padStart(4, '0') }}</p>
+          </div>
+          <!-- Badge statut -->
+          <span [class]="
+            cotisation.statut === 'payee'      ? 'text-xs font-semibold px-sm py-xs rounded-full bg-vert-clair text-vert-foret' :
+            cotisation.statut === 'en_retard'  ? 'text-xs font-semibold px-sm py-xs rounded-full bg-rouge-clair text-rouge-alerte' :
+                                                  'text-xs font-semibold px-sm py-xs rounded-full bg-or-clair text-or-senegal'">
+            {{ cotisation.statut === 'payee' ? 'PAYÉE' : cotisation.statut === 'en_retard' ? 'EN RETARD' : 'EN ATTENTE' }}
+          </span>
+        </div>
+        <div class="flex justify-between text-xs border-t border-anthracite/10 pt-sm">
+          <div>
+            <p class="text-anthracite/50">Session</p>
+            <p class="font-semibold text-anthracite">{{ cotisation.session.libelle }}</p>
+          </div>
+          <div class="text-right">
+            <p class="text-anthracite/50">Date</p>
+            <p class="font-semibold text-anthracite">
+              {{ cotisation.datePaiement ? (cotisation.datePaiement | date:'dd/MM/yyyy') : '---' }}
+            </p>
+          </div>
+        </div>
+      </div>
+    }
+
+  </div>
+
+</div>
+
+<!-- Bouton fixe -->
+<div class="fixed bottom-16 left-0 right-0 px-lg">
+  <button routerLink="/mon-espace/cotisations/session-cotisation"
+    class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm shadow-lg">
+    <i class="pi pi-plus"></i>
+    Nouvelle session
+  </button>
+</div>
+
+<app-bottom-nav />

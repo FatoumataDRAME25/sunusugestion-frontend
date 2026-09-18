@@ -1,0 +1,64 @@
+<!-- features/profil/pages/profil/profil.html -->
+<p-toast />
+
+<div class="p-2xl">
+
+  <h1 class="font-sans font-semibold text-2xl text-anthracite mb-xl">Profil</h1>
+
+  @if (authService.currentUser(); as utilisateur) {
+    <div class="bg-white rounded-lg p-2xl">
+
+      <div class="flex justify-between items-center pb-lg border-b border-anthracite/10 mb-xl">
+        <div class="flex items-center gap-md">
+          <div class="w-16 h-16 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-xl text-bleu-nuit">
+            {{ (prenom() + ' ' + nom()) | initiales }}
+          </div>
+          <div>
+            <h2 class="font-sans font-semibold text-xl text-anthracite">
+              {{ prenom() }} {{ nom() }}
+            </h2>
+            <p class="text-sm text-bleu-nuit">Administrateur Système</p>
+          </div>
+        </div>
+
+        <p-button label="Modifier le mot de passe" icon="pi pi-key" [outlined]="true" />
+      </div>
+
+      <form (ngSubmit)="enregistrer()">
+        <div class="grid grid-cols-2 gap-lg mb-lg">
+          <div>
+            <label class="block text-xs font-medium text-anthracite/60 mb-sm">PRÉNOM</label>
+            <input type="text" pInputText [(ngModel)]="prenom" name="prenom" class="w-full" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-anthracite/60 mb-sm">NOM</label>
+            <input type="text" pInputText [(ngModel)]="nom" name="nom" class="w-full" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-lg mb-lg">
+          <div>
+            <label class="block text-xs font-medium text-anthracite/60 mb-sm">NUMÉRO DE TÉLÉPHONE</label>
+            <input type="text" pInputText [(ngModel)]="telephone" name="telephone" class="w-full" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-anthracite/60 mb-sm">IDENTIFIANT (EMAIL)</label>
+            <input type="email" pInputText [(ngModel)]="email" name="email" class="w-full" />
+          </div>
+        </div>
+
+        <div class="flex justify-between items-end">
+          <div>
+            <label class="block text-xs font-medium text-anthracite/60 mb-sm">RÔLE</label>
+            <div class="inline-flex items-center gap-sm bg-bleu-clair text-bleu-nuit font-medium px-md py-sm rounded-md">
+              <i class="pi pi-shield"></i>
+              Administrateur
+            </div>
+          </div>
+
+          <p-button type="submit" label="Enregistrer les modifications" icon="pi pi-check" />
+        </div>
+      </form>
+    </div>
+  }
+</div>

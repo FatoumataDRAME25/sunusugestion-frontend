@@ -1,0 +1,56 @@
+<div class="min-h-screen bg-blanc-lait p-4 md:p-8 flex flex-col justify-center items-center">
+  <div class="max-w-full w-full mx-auto px-4">
+
+    <!-- En-tête -->
+    <div class="flex items-center gap-3 mb-6">
+      <button routerLink="/inscription/compte" class="text-anthracite">
+        <i class="pi pi-chevron-left"></i>
+      </button>
+      <span class="bg-bleu-clair text-bleu-nuit text-xs font-medium px-3 py-1 rounded-full">
+        Étape 3 sur 3
+      </span>
+    </div>
+
+    <h1 class="font-sans font-semibold text-2xl text-anthracite text-center mb-2">Vérifiez votre numéro</h1>
+    <p class="text-sm text-anthracite/60 text-center mb-6">
+      Un code de vérification à 6 chiffres a été envoyé au <strong>+221 77 123 45 67</strong>
+    </p>
+
+    @if (service.errorMessage()) {
+      <p class="text-sm text-rouge-alerte text-center mb-4">{{ service.errorMessage() }}</p>
+    }
+
+    <!-- Saisie OTP -->
+    <div class="flex justify-center mb-6 w-full">
+      <p-inputotp [(ngModel)]="code" [length]="6" />
+    </div>
+
+    <!-- Renvoi de code -->
+    <p class="text-sm text-anthracite/60 text-center mb-6">
+      Vous n'avez pas reçu le code ?
+      @if (secondesRestantes() > 0) {
+        <span class="text-anthracite/40">Renvoyer le code · 00:{{ secondesRestantes().toString().padStart(2, '0') }}</span>
+      } @else {
+        <a (click)="renvoyerCode()" class="text-bleu-nuit font-medium cursor-pointer">Renvoyer le code</a>
+      }
+    </p>
+
+    <!-- Bouton -->
+    <p-button
+      label="Vérifier"
+      icon="pi pi-arrow-right"
+      iconPos="right"
+      styleClass="w-full mb-4"
+      [loading]="service.isLoading()"
+      [disabled]="code().length !== 6"
+      (onClick)="verifier()"
+    />
+
+    <div class="text-center">
+      <a routerLink="/inscription/compte" class="text-sm text-anthracite/60 font-medium">
+        <i class="pi pi-chevron-left text-xs"></i> Retour
+      </a>
+    </div>
+
+  </div>
+</div>

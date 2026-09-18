@@ -1,0 +1,187 @@
+
+<div class="bg-blanc-lait">
+
+  <!-- Header -->
+  <header class="flex justify-between items-center px-lg pt-2xl pb-lg">
+    <div class="flex items-center gap-sm">
+      <!-- Conteneur du logo adapté pour conserver les proportions -->
+      <div class="w-32 h-32 flex items-center justify-center overflow-hidden">
+        <img src="images/logo-sunu-gestion.png" alt="Logo Sunugestion" class="max-w-full max-h-full object-contain" />
+      </div>
+
+    </div>
+
+    <a routerLink="/login" class="text-sm font-medium text-bleu-nuit">Se connecter</a>
+  </header>
+
+  <!-- Hero -->
+  <section class="px-lg pb-2xl text-center">
+    <h1 class="font-sans font-semibold text-2xl text-anthracite mb-md">
+      Gérez votre GIE en toute confiance
+    </h1>
+    <p class="text-sm text-anthracite/60 mb-xl">
+      SunuGestion centralise les membres, cotisations, finances et prêts de votre GIE dans un espace privé.
+    </p>
+
+    <p-button
+      label="Créer mon espace GIE"
+      routerLink="/inscription/gie"
+      styleClass="w-full mb-xl"
+    />
+
+    <img
+      src="images/login-illustration.png"
+      alt="Membres d'un GIE réunis"
+      class="rounded-lg w-full object-cover"
+    />
+  </section>
+
+  <!-- Toute la gestion au même endroit (carrousel) -->
+  <section class="px-lg pb-2xl text-center">
+    <h2 class="font-sans font-semibold text-2xl text-anthracite mb-sm">Toute la gestion au même endroit</h2>
+    <p class="text-sm text-anthracite/60 mb-xl">
+      Une suite complète d'outils conçue pour les groupements d'intérêt économique.
+    </p>
+
+  <div class="bg-white rounded-lg p-xl flex items-center gap-md">
+    <button (click)="precedent()" class="text-anthracite/40">
+      <i class="pi pi-chevron-left"></i>
+    </button>
+
+    <div class="flex-1 text-left min-h-[160px] flex flex-col justify-center">
+      <div class="w-12 h-12 rounded-md bg-blanc-lait flex items-center justify-center mb-md">
+        <i [class]="fonctionnalites[indexActif()].icone + ' text-bleu-nuit'"></i>
+      </div>
+      <h3 class="font-sans font-semibold text-lg text-anthracite mb-xs">
+        {{ fonctionnalites[indexActif()].titre }}
+      </h3>
+      <p class="text-sm text-anthracite/60">
+        {{ fonctionnalites[indexActif()].description }}
+      </p>
+    </div>
+
+    <button (click)="suivant()" class="text-anthracite/40">
+      <i class="pi pi-chevron-right"></i>
+    </button>
+  </div>
+
+  <div class="flex justify-center gap-xs mt-lg">
+    @for (item of fonctionnalites; track $index) {
+      <button
+        (click)="allerA($index)"
+        class="w-2 h-2 rounded-full"
+        [class.bg-bleu-nuit]="$index === indexActif()"
+        [class.bg-anthracite/20]="$index !== indexActif()"
+      ></button>
+    }
+  </div>
+  </section>
+
+  <!-- Une gestion transparente -->
+  <section class="px-lg pb-2xl">
+    <h2 class="font-sans font-semibold text-2xl text-anthracite mb-xl text-center">
+      Une gestion transparente pour tous les membres
+    </h2>
+
+    <div class="flex gap-md mb-lg">
+      <i class="pi pi-check-circle text-vert-foret text-xl mt-xs"></i>
+      <div>
+        <h3 class="font-sans font-semibold text-anthracite mb-xs">Traçabilité totale</h3>
+        <p class="text-sm text-anthracite/60">Plus de doutes sur la provenance ou l'utilisation des fonds.</p>
+      </div>
+    </div>
+
+    <div class="flex gap-md">
+      <i class="pi pi-check-circle text-vert-foret text-xl mt-xs"></i>
+      <div>
+        <h3 class="font-sans font-semibold text-anthracite mb-xs">Historique accessible</h3>
+        <p class="text-sm text-anthracite/60">Archivez toutes les données financières au fil des ans.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comment ça marche -->
+  <section class="bg-bleu-nuit text-blanc-lait px-lg py-2xl text-center">
+    <h2 class="font-sans font-semibold text-2xl mb-sm">Comment ça marche ?</h2>
+    <p class="text-sm opacity-70 mb-xl">Digitalisez votre GIE en 5 minutes.</p>
+
+    <div class="flex flex-col gap-xl">
+      <div>
+        <div class="w-14 h-14 rounded-full bg-white text-bleu-nuit font-semibold text-lg flex items-center justify-center mx-auto mb-md">
+          01
+        </div>
+        <h3 class="font-sans font-semibold mb-xs">Créez votre espace</h3>
+        <p class="text-sm opacity-70">Remplissez les informations de base de votre groupement.</p>
+      </div>
+
+      <div>
+        <div class="w-14 h-14 rounded-full bg-white text-bleu-nuit font-semibold text-lg flex items-center justify-center mx-auto mb-md">
+          02
+        </div>
+        <h3 class="font-sans font-semibold mb-xs">Ajoutez vos membres</h3>
+        <p class="text-sm opacity-70">Importez la liste ou ajoutez-les individuellement.</p>
+      </div>
+
+      <div>
+        <div class="w-14 h-14 rounded-full bg-white text-bleu-nuit font-semibold text-lg flex items-center justify-center mx-auto mb-md">
+          03
+        </div>
+        <h3 class="font-sans font-semibold mb-xs">Gérez et suivez vos activités</h3>
+        <p class="text-sm opacity-70">Enregistrez vos cotisations et générez vos rapports.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA final -->
+  <section class="px-lg py-2xl text-center">
+    <h2 class="font-sans font-semibold text-2xl text-anthracite mb-sm">Prêt à moderniser votre GIE ?</h2>
+    <p class="text-sm text-anthracite/60 mb-xl">Rejoignez des centaines de GIE qui utilisent déjà SunuGestion.</p>
+    <p-button label="Créer mon espace GIE" routerLink="/inscription/gie" styleClass="w-full" />
+  </section>
+
+  <!-- Footer -->
+
+ <!-- features/vitrine/pages/accueil/accueil.html (section footer) -->
+  <footer class="bg-blanc-lait px-lg py-2xl">
+
+    <div class="flex justify-center items-center gap-sm mb-md">
+      <div class="w-9 h-9 rounded-lg bg-bleu-nuit flex items-center justify-center">
+        <i class="pi pi-shield text-blanc-lait"></i>
+      </div>
+      <span class="font-sans font-semibold text-lg text-bleu-nuit">SunuGestion</span>
+    </div>
+
+    <p class="text-sm text-anthracite/50 mb-xl text-center">L'ERP numéro 1 pour les GIE au Sénégal.</p>
+
+    <div class="flex justify-center gap-md mb-2xl">
+      <a class="w-10 h-10 rounded-full bg-bleu-nuit flex items-center justify-center">
+        <i class="pi pi-facebook text-blanc-lait"></i>
+      </a>
+      <a class="w-10 h-10 rounded-full bg-bleu-nuit flex items-center justify-center">
+        <i class="pi pi-twitter text-blanc-lait"></i>
+      </a>
+      <a class="w-10 h-10 rounded-full bg-bleu-nuit flex items-center justify-center">
+        <i class="pi pi-linkedin text-blanc-lait"></i>
+      </a>
+    </div>
+
+    <div class="grid grid-cols-2 gap-xl mb-2xl text-center">
+      <div class="flex flex-col gap-md">
+        <p class="font-sans font-semibold text-sm text-bleu-nuit">PLATEFORME</p>
+        <p class="text-sm text-anthracite/60">À propos</p>
+        <p class="text-sm text-anthracite/60">Fonctionnalités</p>
+        <p class="text-sm text-anthracite/60">Tarifs</p>
+      </div>
+      <div class="flex flex-col gap-md">
+        <p class="font-sans font-semibold text-sm text-bleu-nuit">SUPPORT</p>
+        <p class="text-sm text-anthracite/60">Centre d'aide</p>
+        <a routerLink="/login" class="text-sm text-anthracite/60">Connexion</a>
+        <p class="text-sm text-anthracite/60">Légal</p>
+      </div>
+    </div>
+
+    <p class="text-xs text-anthracite/40 text-center border-t border-anthracite/10 pt-lg">
+      © 2026 SunuGestion. Tous droits réservés.
+    </p>
+  </footer>
+</div>

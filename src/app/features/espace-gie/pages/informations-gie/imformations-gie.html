@@ -1,0 +1,140 @@
+<div class="min-h-screen bg-gris-fond pb-20">
+
+  <!-- En-tête -->
+  <div class="bg-bleu-nuit p-lg pt-xl flex items-center gap-md">
+    <button routerLink="/mon-espace" class="text-blanc-lait/70">
+      <i class="pi pi-arrow-left text-lg"></i>
+    </button>
+    <h1 class="text-blanc-lait font-semibold text-lg">Informations du GIE</h1>
+  </div>
+
+  @if (gieService.isLoading()) {
+    <div class="flex justify-center py-2xl">
+      <i class="pi pi-spin pi-spinner text-2xl text-bleu-nuit"></i>
+    </div>
+  }
+
+  @if (!gieService.isLoading()) {
+    <form [formGroup]="form" class="p-lg flex flex-col gap-lg">
+
+      <!-- Message succès -->
+      @if (succes()) {
+        <div class="bg-vert-clair text-vert-foret text-sm rounded-xl p-md flex items-center gap-sm">
+          <i class="pi pi-check-circle"></i>
+          Modifications enregistrées avec succès
+        </div>
+      }
+
+      <!-- Message erreur -->
+      @if (gieService.errorMessage()) {
+        <div class="bg-rouge-clair text-rouge-alerte text-sm rounded-xl p-md">
+          {{ gieService.errorMessage() }}
+        </div>
+      }
+
+      <!-- Logo -->
+      <div class="flex flex-col items-center gap-sm">
+        <div class="relative">
+          @if (gieService.infosGie()?.logo) {
+            <img [src]="gieService.infosGie()?.logo" alt="Logo GIE"
+              class="w-24 h-24 rounded-2xl object-cover" />
+          } @else {
+            <div class="w-24 h-24 rounded-2xl bg-bleu-clair flex items-center justify-center">
+              <i class="pi pi-image text-3xl text-bleu-nuit/40"></i>
+            </div>
+          }
+          @if (estPresident) {
+            <button type="button"
+              class="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-bleu-nuit flex items-center justify-center">
+              <i class="pi pi-camera text-blanc-lait text-xs"></i>
+            </button>
+          }
+        </div>
+        @if (estPresident) {
+          <p class="text-sm text-anthracite/60">Modifier le logo</p>
+        }
+      </div>
+
+      <!-- Nom du GIE -->
+      <div class="flex flex-col gap-xs">
+        <label class="text-sm font-medium text-anthracite">Nom du GIE</label>
+        <input pInputText formControlName="nom"
+          [readonly]="!estPresident"
+          [class]="!estPresident ? 'w-full bg-gris-fond' : 'w-full'" />
+      </div>
+
+      <!-- Région -->
+      <div class="flex flex-col gap-xs">
+        <label class="text-sm font-medium text-anthracite">Région</label>
+        <input pInputText formControlName="region"
+          [readonly]="!estPresident"
+          [class]="!estPresident ? 'w-full bg-gris-fond' : 'w-full'" />
+      </div>
+
+      <!-- Secteur d'activité -->
+      <div class="flex flex-col gap-xs">
+        <label class="text-sm font-medium text-anthracite">Secteur d'activité</label>
+        <input pInputText formControlName="secteur"
+          [readonly]="!estPresident"
+          [class]="!estPresident ? 'w-full bg-gris-fond' : 'w-full'" />
+      </div>
+
+      <!-- Téléphone -->
+      <div class="flex flex-col gap-xs">
+        <label class="text-sm font-medium text-anthracite">Téléphone du GIE</label>
+        <input pInputText formControlName="telephone"
+          [readonly]="!estPresident"
+          [class]="!estPresident ? 'w-full bg-gris-fond' : 'w-full'" />
+      </div>
+
+      <!-- Informations du compte (lecture seule) -->
+      <div class="bg-white rounded-xl p-lg flex flex-col gap-md shadow-sm">
+        <p class="text-xs font-bold text-anthracite uppercase tracking-wide">Informations du compte</p>
+        <div class="flex justify-between items-center">
+          <p class="text-sm text-anthracite/60">Code du GIE</p>
+          <span class="bg-bleu-clair text-bleu-nuit text-sm font-semibold px-md py-xs rounded-lg">
+            {{ gieService.infosGie()?.code ?? '—' }}
+          </span>
+        </div>
+        <div class="flex justify-between items-center">
+          <p class="text-sm text-anthracite/60">Date de création</p>
+          <p class="text-sm font-semibold text-anthracite">
+            {{ gieService.infosGie()?.dateCreation | date:'d MMMM yyyy' : '' : 'fr' }}
+          </p>
+        </div>
+        <div class="flex justify-between items-center">
+          <p class="text-sm text-anthracite/60">Statut</p>
+          <span class="flex items-center gap-xs text-sm font-semibold"
+            [class]="gieService.infosGie()?.statut === 'actif' ? 'text-vert-foret' : 'text-rouge-alerte'">
+            <span class="w-2 h-2 rounded-full inline-block"
+              [class]="gieService.infosGie()?.statut === 'actif' ? 'bg-vert-foret' : 'bg-rouge-alerte'">
+            </span>
+            {{ gieService.infosGie()?.statut === 'actif' ? 'Actif' : 'Inactif' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Boutons — visibles seulement pour le président -->
+      @if (estPresident) {
+        <div class="flex flex-col gap-md mt-sm">
+          <button type="button" (click)="enregistrer()"
+            [disabled]="gieService.isSaving() || form.pristine"
+            class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-50">
+            @if (gieService.isSaving()) {
+              <i class="pi pi-spin pi-spinner"></i>
+            }
+            Enregistrer les modifications
+          </button>
+          <button type="button" routerLink="/mon-espace"
+            class="w-full text-bleu-nuit font-semibold py-md text-center">
+            Annuler
+          </button>
+        </div>
+      }
+
+    </form>
+  }
+
+</div>
+
+<app-bottom-nav />

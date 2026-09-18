@@ -1,0 +1,28 @@
+<!-- shared/ui/confirm-dialog/confirm-dialog.html -->
+<p-confirmDialog
+  [pt]="{
+    header: { style: { display: 'none' } },
+    footer: { class: 'flex flex-col-reverse items-center gap-sm w-full pb-lg px-lg' }
+  }"
+>
+  <ng-template pTemplate="message" let-donnees>
+    <div class="flex flex-col items-center text-center gap-md px-lg pb-md">
+
+      <div
+        class="w-16 h-16 rounded-xl flex items-center justify-center text-2xl"
+        [class.bg-rouge-clair]="donnees.type === 'danger'"
+        [class.text-rouge-alerte]="donnees.type === 'danger'"
+        [class.bg-vert-clair]="donnees.type === 'success'"
+        [class.text-vert-foret]="donnees.type === 'success'"
+        [class.bg-bleu-clair]="donnees.type === 'info'"
+        [class.text-bleu-nuit]="donnees.type === 'info'"
+        
+      >
+        <i [class]="donnees.icon"></i>
+      </div>
+
+      <h3 class="font-sans font-semibold text-lg text-anthracite">{{ donnees.header }}</h3>
+      <p class="text-sm text-anthracite/60">{{ donnees.message }}</p>
+    </div>
+  </ng-template>
+</p-confirmDialog>

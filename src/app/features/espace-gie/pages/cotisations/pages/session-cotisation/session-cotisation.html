@@ -1,0 +1,193 @@
+<div class="min-h-screen bg-gris-fond pb-24">
+
+  <!-- En-tête -->
+  <div class="bg-bleu-nuit p-lg pt-xl flex items-center gap-md">
+    <button routerLink="/mon-espace/cotisations"
+      class="w-8 h-8 rounded-full bg-blanc-lait/10 flex items-center justify-center text-blanc-lait">
+      <i class="pi pi-arrow-left text-sm"></i>
+    </button>
+    <h1 class="text-blanc-lait font-bold text-lg">Nouvelle session</h1>
+  </div>
+
+  <div class="p-lg flex flex-col gap-lg">
+
+    <div>
+      <h2 class="font-bold text-xl text-anthracite">Session de cotisation</h2>
+      <p class="text-sm text-anthracite/60 mt-xs">Créez une session pour l'ensemble des membres actifs du GIE.</p>
+    </div>
+
+    <form [formGroup]="form" class="flex flex-col gap-lg">
+
+      <!-- Libellé -->
+      <div class="flex flex-col gap-xs">
+        <label class="text-sm font-medium text-anthracite">Libellé de la session</label>
+        <input pInputText formControlName="libelle"
+          placeholder="Ex. Cotisation septembre 2026" class="w-full" />
+        @if (libelle.invalid && libelle.touched) {
+          <span class="text-xs text-rouge-alerte">Champ obligatoire</span>
+        }
+      </div>
+
+      <!-- Montant -->
+      <div class="flex flex-col gap-xs">
+        <label class="text-sm font-medium text-anthracite">Montant par membre</label>
+        <div class="relative">
+          <input pInputText formControlName="montant" type="number" min="1"
+            placeholder="5 000" class="w-full pr-16" />
+          <span class="absolute right-md top-1/2 -translate-y-1/2 text-sm text-anthracite/50">FCFA</span>
+        </div>
+        @if (montant.invalid && montant.touched) {
+          <span class="text-xs text-rouge-alerte">Montant invalide</span>
+        }
+      </div>
+
+      <!-- Dates -->
+      <div class="grid grid-cols-2 gap-md">
+        <div class="flex flex-col gap-xs">
+          <label class="text-sm font-medium text-anthracite">Date de début</label>
+          <input type="date" formControlName="dateDebut"
+            class="w-full border border-anthracite/20 rounded-xl px-md py-sm text-anthracite bg-white" />
+        </div>
+        <div class="flex flex-col gap-xs">
+          <label class="text-sm font-medium text-anthracite">Date de fin</label>
+          <input type="date" formControlName="dateFin"
+            class="w-full border border-anthracite/20 rounded-xl px-md py-sm text-anthracite bg-white" />
+        </div>
+      </div>
+
+    </form>
+
+    <!-- Récapitulatif -->
+    <div class="bg-white rounded-xl p-lg shadow-sm">
+      <div class="flex items-center gap-sm mb-md">
+        <i class="pi pi-list text-bleu-nuit"></i>
+        <p class="font-bold text-sm text-anthracite uppercase tracking-wide">Récapitulatif</p>
+      </div>
+      <div class="flex flex-col gap-sm">
+        <div class="flex justify-between">
+          <p class="text-sm text-anthracite/60">Membres concernés</p>
+          <p class="text-sm font-bold text-anthracite">{{ nombreMembresActifs() }} membres actifs</p>
+        </div>
+        <div class="flex justify-between">
+          <p class="text-sm text-anthracite/60">Montant par membre</p>
+          <p class="text-sm font-bold text-anthracite">{{ (montant.value ?? 0) | number:'1.0-0' }} FCFA</p>
+        </div>
+        <div class="flex justify-between border-t border-anthracite/10 pt-sm">
+          <p class="text-sm font-bold text-anthracite">Total attendu</p>
+          <p class="text-sm font-bold text-bleu-nuit">{{ totalAttendu() | number:'1.0-0' }} FCFA</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info -->
+    <div class="bg-bleu-clair/30 rounded-xl p-md flex gap-sm">
+      <i class="pi pi-info-circle text-bleu-nuit shrink-0 mt-xs"></i>
+      <p class="text-xs text-anthracite/70">
+        Les cotisations seront automatiquement créées pour les
+        <strong>{{ nombreMembresActifs() }} membres actifs</strong>
+        avec le statut <strong>"En attente"</strong>.
+      </p>
+    </div>
+
+    <!-- Bouton -->
+    <button type="button" (click)="lancerSession()"
+      [disabled]="cotisationService.isLoading()"
+      class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-50">
+      @if (cotisationService.isLoading()) { <i class="pi pi-spin pi-spinner"></i> }
+      Lancer la session
+    </button>
+
+  </div>
+
+</div>
+
+<!-- Modal confirmation -->
+<p-dialog [(visible)]="voirConfirmation" [modal]="true" [closable]="false" [draggable]="false"
+  [style]="{ width: '90vw', 'max-width': '420px' }">
+  <div class="flex flex-col items-center text-center p-md gap-lg">
+
+    <div style="width:64px; height:64px; border-radius:50%; background-color:#EBF5FB; display:flex; align-items:center; justify-content:center;">
+      <i class="pi pi-send" style="font-size:1.5rem; color:#1A3C5E;"></i>
+    </div>
+
+    <div>
+      <h2 style="font-weight:700; font-size:1.2rem; color:#1a1a2e; margin-bottom:8px;">Confirmer le lancement</h2>
+      <p style="font-size:0.875rem; color:#6b7280;">Voulez-vous vraiment lancer cette session de cotisation ?</p>
+      <p style="font-size:0.875rem; font-weight:700; color:#1a1a2e; margin-top:8px;">
+        {{ nombreMembresActifs() }} cotisations de {{ (montant.value ?? 0) | number:'1.0-0' }} FCFA
+        seront générées pour vos membres.
+      </p>
+    </div>
+
+    <!-- Avertissement -->
+    <div style="background-color:#FFF8E1; border-radius:12px; padding:12px; display:flex; gap:8px; align-items:flex-start; width:100%;">
+      <i class="pi pi-exclamation-triangle" style="color:#F59E0B; flex-shrink:0; margin-top:2px;"></i>
+      <p style="font-size:0.75rem; color:#B45309; text-align:left;">
+        Cette action est irréversible. Les notifications d'appel de fonds seront envoyées immédiatement.
+      </p>
+    </div>
+
+    <div style="width:100%; display:flex; flex-direction:column; gap:12px;">
+      <button (click)="confirmerLancement()"
+        style="width:100%; background-color:#1A3C5E; color:white; font-weight:600; border-radius:12px; padding:14px; border:none; cursor:pointer;">
+        Confirmer et lancer
+      </button>
+      <button (click)="voirConfirmation.set(false)"
+        style="width:100%; background:white; color:#1a1a2e; font-weight:600; border-radius:12px; padding:14px; border:1px solid #e5e7eb; cursor:pointer;">
+        Annuler
+      </button>
+    </div>
+
+  </div>
+</p-dialog>
+
+<!-- Modal succès -->
+<p-dialog [(visible)]="voirSucces" [modal]="true" [closable]="false" [draggable]="false"
+  [style]="{ width: '90vw', 'max-width': '420px' }">
+  <div class="flex flex-col items-center text-center p-md gap-lg">
+
+    <div style="width:80px; height:80px; border-radius:50%; background-color:#d1fae5; display:flex; align-items:center; justify-content:center;">
+      <i class="pi pi-check" style="font-size:2rem; color:#2E8B57;"></i>
+    </div>
+
+    <div>
+      <h2 style="font-weight:700; font-size:1.2rem; color:#1a1a2e;">Session lancée avec succès !</h2>
+      <p style="font-size:0.875rem; color:#6b7280; margin-top:8px;">
+        La session <strong>« {{ libelle.value }} »</strong> a été créée.
+        Les {{ nombreMembresActifs() }} membres ont reçu une notification.
+      </p>
+    </div>
+
+    <!-- Récap succès -->
+    <div style="width:100%; background:#f9fafb; border-radius:12px; padding:16px;">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+        <i class="pi pi-list" style="color:#1A3C5E;"></i>
+        <p style="font-size:0.75rem; font-weight:700; color:#1a1a2e;">RÉCAPITULATIF — Session active</p>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+        <p style="font-size:0.875rem; color:#6b7280;">Total attendu</p>
+        <p style="font-size:0.875rem; font-weight:700; color:#1a1a2e;">{{ totalAttendu() | number:'1.0-0' }} FCFA</p>
+      </div>
+      <div style="display:flex; justify-content:space-between;">
+        <p style="font-size:0.875rem; color:#6b7280;">Date d'échéance</p>
+        <p style="font-size:0.875rem; font-weight:700; color:#1a1a2e;">{{ dateFin.value }}</p>
+      </div>
+    </div>
+
+    <div style="width:100%; display:flex; flex-direction:column; gap:12px;">
+      <button (click)="voirTableauDeBord()"
+        style="width:100%; background-color:#1A3C5E; color:white; font-weight:600; border-radius:12px; padding:14px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+        <i class="pi pi-chart-line"></i>
+        Voir le tableau de bord
+      </button>
+      <button (click)="gererCotisations()"
+        style="width:100%; background:white; color:#1a1a2e; font-weight:600; border-radius:12px; padding:14px; border:1px solid #e5e7eb; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+        <i class="pi pi-users"></i>
+        Gérer les cotisations
+      </button>
+    </div>
+
+  </div>
+</p-dialog>
+
+<app-bottom-nav />

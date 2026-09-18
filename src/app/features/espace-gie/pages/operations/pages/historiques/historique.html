@@ -1,0 +1,173 @@
+<div class="min-h-screen bg-gris-fond pb-52">
+
+  <!-- En-tête bleu -->
+  <div class="bg-bleu-nuit p-lg pt-xl pb-xl">
+    <div class="flex justify-between items-center mb-lg">
+      <h1 class="text-blanc-lait font-bold text-xl">Historique</h1>
+      <button class="w-10 h-10 rounded-xl bg-blanc-lait/10 flex items-center justify-center text-blanc-lait">
+        <i class="pi pi-bell"></i>
+      </button>
+    </div>
+
+    <!-- Barre de recherche -->
+    <div class="flex items-center gap-sm bg-blanc-lait/10 rounded-xl px-md py-sm">
+      <i class="pi pi-search text-blanc-lait/50"></i>
+      <input
+        type="text"
+        [ngModel]="termeRecherche()"
+        (ngModelChange)="termeRecherche.set($event)"
+        placeholder="Rechercher une opération..."
+        class="flex-1 bg-transparent outline-none text-sm text-blanc-lait placeholder:text-blanc-lait/40"
+      />
+    </div>
+  </div>
+
+  <div class="p-lg flex flex-col gap-lg">
+
+    <!-- Filtres -->
+    <div class="flex gap-sm">
+      @for (filtre of [
+        { label: 'Toutes', value: 'toutes' },
+        { label: 'Entrées', value: 'entree' },
+        { label: 'Sorties', value: 'sortie' }
+      ]; track filtre.value) {
+        <button
+          (click)="filtreType.set($any(filtre.value))"
+          [class]="filtreType() === filtre.value
+            ? 'px-lg py-sm rounded-full bg-bleu-nuit text-blanc-lait font-semibold text-sm'
+            : 'px-lg py-sm rounded-full bg-white text-anthracite/60 text-sm border border-anthracite/10'"
+        >
+          {{ filtre.label }}
+        </button>
+      }
+    </div>
+
+    <!-- Loading -->
+    @if (isLoading()) {
+      <div class="flex justify-center py-2xl">
+        <i class="pi pi-spin pi-spinner text-2xl text-bleu-nuit"></i>
+      </div>
+    }
+
+    <!-- Liste groupée par date -->
+    @if (!isLoading()) {
+
+      @if (operationsGroupees().length === 0) {
+        <div class="flex flex-col items-center justify-center py-2xl text-center">
+          <div class="w-16 h-16 rounded-full bg-bleu-clair/30 flex items-center justify-center mb-md">
+            <i class="pi pi-wallet text-2xl text-bleu-nuit/40"></i>
+          </div>
+          <p class="font-semibold text-anthracite/60">Aucune opération trouvée</p>
+          @if (termeRecherche() || filtreType() !== 'toutes') {
+            <p class="text-sm text-anthracite/40 mt-xs">Essayez de modifier vos filtres</p>
+          }
+        </div>
+      }
+
+      @for (groupe of operationsGroupees(); track groupe.date) {
+        <!-- Label du groupe -->
+        <p class="text-xs font-bold text-anthracite/40 uppercase tracking-widest">
+          {{ labelDate(groupe.date) }}
+        </p>
+
+        <!-- Opérations du groupe -->
+        <div class="flex flex-col gap-sm -mt-sm">
+          @for (op of groupe.ops; track op.id) {
+            <div class="bg-white rounded-xl p-md flex items-center gap-md shadow-sm">
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-anthracite truncate">{{ op.libelle }}</p>
+                <p class="text-xs text-anthracite/50 mt-xs">
+                  {{ op.dateOperation | date:'HH:mm' }}
+                </p>
+              </div>
+              <div class="flex items-center gap-sm shrink-0">
+                <p [class]="op.typeOperation === 'entree'
+                  ? 'font-bold text-vert-foret'
+                  : 'font-bold text-rouge-alerte'">
+                  {{ op.typeOperation === 'entree' ? '+' : '-' }}
+                  {{ op.montant | number:'1.0-0' }} FCFA
+                </p>
+                <i class="pi pi-chevron-right text-anthracite/30 text-xs"></i>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+
+  </div>
+
+</div>
+
+<!-- Boutons fixes en bas -->
+<div class="fixed bottom-16 left-0 right-0 px-lg flex flex-col gap-sm">
+  <a routerLink="/mon-espace/historiques/nouvelle-operation"
+    class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm shadow-lg">
+    <i class="pi pi-plus"></i>
+    Faire une opération
+  </a>
+  <button
+    (click)="ouvrirCaisse()"
+    class="w-full bg-white text-bleu-nuit font-semibold rounded-xl py-md flex items-center justify-center border border-bleu-nuit/20 shadow-sm">
+    Voir la caisse
+  </button>
+</div>
+
+<!-- Modal état de la caisse -->
+<p-dialog
+  [(visible)]="voirCaisse"
+  [modal]="true"
+  [closable]="false"
+  [draggable]="false"
+  [style]="{ width: '90vw', 'max-width': '420px' }"
+>
+  <div class="flex flex-col gap-lg p-md">
+
+    <!-- Header modal -->
+    <div class="flex justify-between items-center">
+      <h2 class="font-bold text-lg text-anthracite">État de la caisse</h2>
+      <button (click)="fermerCaisse()"
+        class="w-8 h-8 rounded-full bg-gris-fond flex items-center justify-center text-anthracite/60">
+        <i class="pi pi-times text-sm"></i>
+      </button>
+    </div>
+
+    <!-- Solde principal -->
+    <div class="bg-bleu-nuit rounded-xl p-lg">
+      <p class="text-blanc-lait/60 text-xs uppercase font-semibold tracking-wide">Solde disponible</p>
+      <p class="text-blanc-lait font-bold text-3xl mt-xs">
+        {{ (solde()?.solde ?? 0) | number:'1.0-0' }}
+        <span class="text-lg font-normal">FCFA</span>
+      </p>
+      <p class="text-blanc-lait/40 text-xs mt-sm flex items-center gap-xs">
+        <i class="pi pi-refresh text-xs"></i>
+        Mis à jour maintenant
+      </p>
+    </div>
+
+    <!-- Entrées / Sorties -->
+    <div class="grid grid-cols-2 gap-md">
+      <div class="bg-vert-clair/20 rounded-xl p-md">
+        <div class="w-8 h-8 rounded-lg bg-vert-clair flex items-center justify-center mb-sm">
+          <i class="pi pi-arrow-down text-vert-foret text-sm"></i>
+        </div>
+        <p class="text-xs text-anthracite/50 uppercase font-semibold">Total entrées</p>
+        <p class="font-bold text-vert-foret mt-xs">
+          {{ (solde()?.totalEntrees ?? 0) | number:'1.0-0' }} FCFA
+        </p>
+      </div>
+      <div class="bg-rouge-clair/20 rounded-xl p-md">
+        <div class="w-8 h-8 rounded-lg bg-rouge-clair flex items-center justify-center mb-sm">
+          <i class="pi pi-arrow-up text-rouge-alerte text-sm"></i>
+        </div>
+        <p class="text-xs text-anthracite/50 uppercase font-semibold">Total sorties</p>
+        <p class="font-bold text-rouge-alerte mt-xs">
+          {{ (solde()?.totalSorties ?? 0) | number:'1.0-0' }} FCFA
+        </p>
+      </div>
+    </div>
+
+  </div>
+</p-dialog>
+
+<app-bottom-nav />

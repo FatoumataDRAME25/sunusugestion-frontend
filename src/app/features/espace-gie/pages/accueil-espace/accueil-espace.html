@@ -1,0 +1,102 @@
+<div class="p-lg pb-2xl">
+
+  <!-- En-tête -->
+  <div class="flex justify-between items-center mb-xl">
+    <div>
+      <h1 class="font-sans font-semibold text-xl text-anthracite">
+        Bonjour, {{ service.prenomUtilisateur() }}
+      </h1>
+      <p class="text-sm text-anthracite/60">{{ service.nomGie() }}</p>
+    </div>
+
+    <div class="flex items-center gap-md">
+      <div class="relative">
+        <i class="pi pi-bell text-xl text-anthracite/60"></i>
+        <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-rouge-alerte"></span>
+      </div>
+
+      @if (authService.currentUser(); as utilisateur) {
+        <div class="w-10 h-10 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-sm text-bleu-nuit">
+          {{ (utilisateur.prenom + ' ' + utilisateur.nom) | initiales }}
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Bouton principal -->
+  <button
+    routerLink="/mon-espace/membres/"
+    class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-lg py-md flex items-center justify-center gap-sm mb-xl"
+  >
+    <i class="pi pi-plus"></i>
+    Ajouter un membre
+  </button>
+
+  <!-- Vue d'ensemble -->
+  <h2 class="font-sans font-semibold text-lg text-anthracite mb-md">Vue d'ensemble</h2>
+  <div class="grid grid-cols-2 gap-md mb-xl">
+    <div class="bg-white rounded-lg p-lg">
+      <p class="text-xs text-anthracite/50 mb-sm">Membres</p>
+      <p class="text-2xl font-semibold text-anthracite">{{ service.stats().nombreMembres }}</p>
+    </div>
+    <div class="bg-white rounded-lg p-lg">
+      <p class="text-xs text-anthracite/50 mb-sm">Cotisations mois</p>
+      <p class="text-2xl font-semibold text-anthracite">
+        {{ service.stats().cotisationsMois | number: '1.0-0' }} <span class="text-sm font-normal">FCFA</span>
+      </p>
+    </div>
+    <div class="bg-white rounded-lg p-lg">
+      <p class="text-xs text-anthracite/50 mb-sm">En attente</p>
+      <p class="text-2xl font-semibold text-anthracite">
+        {{ service.stats().montantEnAttente | number: '1.0-0' }} <span class="text-sm font-normal">FCFA</span>
+      </p>
+    </div>
+    <div class="bg-white rounded-lg p-lg">
+      <p class="text-xs text-anthracite/50 mb-sm">Prêts en cours</p>
+      <p class="text-2xl font-semibold text-anthracite">{{ service.stats().pretsEnCours }}</p>
+    </div>
+  </div>
+
+  <!-- À traiter -->
+  <h2 class="font-sans font-semibold text-lg text-anthracite mb-md">À traiter</h2>
+  <button
+    routerLink="/mon-espace/operations"
+    class="w-full bg-white rounded-lg p-lg flex items-center gap-md mb-xl text-left"
+  >
+    <div class="w-10 h-10 rounded-md bg-or-clair flex items-center justify-center">
+      <i class="pi pi-credit-card text-or-senegal"></i>
+    </div>
+    <div class="flex-1">
+      <p class="text-sm font-medium text-anthracite">Demandes d'approbation de prêts</p>
+    </div>
+    <span class="bg-rouge-clair text-rouge-alerte text-xs font-semibold w-6 h-6 rounded-full flex items-center justify-center">
+      {{ service.stats().demandesApprobationPrets }}
+    </span>
+    <i class="pi pi-chevron-right text-anthracite/30"></i>
+  </button>
+
+  <!-- Activité récente -->
+  <div class="flex justify-between items-center mb-md">
+    <h2 class="font-sans font-semibold text-lg text-anthracite">Activité récente</h2>
+    <a class="text-sm text-bleu-nuit font-medium">Tout voir</a>
+  </div>
+
+  <div class="flex flex-col gap-lg mb-xl">
+    @for (activite of service.activitesRecentes(); track activite.id) {
+      <div class="flex gap-md">
+        <span class="w-2 h-2 rounded-full bg-bleu-nuit mt-xs"></span>
+        <div>
+          <p class="text-sm text-anthracite">{{ activite.message }}</p>
+          <p class="text-xs text-anthracite/50 uppercase">{{ activite.tempsEcoule }}</p>
+        </div>
+      </div>
+    }
+  </div>
+
+  <button
+    routerLink="/mon-espace/informations-gie"
+    class="w-full bg-white text-bleu-nuit font-medium rounded-lg py-md"
+  >
+    Voir les informations du GIE
+  </button>
+</div>

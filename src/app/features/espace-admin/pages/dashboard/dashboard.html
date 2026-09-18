@@ -1,0 +1,128 @@
+<!-- features/dashboard/pages/dashboard/dashboard.html -->
+<div class="p-2xl">
+
+  <!-- En-tête -->
+  <div class="flex justify-between items-center mb-xl">
+    <div>
+      <h1 class="font-sans font-semibold text-2xl text-anthracite">Tableau de bord</h1>
+      <p class="text-sm text-anthracite/60">Vue globale de la plateforme SunuGestion</p>
+    </div>
+    <div class="flex items-center gap-md">
+      <i class="pi pi-bell text-xl text-anthracite/60"></i>
+      <div class="text-right">
+        <p class="text-sm font-medium text-anthracite">Admin SunuGestion</p>
+        <p class="text-xs text-anthracite/50">SUPER-ADMIN</p>
+      </div>
+      <div class="w-10 h-10 rounded-full bg-anthracite/10"> </div>
+    </div>
+  </div>
+
+  <!-- Cartes de statistiques -->
+  <div class="grid grid-cols-6 gap-lg mb-xl">
+    <div class="bg-white rounded-lg p-lg text-center">
+
+      <p class="text-sm text-anthracite/60">Total des GIE</p>
+      <p class="text-2xl font-semibold text-anthracite">{{ dashboardService.stats().totalGies }}</p>
+    </div>
+    <div class="bg-white rounded-lg p-lg text-center">
+      <!-- <i class="pi pi-check-circle text-vert-clair text-xl mb-sm"></i> -->
+      <p class="text-sm text-anthracite/60">GIE actifs</p>
+      <p class="text-2xl font-semibold text-anthracite">{{ dashboardService.stats().gieActifs }}</p>
+    </div>
+    <div class="bg-white rounded-lg p-lg text-center">
+      <!--<i class="pi pi-ban text-rouge-clair text-xl mb-sm"></i> -->
+      <p class="text-sm text-anthracite/60">GIE inactifs</p>
+      <p class="text-2xl font-semibold text-anthracite">{{ dashboardService.stats().gieInactifs }}</p>
+    </div>
+    <div class="bg-white rounded-lg p-lg text-center">
+      <!--<i class="pi pi-users text-xl mb-sm"></i> -->
+      <p class="text-sm text-anthracite/60">Membres</p>
+      <p class="text-2xl font-semibold text-anthracite">{{ dashboardService.stats().totalMembres }}</p>
+    </div>
+    <div class="bg-white rounded-lg p-lg text-center">
+      <!--<i class="pi pi-map text-or-senegal text-xl mb-sm"></i> -->
+      <p class="text-sm text-anthracite/60">Régions</p>
+      <p class="text-2xl font-semibold text-anthracite">{{ dashboardService.stats().totalRegions }}</p>
+    </div>
+    <div class="bg-white rounded-lg p-lg text-center">
+      <!-- <i class="pi pi-briefcase text-xl mb-sm"></i> -->
+      <p class="text-sm text-anthracite/60">Secteurs</p>
+      <p class="text-2xl font-semibold text-anthracite">{{ dashboardService.stats().totalSecteurs }}</p>
+    </div>
+  </div>
+
+  <!-- Graphiques -->
+  <div class="grid grid-cols-2 gap-lg mb-xl">
+    <div class="bg-white rounded-lg p-lg">
+      <h2 class="font-sans font-medium text-lg text-anthracite mb-md">Évolution du nombre de GIE</h2>
+      <p-chart type="line" [data]="lineChartData()" [options]="lineChartOptions" [style]="{ height: '280px' }" />
+    </div>
+
+    <div class="bg-white rounded-lg p-lg">
+      <h2 class="font-sans font-medium text-lg text-anthracite mb-md">GIE par secteur d'activité</h2>
+      <p-chart type="doughnut" [data]="donutChartData()" [options]="donutChartOptions" [style]="{ height: '220px' }" />
+
+      <div class="grid grid-cols-2 gap-sm mt-lg">
+        @for (item of dashboardService.repartitionSecteurs(); track item.secteur) {
+          <div class="flex items-center gap-sm text-sm">
+            <span class="w-3 h-3 rounded-sm bg-bleu-nuit"></span>
+            <span class="text-anthracite">{{ item.secteur }} ({{ item.pourcentage }}%)</span>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Tableaux -->
+  <div class="grid grid-cols-2 gap-lg">
+    <div class="bg-white rounded-lg p-lg">
+      <div class="flex justify-between items-center mb-md">
+        <h2 class="font-sans font-medium text-lg text-anthracite">GIE récemment activés</h2>
+        <a class="text-sm text-bleu-nuit cursor-pointer">Voir tout</a>
+      </div>
+      <p-table [value]="dashboardService.gieRecentsActives()">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>GIE</th>
+            <th>Région</th>
+            <th>Date</th>
+            <th>Statut</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-gie>
+          <tr>
+            <td class="font-medium">{{ gie.nom }}</td>
+            <td>{{ gie.region }}</td>
+            <td>{{ gie.dateCreation | date: 'dd MMM yyyy' }}</td>
+            <td><p-tag severity="success" value="ACTIF" /></td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <div class="bg-white rounded-lg p-lg">
+      <div class="flex justify-between items-center mb-md">
+        <h2 class="font-sans font-medium text-lg text-anthracite">GIE récemment désactivés</h2>
+        <a class="text-sm text-bleu-nuit cursor-pointer">Voir tout</a>
+      </div>
+      <p-table [value]="dashboardService.gieRecentsDesactives()">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>GIE</th>
+            <th>Région</th>
+            <th>Date</th>
+            <th>Statut</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-gie>
+          <tr>
+            <td class="font-medium">{{ gie.nom }}</td>
+            <td>{{ gie.region }}</td>
+            <td>{{ gie.dateCreation | date: 'dd MMM yyyy' }}</td>
+            <td><p-tag severity="danger" value="INACTIF" /></td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>

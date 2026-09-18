@@ -1,0 +1,43 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import 'tailwindcss';
+
+
+@import "primeicons/primeicons.css";
+
+@theme {
+  /* Couleurs principales */
+  --color-bleu-nuit: #1A3C5E;
+  --color-vert-foret: #2E8B57;
+  --color-or-senegal: #E8A020;
+  --color-rouge-alerte: #E74C3C;
+
+  /* Fond et texte */
+  --color-blanc-lait: #F5F7FA;
+  --color-anthracite: #2D2D2D;
+
+  /* Couleurs secondaires (fonds d'états) */
+  --color-bleu-clair: #D4E8F5;
+  --color-vert-clair: #D6EFE0;
+  --color-or-clair: #FDF3E0;
+  --color-rouge-clair: #FDECEA;
+
+  /* Police */
+  --font-sans: "Inter", sans-serif;
+
+  /* Rayons de bordure */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 20px;
+
+  /* Espacements */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
+}
+

@@ -1,0 +1,99 @@
+<!-- features/auth/pages/login/login.html -->
+<div class="min-h-screen flex bg-blanc-lait">
+
+  <!-- Panneau gauche : visible uniquement à partir du breakpoint md (desktop) -->
+  <div class="hidden md:flex md:w-1/2 bg-bleu-nuit text-blanc-lait flex-col justify-between p-2xl">
+    <div>
+      <div class="flex items-center gap-sm mb-xl">
+        <div class="bg-blanc-lait rounded-md p-sm">
+          <i class="pi pi-verified text-bleu-nuit text-xl"></i>
+        </div>
+        <span class="font-sans font-semibold text-xl">SunuGestion</span>
+      </div>
+
+      <h1 class="font-sans font-semibold text-2xl mb-md">Gérez votre GIE simplement</h1>
+      <p class="text-sm opacity-80 mb-xl">
+        Une plateforme pensée pour simplifier la gestion, le suivi des membres et les activités de votre GIE.
+      </p>
+
+      <img
+        src="images/login-illustration.png"
+        alt="Réunion GIE"
+        class="rounded-lg mb-xl  object-cover"
+      />
+
+      <ul class="flex flex-col gap-sm mb-3">
+        <li class="flex items-center gap-sm text-sm">
+          <i class="pi pi-check-circle text-vert-foret"></i> Gestion des membres
+        </li>
+        <li class="flex items-center gap-sm text-sm">
+          <i class="pi pi-check-circle text-vert-foret"></i> Suivi des cotisations et prêts
+        </li>
+        <li class="flex items-center gap-sm text-sm">
+          <i class="pi pi-check-circle text-vert-foret"></i> Gestion simple et centralisée
+        </li>
+      </ul>
+    </div>
+
+    <p class="text-xs opacity-60 border-t border-white/10 pt-md text-center">
+      © 2026 SunuGestion. Tous droits réservés.
+    </p>
+  </div>
+
+  <!-- Panneau droit : le formulaire, toujours visible -->
+  <div class="flex-1 flex items-center justify-center p-lg">
+    <div class="w-full max-w-3xl md:bg-white md:shadow-lg md:rounded-xl md:p-2xl ">
+
+      <h2 class="font-sans font-semibold text-2xl text-anthracite mb-x">
+        Bienvenue sur SunuGestion
+      </h2>
+      <p class="text-sm text-anthracite/70 mb-xl">Connectez-vous à votre espace</p>
+
+      @if (authService.errorMessage()) {
+        <p-message severity="error" [text]="authService.errorMessage()!" styleClass="mb-lg w-full"/>
+      }
+
+      <form (ngSubmit)="seConnecter()">
+
+        <label class="block text-sm font-medium text-anthracite mb-sm">
+          Identifiant ou numéro de téléphone
+        </label>
+        <p-iconfield class="block mb-lg">
+          <p-inputicon styleClass="pi pi-user" />
+          <input
+            type="text"
+            pInputText
+            [(ngModel)]="telephone"
+            name="telephone"
+            placeholder="Exemple : 77 XXX XX XX"
+            class="w-full"
+            required
+          />
+        </p-iconfield>
+
+        <div class="flex justify-between items-center mb-sm">
+          <label class="text-sm font-medium text-anthracite">Mot de passe</label>
+          <a class="text-sm text-bleu-nuit cursor-pointer">Mot de passe oublié ?</a>
+        </div>
+        <p-password
+          [(ngModel)]="codePin"
+          name="codePin"
+          placeholder="••••••••"
+          [toggleMask]="true"
+          [feedback]="false"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+        />
+
+        <p-button
+          type="submit"
+          label="Se connecter"
+          icon="pi pi-sign-in"
+          iconPos="right"
+          styleClass="w-full mt-5"
+          [loading]="authService.isLoading()"
+        />
+      </form>
+    </div>
+  </div>
+</div>

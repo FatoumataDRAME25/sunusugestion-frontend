@@ -1,0 +1,42 @@
+<!-- shared/ui/sidebar/sidebar.html -->
+<aside class="w-64 h-screen bg-bleu-nuit text-blanc-lait flex flex-col p-lg">
+
+    <div class="w-32 h-32  overflow-hidden ">
+        <img src="images/logo-sunugestion-fond-bleu.png" alt="Logo Sunugestion" class="max-w-full max-h-full object-contain" />
+    </div>
+
+
+  <nav class="flex flex-col gap-xs flex-1">
+    <a
+      routerLink="/dashboard"
+      routerLinkActive="bg-white/20"
+      class="flex items-center gap-sm px-md py-sm rounded-md hover:bg-white/5">
+      <i class="pi pi-chart-line"></i>
+      <span>Dashboard</span>
+    </a>
+
+    <a
+      routerLink="/espaces-gie"
+      routerLinkActive="bg-white/10"
+      class="flex items-center gap-sm px-md py-sm rounded-md hover:bg-white/5">
+      <i class="pi pi-building"></i>
+      <span>Espaces GIE</span>
+    </a>
+
+    <a
+      routerLink="/profil"
+      routerLinkActive="bg-white/10"
+      class="flex items-center gap-sm px-md py-sm rounded-md hover:bg-white/5">
+      <i class="pi pi-cog"></i>
+      <span>Profil</span>
+    </a>
+  </nav>
+
+  <button
+    (click)="confirmerDeconnexion()"
+    class="flex items-center gap-sm px-md py-sm rounded-md hover:bg-white/5 text-left"
+  >
+    <i class="pi pi-sign-out"></i>
+    <span>Déconnexion</span>
+  </button>
+</aside>

@@ -1,0 +1,73 @@
+<!-- features/inscription/pages/etape-compte/etape-compte.html -->
+<div class="min-h-screen bg-blanc-lait p-lg">
+  <div class="max-w-full mx-auto">
+
+    <div class="flex items-center gap-md mb-xl">
+      <button routerLink="/inscription/gie" class="text-anthracite">
+        <i class="pi pi-chevron-left"></i>
+      </button>
+      <span class="bg-bleu-clair text-bleu-nuit text-xs font-medium px-md py-xs rounded-full">
+        Étape 2 sur 3
+      </span>
+    </div>
+
+    <h1 class="font-sans font-semibold text-2xl text-anthracite mb-xs">Créez votre compte</h1>
+    <p class="text-sm text-anthracite/60 mb-xl">Commencez la digitalisation de votre GIE en quelques étapes.</p>
+
+    @if (service.errorMessage()) {
+      <p class="text-sm text-rouge-alerte mb-lg">{{ service.errorMessage() }}</p>
+    }
+
+    <form (ngSubmit)="continuer()" class="flex flex-col gap-lg">
+
+      <div class="grid grid-cols-2 gap-md">
+        <div>
+          <label class="block text-sm font-medium text-anthracite mb-sm">Prénom</label>
+          <input type="text" pInputText [(ngModel)]="prenom" name="prenom" placeholder="Ex: Moussa" class="w-full" required />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-anthracite mb-sm">Nom</label>
+          <input type="text" pInputText [(ngModel)]="nom" name="nom" placeholder="Ex: Diop" class="w-full" required />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-anthracite mb-sm">Numéro de téléphone</label>
+        <div class="flex gap-sm">
+          <span class="bg-white border border-anthracite/10 rounded-md px-md flex items-center">+221</span>
+          <input type="text" pInputText [(ngModel)]="telephone" name="telephone" placeholder="77 000 00 00" class="w-full" required />
+        </div>
+      </div>
+
+      <div>
+        <div class="flex justify-between mb-sm">
+          <label class="text-sm font-medium text-anthracite">Adresse e-mail</label>
+          <span class="text-xs text-anthracite/50 bg-anthracite/5 px-sm rounded">FACULTATIF</span>
+        </div>
+        <input type="email" pInputText [(ngModel)]="email" name="email" placeholder="nom@exemple.sn" class="w-full" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-anthracite mb-sm">Mot de passe</label>
+        <p-password [(ngModel)]="pin" name="codePin" [toggleMask]="true" [feedback]="false" styleClass="w-full" inputStyleClass="w-full" required />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-anthracite mb-sm">Confirmation du mot de passe</label>
+        <p-password [(ngModel)]="confirmationPin" name="confirmationCodePin" [toggleMask]="true" [feedback]="false" styleClass="w-full" inputStyleClass="w-full" required />
+        @if (erreurConfirmation()) {
+          <p class="text-xs text-rouge-alerte mt-xs">{{ erreurConfirmation() }}</p>
+        }
+      </div>
+
+      <div class="flex items-start gap-sm">
+        <p-checkbox [(ngModel)]="accepteConditions" name="accepteConditions" [binary]="true" required />
+        <label class="text-sm text-anthracite/70">
+          J'accepte les <a class="text-bleu-nuit font-medium cursor-pointer">conditions d'utilisation</a> et la <a class="text-bleu-nuit font-medium cursor-pointer">politique de confidentialité</a>.
+        </label>
+      </div>
+
+      <p-button type="submit" label="Continuer" icon="pi pi-arrow-right" iconPos="right" styleClass="w-full" [loading]="service.isLoading()" [disabled]="!accepteConditions()" />
+    </form>
+  </div>
+</div>
