@@ -1,6 +1,6 @@
 <div class="min-h-screen bg-gris-fond pb-20">
 
-  <!-- En-tête commun aux deux étapes -->
+  <!-- En-tête -->
   <div class="p-lg pt-xl">
     <button (click)="etape() === 'selection' ? null : retourSelection()"
       [routerLink]="etape() === 'selection' ? '/mon-espace/membres' : null"
@@ -10,7 +10,7 @@
 
     @if (etape() === 'selection') {
       <h1 class="font-sans font-bold text-2xl text-anthracite">Importer des membres</h1>
-      <p class="text-sm text-bleu-nuit mt-xs">Ajoutez rapidement plusieurs membres via un fichier Excel.</p>
+      <p class="text-sm text-bleu-nuit mt-xs">Ajoutez rapidement plusieurs membres via une photo ou un fichier.</p>
     } @else {
       <h1 class="font-sans font-bold text-2xl text-anthracite">Vérifier les membres</h1>
       <p class="text-sm text-anthracite/60 mt-xs">Vérifiez les informations avant l'importation.</p>
@@ -27,70 +27,163 @@
   @if (etape() === 'selection') {
     <div class="mx-lg flex flex-col gap-lg">
 
-      <!-- Étape 1 : Préparer -->
-      <div class="bg-white rounded-xl p-lg shadow-sm">
-        <div class="flex items-center gap-md mb-md">
-          <div class="w-8 h-8 rounded-full bg-bleu-nuit flex items-center justify-center text-blanc-lait text-sm font-bold">1</div>
-          <h2 class="font-semibold text-anthracite">Préparer le fichier</h2>
-        </div>
-        <p class="text-sm text-anthracite/60">
-          Utilisez notre format standard pour assurer une importation sans erreurs de vos données membres.
-        </p>
-      </div>
-
-      <!-- Étape 2 : Importer -->
+      <!-- Étape 1 : Mode d'importation -->
       <div class="bg-white rounded-xl p-lg shadow-sm">
         <div class="flex items-center gap-md mb-lg">
-          <div class="w-8 h-8 rounded-full bg-bleu-nuit flex items-center justify-center text-blanc-lait text-sm font-bold">2</div>
-          <h2 class="font-semibold text-anthracite">Importer le fichier</h2>
+          <div class="w-8 h-8 rounded-full bg-bleu-nuit flex items-center justify-center text-blanc-lait text-sm font-bold shrink-0">1</div>
+          <h2 class="font-semibold text-anthracite">Mode d'importation</h2>
         </div>
 
-        <!-- Zone de dépôt -->
-        <label for="fichier-excel"
-          class="flex flex-col items-center justify-center gap-md border-2 border-dashed border-bleu-nuit/30 rounded-xl p-xl cursor-pointer mb-lg">
-          <!-- Icône fichier Excel -->
-          <div class="w-16 h-16 bg-vert-clair rounded-xl flex items-center justify-center relative">
-            <i class="pi pi-file text-3xl text-vert-foret"></i>
-            <span class="absolute bottom-1 right-1 bg-vert-foret text-blanc-lait text-xs font-bold px-xs rounded">X</span>
+        <!-- Toggle Excel / Image -->
+        <div class="flex bg-gris-fond rounded-xl p-xs gap-xs mb-lg">
+          <button (click)="changerMode('excel')"
+            [class]="modeImport() === 'excel'
+              ? 'flex-1 py-sm rounded-lg bg-bleu-nuit text-blanc-lait font-semibold text-sm shadow-sm'
+              : 'flex-1 py-sm rounded-lg text-anthracite/50 text-sm'">
+            Fichier Excel
+          </button>
+          <button (click)="changerMode('image')"
+            [class]="modeImport() === 'image'
+              ? 'flex-1 py-sm rounded-lg bg-bleu-nuit text-blanc-lait font-semibold text-sm shadow-sm'
+              : 'flex-1 py-sm rounded-lg text-anthracite/50 text-sm'">
+            Photo / Image
+          </button>
+        </div>
+
+        <!-- Description du mode image -->
+        @if (modeImport() === 'image') {
+          <p class="text-sm text-anthracite/60 mb-lg">
+            Prenez en photo ou importez une capture de votre liste de membres.
+            Nous extrairons automatiquement les informations (Nom, Prénom, Rôle).
+          </p>
+          <div class="flex flex-col gap-sm">
+            <button (click)="ouvrirCamera()"
+              class="w-full border border-anthracite/20 bg-white text-anthracite font-semibold rounded-xl py-md flex items-center justify-center gap-sm">
+              <i class="pi pi-camera text-bleu-nuit"></i>
+              Prendre une photo
+            </button>
+            <button (click)="ouvrirGalerie()"
+              class="w-full border border-anthracite/20 bg-white text-anthracite font-semibold rounded-xl py-md flex items-center justify-center gap-sm">
+              <i class="pi pi-images text-bleu-nuit"></i>
+              Choisir depuis la galerie
+            </button>
           </div>
 
-          @if (nomFichier()) {
-            <p class="font-semibold text-anthracite text-center">{{ nomFichier() }}</p>
-            <p class="text-xs text-anthracite/50">Cliquer pour changer</p>
-          } @else {
-            <p class="font-semibold text-anthracite text-center">Sélectionnez votre fichier</p>
-            <p class="text-xs text-anthracite/50 text-center">Glissez-déposez ou parcourez vos documents.<br>Formats acceptés : .xlsx, .xls</p>
+          <!-- Inputs cachés -->
+          <input id="fichier-camera" type="file" accept="image/jpeg,image/png,image/webp" capture="environment"
+            (change)="onFichierImageChange($event)" class="hidden" />
+          <input id="fichier-galerie" type="file" accept="image/jpeg,image/png,image/webp"
+            (change)="onFichierImageChange($event)" class="hidden" />
+        }
+      </div>
+
+      <!-- Étape 2 : Upload du fichier -->
+      <div class="bg-white rounded-xl p-lg shadow-sm">
+        <div class="flex items-center gap-md mb-lg">
+          <div class="w-8 h-8 rounded-full bg-bleu-nuit flex items-center justify-center text-blanc-lait text-sm font-bold shrink-0">2</div>
+          <h2 class="font-semibold text-anthracite">
+            {{ modeImport() === 'excel' ? 'Importer le fichier' : 'Importer l\'image' }}
+          </h2>
+        </div>
+
+        <!-- Zone Excel -->
+        @if (modeImport() === 'excel') {
+          <label for="fichier-excel"
+            class="flex flex-col items-center justify-center gap-md border-2 border-dashed border-bleu-nuit/30 rounded-xl p-xl cursor-pointer mb-lg">
+            <div class="w-16 h-16 bg-vert-clair rounded-xl flex items-center justify-center relative">
+              <i class="pi pi-file text-3xl text-vert-foret"></i>
+              <span class="absolute bottom-1 right-1 bg-vert-foret text-blanc-lait text-xs font-bold px-xs rounded">X</span>
+            </div>
+            @if (nomFichierExcel()) {
+              <p class="font-semibold text-anthracite text-center">{{ nomFichierExcel() }}</p>
+              <p class="text-xs text-anthracite/50">Cliquer pour changer</p>
+            } @else {
+              <p class="font-semibold text-anthracite text-center">Sélectionnez votre fichier</p>
+              <p class="text-xs text-anthracite/50 text-center">Formats acceptés : .xlsx, .xls</p>
+            }
+            <button type="button"
+              class="bg-bleu-nuit text-blanc-lait font-semibold rounded-xl px-xl py-md text-sm pointer-events-none">
+              Choisir un fichier
+            </button>
+          </label>
+          <input id="fichier-excel" type="file" accept=".xlsx,.xls"
+            (change)="onFichierExcelChange($event)" class="hidden" />
+        }
+
+        <!-- Zone Image -->
+        @if (modeImport() === 'image') {
+          <!-- Erreur fichier image -->
+          @if (erreurFichierImage()) {
+            <div class="mb-md bg-rouge-clair text-rouge-alerte text-sm rounded-lg p-md flex items-center gap-sm">
+              <i class="pi pi-exclamation-triangle shrink-0"></i>
+              {{ erreurFichierImage() }}
+            </div>
           }
 
-          <button type="button"
-            class="bg-bleu-nuit text-blanc-lait font-semibold rounded-xl px-xl py-md text-sm pointer-events-none">
-            Choisir un fichier
-          </button>
-        </label>
-        <input id="fichier-excel" type="file" accept=".xlsx,.xls"
-          (change)="onFichierChange($event)" class="hidden" />
+          <label for="fichier-image-zone"
+            class="flex flex-col items-center justify-center gap-md border-2 border-dashed border-bleu-nuit/30 rounded-xl p-xl cursor-pointer mb-lg">
+
+            @if (apercuImage()) {
+              <img [src]="apercuImage()" alt="Aperçu" class="w-full max-h-48 object-contain rounded-lg" />
+              <p class="text-xs text-anthracite/50">Cliquer pour changer</p>
+            } @else {
+              <div class="w-16 h-16 bg-vert-clair/30 rounded-xl flex items-center justify-center">
+                <i class="pi pi-image text-3xl text-vert-foret/60"></i>
+              </div>
+              <p class="font-semibold text-anthracite text-center">Sélectionnez votre image</p>
+              <p class="text-xs text-anthracite/50 text-center">
+                Formats acceptés : JPEG, PNG, WEBP<br>Taille max : 5 Mo.
+              </p>
+            }
+
+            <button type="button"
+              class="bg-bleu-nuit text-blanc-lait font-semibold rounded-xl px-xl py-md text-sm pointer-events-none">
+              Importer l'image
+            </button>
+          </label>
+          <input id="fichier-image-zone" type="file" accept="image/jpeg,image/png,image/webp"
+            (change)="onFichierImageChange($event)" class="hidden" />
+        }
 
         <!-- Conseil -->
         <div class="bg-or-clair/30 rounded-xl p-md flex gap-md items-start">
           <span class="text-xl">💡</span>
           <div>
             <p class="text-sm font-semibold text-anthracite">Conseil</p>
-            <p class="text-xs text-anthracite/60">
-              Assurez-vous que les colonnes obligatoires (Nom, Prénom, rôle) sont correctement remplies avant l'envoi.
-            </p>
+            @if (modeImport() === 'excel') {
+              <p class="text-xs text-anthracite/60">
+                Assurez-vous que les colonnes obligatoires (Nom, Prénom, rôle) sont correctement remplies avant l'envoi.
+              </p>
+            } @else {
+              <p class="text-xs text-anthracite/60">
+                Assurez-vous que la photo soit nette, bien éclairée, et que toutes les colonnes soient lisibles.
+              </p>
+            }
           </div>
         </div>
       </div>
 
-      <button
-        (click)="analyser()"
-        [disabled]="service.isLoading() || !fichierSelectionne()"
-        class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-50">
-        @if (service.isLoading()) {
-          <i class="pi pi-spin pi-spinner"></i>
-        }
-        Analyser le fichier
-      </button>
+      <!-- Bouton analyser -->
+      @if (modeImport() === 'excel') {
+        <button (click)="analyserExcel()"
+          [disabled]="service.isLoading() || !fichierExcel()"
+          class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-50">
+          @if (service.isLoading()) { <i class="pi pi-spin pi-spinner"></i> }
+          Analyser le fichier
+        </button>
+      } @else {
+        <button (click)="analyserImage()"
+          [disabled]="service.isLoading() || !fichierImage()"
+          class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-50">
+          @if (service.isLoading()) { <i class="pi pi-spin pi-spinner"></i> }
+          Analyser l'image
+        </button>
+      }
+
+      <a routerLink="/mon-espace/membres"
+        class="w-full text-bleu-nuit font-semibold py-md text-center block">
+        Annuler
+      </a>
 
     </div>
   }
@@ -99,7 +192,7 @@
   @if (etape() === 'verification') {
     <div class="mx-lg flex flex-col gap-lg">
 
-      <!-- Stats globales -->
+      <!-- Résumé stats -->
       <div class="bg-white rounded-xl p-lg shadow-sm">
         <div class="flex items-center gap-md mb-md">
           <div class="w-12 h-12 rounded-full bg-bleu-clair flex items-center justify-center">
@@ -128,58 +221,333 @@
         </div>
       </div>
 
-      <!-- Liste membres -->
-      <div>
-        <div class="flex justify-between items-center mb-md">
-          <p class="font-semibold text-anthracite">Détails de l'import</p>
-          <button class="text-sm text-bleu-nuit">voir plus</button>
-        </div>
+      <!-- ===== MODE EXCEL : deux tableaux avec édition inline ===== -->
+      @if (modeImport() === 'excel') {
 
-        <div class="flex flex-col gap-sm">
-          @for (membre of service.membresAnalyses(); track $index) {
-            <div class="bg-white rounded-xl p-md shadow-sm">
-              <div class="flex items-center gap-md">
-                <div class="w-10 h-10 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-sm text-bleu-nuit shrink-0">
-                  {{ membre.prenom[0] | uppercase }}{{ membre.nom[0] | uppercase }}
-                </div>
-                <div class="flex-1 min-w-0">
-                  <p class="font-semibold text-anthracite truncate">{{ membre.prenom }} {{ membre.nom }}</p>
-                  <p class="text-xs text-anthracite/50">{{ membre.telephone || 'Non spécifié' }}</p>
-                </div>
-                <span
-                  [class]="membre.statut === 'valide'
-                    ? 'text-xs font-semibold px-sm py-xs rounded-full bg-vert-clair text-vert-foret'
-                    : 'text-xs font-semibold px-sm py-xs rounded-full bg-rouge-clair text-rouge-alerte'"
-                >
-                  {{ membre.statut === 'valide' ? 'VALIDE' : 'ERREUR' }}
-                </span>
-              </div>
+        <!-- Membres valides -->
+        @if (membresValides().length > 0) {
+          <div>
+            <div class="flex items-center gap-sm mb-md">
+              <i class="pi pi-check-circle text-vert-foret"></i>
+              <p class="font-semibold text-anthracite">Membres valides ({{ membresValides().length }})</p>
+            </div>
+            <div class="flex flex-col gap-sm">
+              @for (membre of service.membresAnalyses(); track $index) {
+                @if (membre.statut === 'valide') {
+                  <div class="bg-white rounded-xl p-md shadow-sm border border-vert-foret/20">
+                    <div class="flex items-center gap-md">
+                      <div class="w-10 h-10 rounded-full bg-vert-clair flex items-center justify-center font-semibold text-sm text-vert-foret shrink-0">
+                        {{ (membre.prenom[0] || '?') | uppercase }}{{ (membre.nom[0] || '?') | uppercase }}
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <p class="font-semibold text-anthracite truncate">{{ membre.prenom }} {{ membre.nom }}</p>
+                        <p class="text-xs text-anthracite/50">{{ membre.telephone || 'Non spécifié' }}</p>
+                      </div>
+                      <div class="flex flex-col items-end gap-xs">
+                        <span class="text-xs font-semibold px-sm py-xs rounded-full bg-vert-clair text-vert-foret">VALIDE</span>
+                        <span class="text-xs text-anthracite/40 capitalize">{{ membre.role }}</span>
+                      </div>
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+          </div>
+        }
 
-              @if (membre.statut === 'erreur' && membre.erreurs?.length) {
-                <div class="mt-sm flex flex-col gap-xs bg-rouge-clair/30 rounded-lg p-sm">
-                  @for (erreur of membre.erreurs; track $index) {
-                    <div class="flex items-center gap-sm text-rouge-alerte text-xs">
-                      <i class="pi pi-exclamation-triangle shrink-0"></i>
-                      {{ erreur }}
+        <!-- Membres invalides avec édition inline -->
+        @if (membresInvalides().length > 0) {
+          <div>
+            <div class="flex items-center gap-sm mb-md">
+              <i class="pi pi-exclamation-circle text-rouge-alerte"></i>
+              <p class="font-semibold text-anthracite">Membres à corriger ({{ membresInvalides().length }})</p>
+            </div>
+            <p class="text-xs text-anthracite/50 mb-md -mt-xs">Corrigez les erreurs pour pouvoir importer ces membres.</p>
+            <div class="flex flex-col gap-sm">
+              @for (membre of service.membresAnalyses(); track $index) {
+                @if (membre.statut === 'erreur') {
+
+                  <!-- Mode lecture -->
+                  @if (indexEnEdition() !== $index) {
+                    <div class="bg-white rounded-xl p-md shadow-sm border border-rouge-alerte/20">
+                      <div class="flex items-center gap-md">
+                        <div class="w-10 h-10 rounded-full bg-rouge-clair flex items-center justify-center font-semibold text-sm text-rouge-alerte shrink-0">
+                          {{ (membre.prenom?.[0] || '?') | uppercase }}{{ (membre.nom?.[0] || '?') | uppercase }}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                          <p class="font-semibold text-anthracite truncate">{{ membre.prenom || '—' }} {{ membre.nom || '—' }}</p>
+                          <p class="text-xs text-anthracite/50">{{ membre.telephone || 'Non spécifié' }}</p>
+                        </div>
+                        <button (click)="ouvrirEdition($index)"
+                          class="text-bleu-nuit border border-bleu-nuit/30 rounded-lg px-sm py-xs text-xs font-semibold flex items-center gap-xs shrink-0">
+                          <i class="pi pi-pencil text-xs"></i>
+                          Corriger
+                        </button>
+                      </div>
+                      <div class="mt-sm flex flex-col gap-xs bg-rouge-clair/30 rounded-lg p-sm">
+                        @for (erreur of membre.erreurs; track $index) {
+                          <div class="flex items-center gap-sm text-rouge-alerte text-xs">
+                            <i class="pi pi-exclamation-triangle shrink-0"></i>
+                            {{ erreur }}
+                          </div>
+                        }
+                      </div>
                     </div>
                   }
-                </div>
+
+                  <!-- Mode édition inline -->
+                  @if (indexEnEdition() === $index && membreEnEdition()) {
+                    <div class="bg-white rounded-xl p-md shadow-sm border-2 border-bleu-nuit/40">
+                      <div class="flex items-center gap-sm mb-md">
+                        <i class="pi pi-pencil text-bleu-nuit text-sm"></i>
+                        <p class="font-semibold text-bleu-nuit text-sm">Correction en cours</p>
+                      </div>
+                      <div class="flex flex-col gap-sm">
+                        <div>
+                          <label class="text-xs font-semibold text-anthracite/60 mb-xs block">Prénom *</label>
+                          <input type="text"
+                            [(ngModel)]="membreEnEdition()!.prenom"
+                            (ngModelChange)="membreEnEdition.set({ ...membreEnEdition()!, prenom: $event })"
+                            placeholder="Prénom"
+                            class="w-full border border-anthracite/20 rounded-lg px-md py-sm text-sm text-anthracite focus:border-bleu-nuit focus:outline-none" />
+                        </div>
+                        <div>
+                          <label class="text-xs font-semibold text-anthracite/60 mb-xs block">Nom *</label>
+                          <input type="text"
+                            [(ngModel)]="membreEnEdition()!.nom"
+                            (ngModelChange)="membreEnEdition.set({ ...membreEnEdition()!, nom: $event })"
+                            placeholder="Nom"
+                            class="w-full border border-anthracite/20 rounded-lg px-md py-sm text-sm text-anthracite focus:border-bleu-nuit focus:outline-none" />
+                        </div>
+                        <div>
+                          <label class="text-xs font-semibold text-anthracite/60 mb-xs block">Téléphone *</label>
+                          <input type="tel"
+                            [(ngModel)]="membreEnEdition()!.telephone"
+                            (ngModelChange)="membreEnEdition.set({ ...membreEnEdition()!, telephone: $event })"
+                            placeholder="7XXXXXXXX"
+                            class="w-full border border-anthracite/20 rounded-lg px-md py-sm text-sm text-anthracite focus:border-bleu-nuit focus:outline-none" />
+                          <p class="text-xs text-anthracite/40 mt-xs">Commence par 70, 71, 75, 76, 77 ou 78</p>
+                        </div>
+                        <div>
+                          <label class="text-xs font-semibold text-anthracite/60 mb-xs block">Rôle *</label>
+                          <select
+                            [(ngModel)]="membreEnEdition()!.role"
+                            (ngModelChange)="membreEnEdition.set({ ...membreEnEdition()!, role: $event })"
+                            class="w-full border border-anthracite/20 rounded-lg px-md py-sm text-sm text-anthracite focus:border-bleu-nuit focus:outline-none bg-white">
+                            <option value="" disabled>Sélectionner un rôle</option>
+                            @for (role of rolesDisponibles; track role) {
+                              <option [value]="role">{{ role | uppercase }}</option>
+                            }
+                          </select>
+                        </div>
+                      </div>
+                      <div class="flex gap-sm mt-md">
+                        <button (click)="annulerEdition()"
+                          class="flex-1 border border-anthracite/20 text-anthracite font-semibold rounded-xl py-sm text-sm">
+                          Annuler
+                        </button>
+                        <button (click)="sauvegarderEdition($index)"
+                          class="flex-1 bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-sm text-sm flex items-center justify-center gap-xs">
+                          <i class="pi pi-check text-xs"></i>
+                          Valider
+                        </button>
+                      </div>
+                    </div>
+                  }
+
+                }
               }
-
             </div>
-          }
-        </div>
-      </div>
+          </div>
+        }
 
-      <!-- Actions -->
+        @if (membresInvalides().length === 0 && membresValides().length > 0) {
+          <div class="bg-vert-clair/30 rounded-xl p-md flex items-center gap-md">
+            <i class="pi pi-check-circle text-vert-foret text-xl"></i>
+            <p class="text-sm font-semibold text-vert-foret">Tous les membres sont valides !</p>
+          </div>
+        }
+
+      }
+
+      <!-- ===== MODE IMAGE : deux tableaux séparés avec édition inline ===== -->
+      @if (modeImport() === 'image') {
+
+        <!-- Tableau des membres valides -->
+        @if (membresValides().length > 0) {
+          <div>
+            <div class="flex items-center gap-sm mb-md">
+              <i class="pi pi-check-circle text-vert-foret"></i>
+              <p class="font-semibold text-anthracite">
+                Membres valides ({{ membresValides().length }})
+              </p>
+            </div>
+            <div class="flex flex-col gap-sm">
+              @for (membre of service.membresAnalyses(); track $index) {
+                @if (membre.statut === 'valide') {
+                  <div class="bg-white rounded-xl p-md shadow-sm border border-vert-foret/20">
+                    <div class="flex items-center gap-md">
+                      <div class="w-10 h-10 rounded-full bg-vert-clair flex items-center justify-center font-semibold text-sm text-vert-foret shrink-0">
+                        {{ (membre.prenom[0] || '?') | uppercase }}{{ (membre.nom[0] || '?') | uppercase }}
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <p class="font-semibold text-anthracite truncate">{{ membre.prenom }} {{ membre.nom }}</p>
+                        <p class="text-xs text-anthracite/50">{{ membre.telephone || 'Non spécifié' }}</p>
+                      </div>
+                      <div class="flex flex-col items-end gap-xs">
+                        <span class="text-xs font-semibold px-sm py-xs rounded-full bg-vert-clair text-vert-foret">
+                          VALIDE
+                        </span>
+                        <span class="text-xs text-anthracite/40 capitalize">{{ membre.role }}</span>
+                      </div>
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Tableau des membres invalides avec édition inline -->
+        @if (membresInvalides().length > 0) {
+          <div>
+            <div class="flex items-center gap-sm mb-md">
+              <i class="pi pi-exclamation-circle text-rouge-alerte"></i>
+              <p class="font-semibold text-anthracite">
+                Membres à corriger ({{ membresInvalides().length }})
+              </p>
+            </div>
+            <p class="text-xs text-anthracite/50 mb-md -mt-xs">
+              Corrigez les erreurs pour pouvoir importer ces membres.
+            </p>
+            <div class="flex flex-col gap-sm">
+              @for (membre of service.membresAnalyses(); track $index) {
+                @if (membre.statut === 'erreur') {
+
+                  <!-- Mode lecture : affichage des erreurs + bouton corriger -->
+                  @if (indexEnEdition() !== $index) {
+                    <div class="bg-white rounded-xl p-md shadow-sm border border-rouge-alerte/20">
+                      <div class="flex items-center gap-md">
+                        <div class="w-10 h-10 rounded-full bg-rouge-clair flex items-center justify-center font-semibold text-sm text-rouge-alerte shrink-0">
+                          {{ (membre.prenom?.[0] || '?') | uppercase }}{{ (membre.nom?.[0] || '?') | uppercase }}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                          <p class="font-semibold text-anthracite truncate">
+                            {{ membre.prenom || '—' }} {{ membre.nom || '—' }}
+                          </p>
+                          <p class="text-xs text-anthracite/50">{{ membre.telephone || 'Non spécifié' }}</p>
+                        </div>
+                        <button (click)="ouvrirEdition($index)"
+                          class="text-bleu-nuit border border-bleu-nuit/30 rounded-lg px-sm py-xs text-xs font-semibold flex items-center gap-xs shrink-0">
+                          <i class="pi pi-pencil text-xs"></i>
+                          Corriger
+                        </button>
+                      </div>
+                      <!-- Liste des erreurs -->
+                      <div class="mt-sm flex flex-col gap-xs bg-rouge-clair/30 rounded-lg p-sm">
+                        @for (erreur of membre.erreurs; track $index) {
+                          <div class="flex items-center gap-sm text-rouge-alerte text-xs">
+                            <i class="pi pi-exclamation-triangle shrink-0"></i>
+                            {{ erreur }}
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+
+                  <!-- Mode édition inline -->
+                  @if (indexEnEdition() === $index && membreEnEdition()) {
+                    <div class="bg-white rounded-xl p-md shadow-sm border-2 border-bleu-nuit/40">
+                      <div class="flex items-center gap-sm mb-md">
+                        <i class="pi pi-pencil text-bleu-nuit text-sm"></i>
+                        <p class="font-semibold text-bleu-nuit text-sm">Correction en cours</p>
+                      </div>
+
+                      <div class="flex flex-col gap-sm">
+                        <!-- Prénom -->
+                        <div>
+                          <label class="text-xs font-semibold text-anthracite/60 mb-xs block">Prénom *</label>
+                          <input type="text"
+                            [(ngModel)]="membreEnEdition()!.prenom"
+                            (ngModelChange)="membreEnEdition.set({ ...membreEnEdition()!, prenom: $event })"
+                            placeholder="Prénom"
+                            class="w-full border border-anthracite/20 rounded-lg px-md py-sm text-sm text-anthracite focus:border-bleu-nuit focus:outline-none" />
+                        </div>
+
+                        <!-- Nom -->
+                        <div>
+                          <label class="text-xs font-semibold text-anthracite/60 mb-xs block">Nom *</label>
+                          <input type="text"
+                            [(ngModel)]="membreEnEdition()!.nom"
+                            (ngModelChange)="membreEnEdition.set({ ...membreEnEdition()!, nom: $event })"
+                            placeholder="Nom"
+                            class="w-full border border-anthracite/20 rounded-lg px-md py-sm text-sm text-anthracite focus:border-bleu-nuit focus:outline-none" />
+                        </div>
+
+                        <!-- Téléphone -->
+                        <div>
+                          <label class="text-xs font-semibold text-anthracite/60 mb-xs block">Téléphone *</label>
+                          <input type="tel"
+                            [(ngModel)]="membreEnEdition()!.telephone"
+                            (ngModelChange)="membreEnEdition.set({ ...membreEnEdition()!, telephone: $event })"
+                            placeholder="7XXXXXXXX"
+                            class="w-full border border-anthracite/20 rounded-lg px-md py-sm text-sm text-anthracite focus:border-bleu-nuit focus:outline-none" />
+                          <p class="text-xs text-anthracite/40 mt-xs">Commence par 70, 71, 75, 76, 77 ou 78</p>
+                        </div>
+
+                        <!-- Rôle -->
+                        <div>
+                          <label class="text-xs font-semibold text-anthracite/60 mb-xs block">Rôle *</label>
+                          <select
+                            [(ngModel)]="membreEnEdition()!.role"
+                            (ngModelChange)="membreEnEdition.set({ ...membreEnEdition()!, role: $event })"
+                            class="w-full border border-anthracite/20 rounded-lg px-md py-sm text-sm text-anthracite focus:border-bleu-nuit focus:outline-none bg-white">
+                            <option value="" disabled>Sélectionner un rôle</option>
+                            @for (role of rolesDisponibles; track role) {
+                              <option [value]="role">{{ role | uppercase }}</option>
+                            }
+                          </select>
+                        </div>
+                      </div>
+
+                      <!-- Boutons action -->
+                      <div class="flex gap-sm mt-md">
+                        <button (click)="annulerEdition()"
+                          class="flex-1 border border-anthracite/20 text-anthracite font-semibold rounded-xl py-sm text-sm">
+                          Annuler
+                        </button>
+                        <button (click)="sauvegarderEdition($index)"
+                          class="flex-1 bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-sm text-sm flex items-center justify-center gap-xs">
+                          <i class="pi pi-check text-xs"></i>
+                          Valider
+                        </button>
+                      </div>
+                    </div>
+                  }
+
+                }
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Message si tous les membres ont été corrigés -->
+        @if (membresInvalides().length === 0 && membresValides().length > 0) {
+          <div class="bg-vert-clair/30 rounded-xl p-md flex items-center gap-md">
+            <i class="pi pi-check-circle text-vert-foret text-xl"></i>
+            <p class="text-sm font-semibold text-vert-foret">Tous les membres sont valides !</p>
+          </div>
+        }
+
+      }
+      <!-- fin mode image -->
+
+      <!-- Boutons d'action -->
       <div class="flex flex-col gap-md pb-lg">
-        <button
-          (click)="importer()"
+        <button (click)="importer()"
           [disabled]="service.isLoading() || membresValides().length === 0"
           class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-50">
-          @if (service.isLoading()) {
-            <i class="pi pi-spin pi-spinner"></i>
-          }
+          @if (service.isLoading()) { <i class="pi pi-spin pi-spinner"></i> }
           Importer les membres valides ({{ membresValides().length }})
         </button>
         <button (click)="retourSelection()"
@@ -193,34 +561,24 @@
 
 </div>
 
-<!-- Modal de succès Excel -->
-<p-dialog
-  [(visible)]="modalSuccesVisible"
-  [modal]="true"
-  [closable]="false"
-  [draggable]="false"
-  styleClass="w-[90vw] max-w-sm rounded-2xl"
->
+<!-- Modal succès -->
+<p-dialog [(visible)]="modalSuccesVisible" [modal]="true" [closable]="false" [draggable]="false"
+  [style]="{ width: '90vw', 'max-width': '400px' }">
   <div class="flex flex-col items-center text-center px-md pt-xl pb-lg gap-lg">
-
-    <div class="w-20 h-20 rounded-full bg-vert-succes flex items-center justify-center">
-      <i class="pi pi-check text-3xl text-blanc-lait"></i>
+    <div style="width:80px; height:80px; border-radius:50%; background-color:#2E8B57; display:flex; align-items:center; justify-content:center;">
+      <i class="pi pi-check" style="font-size:2rem; color:white;"></i>
     </div>
-
     <div>
-      <h2 class="font-bold text-xl text-anthracite">Import réussi</h2>
-      <p class="text-sm text-anthracite/60 mt-xs">
-        <span class="font-bold text-anthracite">{{ service.nombreMembresImportes() }} membres</span>
-        ont été ajoutés à votre GIE.
+      <h2 style="font-weight:700; font-size:1.2rem;">Import réussi</h2>
+      <p style="font-size:0.875rem; color:#6b7280; margin-top:4px;">
+        <strong>{{ service.nombreMembresImportes() }} membres</strong> ont été ajoutés à votre GIE.
       </p>
     </div>
-
     <button (click)="voirLesMembres()"
-      class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm">
+      style="width:100%; background-color:#1A3C5E; color:white; font-weight:600; border-radius:12px; padding:14px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
       <i class="pi pi-users"></i>
       Voir les membres
     </button>
-
   </div>
 </p-dialog>
 

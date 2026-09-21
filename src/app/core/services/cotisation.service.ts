@@ -1,9 +1,17 @@
 import { Injectable, inject, signal } from '@angular/core';
+
 import { HttpClient } from '@angular/common/http';
+
 import { Observable, tap } from 'rxjs';
 
-import { Cotisation, CreerSessionRequest, SessionCotisation } from '../models/cotisation.model';
+import {
+  Cotisation,
+  CreerSessionRequest,
+  SessionCotisation
+} from '../models/cotisation.model';
+
 import { environment } from '../../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root'
@@ -11,33 +19,65 @@ import { environment } from '../../../environments/environment';
 export class CotisationService {
 
   isLoading = signal(false);
+
   private http = inject(HttpClient);
+
   cotisations = signal<Cotisation[]>([]);
+
   sessions = signal<SessionCotisation[]>([]);
+
   sessionActive = signal<SessionCotisation | null>(null);
 
   private readonly BASE_URL = environment.API_URL;
 
 
-   // Créer une session
-  creerSession(donnees: CreerSessionRequest): Observable<SessionCotisation> {
+  // Créer une session
+
+  creerSession(
+    donnees: CreerSessionRequest
+  ): Observable<SessionCotisation> {
+
     this.isLoading.set(true);
-    return this.http.post<SessionCotisation>(`${this.BASE_URL}cotisations/sessions/`, donnees).pipe(
+
+    return this.http.post<SessionCotisation>(
+      `${this.BASE_URL}cotisations/sessions/`,
+      donnees
+    ).pipe(
+
       tap((session) => {
+
         this.sessionActive.set(session);
+
         this.isLoading.set(false);
+
       })
+
     );
   }
+
 
   // Cotisations d'une session
-  getCotisations(sessionId: number): Observable<Cotisation[]> {
+
+  getCotisations(
+    sessionId: number
+  ): Observable<Cotisation[]> {
+
     return this.http.get<Cotisation[]>(
       `${this.BASE_URL}cotisations/sessions/${sessionId}/cotisations/`
+    ).pipe(
+
+      tap((data) => {
+
+        this.cotisations.set(data);
+
+      })
+
     );
   }
 
+
   // Payer une cotisation
+
   payerCotisation(
     cotisationId: number,
     modePaiement: 'especes'
@@ -53,13 +93,26 @@ export class CotisationService {
 
 
   // Charger toutes les sessions
+
   getSessions(): Observable<SessionCotisation[]> {
-    return this.http.get<SessionCotisation[]>(`${this.BASE_URL}cotisations/sessions/`).pipe(
-      tap(data => {
+
+    return this.http.get<SessionCotisation[]>(
+      `${this.BASE_URL}cotisations/sessions/`
+    ).pipe(
+
+      tap((data) => {
+
         this.sessions.set(data);
-        const active = data.find(s => s.statut === 'active') ?? null;
+
+        const active = data.find(
+          s => s.statut === 'ouverte'
+        ) ?? null;
+
         this.sessionActive.set(active);
+
       })
+
     );
   }
+
 }

@@ -30,7 +30,7 @@ export interface SessionCotisation {
   montant: number;
   dateDebut: string;
   dateFin: string;
-  statut: 'active' | 'terminee';
+  statut: 'ouverte' | 'cloturee';
   totalAttendu: number;
   totalCollecte: number;
   nombreMembres: number;

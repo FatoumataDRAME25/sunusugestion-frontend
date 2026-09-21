@@ -20,6 +20,7 @@ import { InformationsGie } from './features/espace-gie/pages/informations-gie/im
 import { NouvelleOperation } from './features/espace-gie/pages/operations/pages/nouvelle-operation/nouvelle-operation';
 import { ListeCotisations } from './features/espace-gie/pages/cotisations/pages/liste-cotisation/liste-cotisation';
 import { SessionCotisation } from './features/espace-gie/pages/cotisations/pages/session-cotisation/session-cotisation';
+import { ActiverCompte } from './features/espace-gie/pages/membres/pages/activer-compte/activer-compte';
 
 
 
@@ -46,6 +47,7 @@ export const routes: Routes = [
       { path: 'profil', component: Profil },
     ]
   },
+  { path: 'activation', component: ActiverCompte },
 
   // Les routes pour la navigation au sein du GIE
 

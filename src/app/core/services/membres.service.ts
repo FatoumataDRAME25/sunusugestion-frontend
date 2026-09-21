@@ -10,13 +10,19 @@ import {
   ReponseImport,
   ReponseMembres
 } from '../models/membre.model';
+import { OcrService } from './ocr.service';
+import { PersonExtraite, ProcessDocumentResponse } from '../models/ocr.model';
 
 @Injectable({ providedIn: 'root' })
 export class MembresService {
 
 
   private http = inject(HttpClient);
+  private ocrService = inject(OcrService);
   private readonly BASE_URL = environment.API_URL;
+
+  // Résultat brut OCR (utilisé pour affichage du texte brut si besoin)
+  ocrResultBrut = signal<ProcessDocumentResponse | null>(null);
 
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
@@ -38,22 +44,27 @@ filtreStatut = signal<'actif' | 'inactif' | 'en_attente' | null>(null);
   // Nombre de membres importés via Excel (pour le modal succès)
   nombreMembresImportes = signal<number>(0);
 
-  // --- Ajout manuel ---
+    // --- Ajout manuel ---
   ajouterMembre(donnees: AjouterMembreRequest): Observable<any> {
-  this.isLoading.set(true);
-  this.errorMessage.set(null);
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
 
-  return this.http.post(`${this.BASE_URL}membres/membres/ajouter/`, donnees).pipe(
-    tap(() => {
-      this.dernierMembreAjoute.set({ prenom: donnees.prenom, nom: donnees.nom });
-      this.isLoading.set(false);
-    }),
-    catchError((err) => {
-      this.isLoading.set(false);
-      return throwError(() => err);
-    })
-  );
-}
+    return this.http.post<any>(`${this.BASE_URL}membres/membres/ajouter/`, donnees).pipe(
+      tap((reponse) => {
+        // On enregistre simplement les infos pour le modal de succès
+        this.dernierMembreAjoute.set({ prenom: donnees.prenom, nom: donnees.nom });
+        this.isLoading.set(false);
+        // 🚀 La simulation sous forme d'alerte a été retirée d'ici.
+        // C'est maintenant le composant Angular qui interceptera la "reponse"
+        // contenant le vrai token_invitation.
+      }),
+      catchError((err) => {
+        this.isLoading.set(false);
+        return throwError(() => err);
+      })
+    );
+  }
+
 
 
   // --- Import Excel : étape 1, analyse ---
@@ -114,13 +125,27 @@ filtreStatut = signal<'actif' | 'inactif' | 'en_attente' | null>(null);
     { membres:membresValides }
   ).pipe(
     tap((reponse) => {
-      this.nombreMembresImportes.set(reponse.membresImportes.length);
+      console.log('Réponse import complète:', reponse);
+      // Le backend peut retourner membresImportes ou membres_importes ou un simple count
+      const nb =
+        reponse.membresImportes?.length ??
+        (reponse as any).membres_importes?.length ??
+        (reponse as any).count ??
+        membresValides.length;
+      this.nombreMembresImportes.set(nb);
       this.isLoading.set(false);
     }),
     catchError((err) => {
-      console.log('Erreur import complète:', err.error);
+      console.log('Erreur import complète:', err);
+      console.log('Erreur import body:', err.error);
       this.isLoading.set(false);
-      this.errorMessage.set(err?.error?.erreur ?? err?.error?.detail ?? "Erreur lors de l'import");
+      this.errorMessage.set(
+        err?.error?.erreur ??
+        err?.error?.detail ??
+        err?.error?.message ??
+        err?.message ??
+        "Erreur lors de l'import"
+      );
       return throwError(() => err);
     })
   );
@@ -173,6 +198,54 @@ chargerMembres(): Observable<ReponseMembres> {
 
 
 }
+
+
+// --- Import Image : analyse OCR via OcrService ---
+analyserImage(fichier: File): Observable<ProcessDocumentResponse> {
+  // Validation côté client avant envoi
+  const erreurFichier = this.ocrService.validerFichier(fichier);
+  if (erreurFichier) {
+    this.errorMessage.set(erreurFichier);
+    return throwError(() => new Error(erreurFichier));
+  }
+
+  this.isLoading.set(true);
+  this.errorMessage.set(null);
+
+  return this.ocrService.processDocument(fichier).pipe(
+    tap((reponse: ProcessDocumentResponse) => {
+      // Stocker le résultat brut OCR
+      this.ocrResultBrut.set(reponse);
+
+      // Mapper PersonExtraite[] → MembreExcel[] avec statut valide/erreur
+      const membres: MembreExcel[] = reponse.persons.map((p: PersonExtraite) => {
+        const aErreurs = p['erreurs'] && p['erreurs'].length > 0;
+        return {
+          prenom: p['prenom'] ?? '',
+          nom: p['nom'] ?? '',
+          telephone: p['telephone'] ?? '',
+          role: p['role'] ?? '',
+          statut: aErreurs ? 'erreur' as const : 'valide' as const,
+          erreurs: p['erreurs'] ?? []
+        };
+      });
+
+      this.membresAnalyses.set(membres);
+      this.statsAnalyse.set({
+        total: reponse.count,
+        valides: reponse.validCount,
+        erreurs: reponse.invalidCount
+      });
+      this.isLoading.set(false);
+    }),
+    catchError((err) => {
+      this.isLoading.set(false);
+      this.errorMessage.set(err?.message ?? err?.error?.detail ?? "Analyse de l'image échouée");
+      return throwError(() => err);
+    })
+  );
+}
+
 
 }
 

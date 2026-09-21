@@ -83,14 +83,23 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+
+          "options": {
+            "allowedHosts": [
+              "stitch-freebie-dreamless.ngrok-free.dev"
+            ]
+          },
+
           "configurations": {
             "production": {
               "buildTarget": "sunugestion:build:production"
             },
+
             "development": {
               "buildTarget": "sunugestion:build:development"
             }
           },
+
           "defaultConfiguration": "development"
         }
       }

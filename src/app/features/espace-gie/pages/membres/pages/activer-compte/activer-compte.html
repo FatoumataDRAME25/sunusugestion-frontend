@@ -1,0 +1,79 @@
+<div class="min-h-screen bg-gris-fond flex flex-col items-center justify-center p-lg">
+  <div class="bg-white rounded-xl p-xl shadow-sm max-w-full w-full text-center flex flex-col items-center gap-lg">
+
+    <!-- 1. ÉCRAN DE CHARGEMENT -->
+    @if (statut() === 'chargement') {
+      <div class="flex flex-col items-center gap-md py-xl">
+        <i class="pi pi-spin pi-spinner text-bleu-nuit text-3xl"></i>
+        <p class="font-medium text-anthracite mt-sm">Traitement en cours, veuillez patienter...</p>
+      </div>
+    }
+
+    <!-- 2. ÉCRAN DU FORMULAIRE (Saisie du Code PIN) -->
+    @if (statut() === 'formulaire') {
+      <div class="w-full flex flex-col gap-sm">
+        <div style="width:64px; height:64px; border-radius:50%; background-color:#EBF5FB; display:flex; align-items:center; justify-content:center; margin: 0 auto;">
+          <i class="pi pi-key" style="font-size:1.5rem; color:#1A3C5E;"></i>
+        </div>
+        <div>
+          <h2 class="font-bold text-xl text-anthracite">Activer votre compte</h2>
+          <p class="text-sm text-anthracite/60 mt-xs">Veuillez choisir un code PIN de 4 chiffres pour sécuriser l'accès à votre espace.</p>
+        </div>
+      </div>
+
+      <form [formGroup]="formPin" (ngSubmit)="validerActivation()" class="w-full flex flex-col gap-lg mt-md text-left">
+        <!-- Champ PIN -->
+        <div class="flex flex-col gap-xs">
+          <label class="text-sm font-medium text-anthracite">Nouveau code PIN</label>
+          <input type="password" formControlName="pin" maxlength="4" placeholder="••••"
+            class="w-full border border-anthracite/20 rounded-xl px-md py-sm text-center text-lg font-bold tracking-widest text-anthracite bg-white focus:outline-none focus:border-bleu-nuit" />
+          @if (pin.invalid && pin.touched) {
+            <span class="text-xs text-rouge-alerte">Le code PIN doit contenir exactement 4 chiffres.</span>
+          }
+        </div>
+
+        <!-- Champ Confirmation -->
+        <div class="flex flex-col gap-xs">
+          <label class="text-sm font-medium text-anthracite">Confirmer le code PIN</label>
+          <input type="password" formControlName="confirmationPin" maxlength="4" placeholder="••••"
+            class="w-full border border-anthracite/20 rounded-xl px-md py-sm text-center text-lg font-bold tracking-widest text-anthracite bg-white focus:outline-none focus:border-bleu-nuit" />
+          @if (formPin.errors?.['neCorrespondPas'] && confirmationPin.touched) {
+            <span class="text-xs text-rouge-alerte">Les codes PIN ne correspondent pas.</span>
+          }
+        </div>
+
+        <!-- Bouton de validation -->
+        <button type="submit" [disabled]="formPin.invalid"
+          class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-50 mt-sm">
+          Activer mon compte
+        </button>
+      </form>
+    }
+
+    <!-- 3. ÉCRAN DE SUCCÈS -->
+    @if (statut() === 'succes') {
+      <div style="width:64px; height:64px; border-radius:50%; background-color:#E8F8F5; display:flex; align-items:center; justify-content:center;">
+        <i class="pi pi-check-circle" style="font-size:1.5rem; color:#2ECC71;"></i>
+      </div>
+      <div>
+        <h2 class="font-bold text-xl text-anthracite mb-xs">Compte activé !</h2>
+        <p class="text-sm text-anthracite/60 px-sm">Votre code PIN a été enregistré. Vous allez être redirigé vers votre espace de connexion dans quelques instants...</p>
+      </div>
+    }
+
+    <!-- 4. ÉCRAN D'ERREUR -->
+    @if (statut() === 'erreur') {
+      <div style="width:64px; height:64px; border-radius:50%; background-color:#FCE4D6; display:flex; align-items:center; justify-content:center;">
+        <i class="pi pi-times-circle" style="font-size:1.5rem; color:#E74C3C;"></i>
+      </div>
+      <div>
+        <h2 class="font-bold text-xl text-anthracite mb-xs">Lien invalide</h2>
+        <p class="text-sm text-rouge-alerte px-sm">{{ messageErreur() }}</p>
+      </div>
+      <button (click)="statut.set('formulaire')" class="w-full border border-anthracite/20 text-anthracite font-semibold rounded-xl py-sm mt-md">
+        Réessayer
+      </button>
+    }
+
+  </div>
+</div>

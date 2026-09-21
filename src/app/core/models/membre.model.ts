@@ -26,6 +26,7 @@ export type RoleMembre = 'president'| 'tresorier' | 'secretaire' | 'membre';
 
 // Contrat pour l'ajout manuel d'un membre
 export interface AjouterMembreRequest {
+  tokenInvitation: string
   prenom: string;
   nom: string;
   telephone: string;

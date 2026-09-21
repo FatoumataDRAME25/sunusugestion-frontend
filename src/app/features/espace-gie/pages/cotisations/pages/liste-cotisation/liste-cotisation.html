@@ -1,87 +1,536 @@
 <div class="min-h-screen bg-gris-fond pb-24">
 
-  <!-- En-tête -->
+  <!-- ========================================= -->
+  <!-- EN-TÊTE -->
+  <!-- ========================================= -->
+
   <div class="bg-bleu-nuit p-lg pt-xl pb-xl">
-    <h1 class="text-blanc-lait font-bold text-xl mb-lg">Cotisations</h1>
-    <div class="flex items-center gap-sm bg-blanc-lait/10 rounded-xl px-md py-sm">
+
+    <h1 class="text-blanc-lait font-bold text-xl mb-lg">
+      Cotisations
+    </h1>
+
+    <!-- Recherche -->
+    <div
+      class="flex items-center gap-sm bg-blanc-lait/10 rounded-xl px-md py-sm"
+    >
       <i class="pi pi-search text-blanc-lait/50"></i>
-      <input type="text"
-        [ngModel]="termeRecherche()" (ngModelChange)="termeRecherche.set($event)"
-        placeholder="Rechercher une opération..."
-        class="flex-1 bg-transparent outline-none text-sm text-blanc-lait placeholder:text-blanc-lait/40" />
+
+      <input
+        type="text"
+        [ngModel]="termeRecherche()"
+        (ngModelChange)="termeRecherche.set($event)"
+        placeholder="Rechercher une cotisation..."
+        class="flex-1 bg-transparent outline-none text-sm text-blanc-lait placeholder:text-blanc-lait/40"
+      />
     </div>
+
   </div>
+
+
+  <!-- ========================================= -->
+  <!-- CONTENU -->
+  <!-- ========================================= -->
 
   <div class="p-lg flex flex-col gap-lg">
 
-    <!-- Filtres -->
+    <!-- ========================================= -->
+    <!-- FILTRES -->
+    <!-- ========================================= -->
+
     <div class="flex gap-sm overflow-x-auto pb-xs">
+
       @for (option of optionsFiltres; track option.label) {
+
         <button
+          type="button"
           (click)="filtreStatut.set(option.value)"
           [class]="filtreStatut() === option.value
             ? 'px-lg py-sm rounded-full bg-bleu-nuit text-blanc-lait font-semibold text-sm whitespace-nowrap'
-            : 'px-lg py-sm rounded-full bg-white text-anthracite/60 text-sm border border-anthracite/10 whitespace-nowrap'">
+            : 'px-lg py-sm rounded-full bg-white text-anthracite/60 text-sm border border-anthracite/10 whitespace-nowrap'"
+        >
           {{ option.label }}
         </button>
+
       }
+
     </div>
 
-    <!-- Liste -->
+
+    <!-- ========================================= -->
+    <!-- AUCUNE COTISATION -->
+    <!-- ========================================= -->
+
     @if (cotisationsFiltrees().length === 0) {
+
       <div class="flex flex-col items-center py-2xl text-center">
+
         <i class="pi pi-inbox text-4xl text-anthracite/30 mb-md"></i>
-        <p class="font-semibold text-anthracite/60">Aucune cotisation trouvée</p>
+
+        <p class="font-semibold text-anthracite/60">
+          Aucune cotisation trouvée
+        </p>
+
       </div>
+
     }
 
+
+    <!-- ========================================= -->
+    <!-- LISTE DES COTISATIONS -->
+    <!-- ========================================= -->
+
     @for (cotisation of cotisationsFiltrees(); track cotisation.id) {
-      <div class="bg-white rounded-xl p-md shadow-sm">
+
+      <div
+        class="bg-white rounded-xl p-md shadow-sm cursor-pointer"
+        (click)="ouvrirDetail(cotisation)"
+      >
+
+        <!-- ===================================== -->
+        <!-- INFORMATIONS MEMBRE -->
+        <!-- ===================================== -->
+
         <div class="flex items-center gap-md mb-md">
+
           <!-- Avatar -->
-          <div class="w-10 h-10 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-sm text-bleu-nuit shrink-0">
-            {{ (cotisation.membre.prenom + ' ' + cotisation.membre.nom) | initiales }}
+          <div
+            class="w-10 h-10 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-sm text-bleu-nuit shrink-0"
+          >
+            {{
+              (cotisation.membre.prenom + ' ' + cotisation.membre.nom)
+                | initiales
+            }}
           </div>
+
+
+          <!-- Nom -->
           <div class="flex-1 min-w-0">
+
             <p class="font-semibold text-anthracite truncate">
-              {{ cotisation.membre.prenom }} {{ cotisation.membre.nom }}
+              {{ cotisation.membre.prenom }}
+              {{ cotisation.membre.nom }}
             </p>
-            <p class="text-xs text-anthracite/50">ID: SG-{{ cotisation.id.toString().padStart(4, '0') }}</p>
+
+            <p class="text-xs text-anthracite/50">
+              ID: SG-{{ cotisation.id.toString().padStart(4, '0') }}
+            </p>
+
           </div>
-          <!-- Badge statut -->
-          <span [class]="
-            cotisation.statut === 'payee'      ? 'text-xs font-semibold px-sm py-xs rounded-full bg-vert-clair text-vert-foret' :
-            cotisation.statut === 'en_retard'  ? 'text-xs font-semibold px-sm py-xs rounded-full bg-rouge-clair text-rouge-alerte' :
-                                                  'text-xs font-semibold px-sm py-xs rounded-full bg-or-clair text-or-senegal'">
-            {{ cotisation.statut === 'payee' ? 'PAYÉE' : cotisation.statut === 'en_retard' ? 'EN RETARD' : 'EN ATTENTE' }}
+
+
+          <!-- ================================= -->
+          <!-- BADGE STATUT -->
+          <!-- ================================= -->
+
+          <span
+            [class]="
+              cotisation.statut === 'paye'
+                ? 'text-xs font-semibold px-sm py-xs rounded-full bg-vert-clair text-vert-foret'
+                : cotisation.statut === 'en_retard'
+                  ? 'text-xs font-semibold px-sm py-xs rounded-full bg-rouge-clair text-rouge-alerte'
+                  : 'text-xs font-semibold px-sm py-xs rounded-full bg-or-clair text-or-senegal'
+            "
+          >
+
+            {{
+              cotisation.statut === 'paye'
+                ? 'PAYÉ'
+                : cotisation.statut === 'en_retard'
+                  ? 'EN RETARD'
+                  : 'EN COURS'
+            }}
+
           </span>
+
         </div>
-        <div class="flex justify-between text-xs border-t border-anthracite/10 pt-sm">
-          <div>
-            <p class="text-anthracite/50">Session</p>
-            <p class="font-semibold text-anthracite">{{ cotisation.session.libelle }}</p>
-          </div>
-          <div class="text-right">
-            <p class="text-anthracite/50">Date</p>
-            <p class="font-semibold text-anthracite">
-              {{ cotisation.datePaiement ? (cotisation.datePaiement | date:'dd/MM/yyyy') : '---' }}
+
+
+        <!-- ===================================== -->
+        <!-- SESSION + PAIEMENT -->
+        <!-- ===================================== -->
+
+        <div
+          class="flex justify-between text-xs border-t border-anthracite/10 pt-sm"
+        >
+
+          <!-- Session -->
+          <div class="min-w-0">
+
+            <p class="text-anthracite/50">
+              Session
             </p>
+
+            <p class="font-semibold text-anthracite truncate">
+              {{ cotisation.session.libelle }}
+            </p>
+
           </div>
+
+
+          <!-- ================================= -->
+          <!-- PAIEMENT -->
+          <!-- ================================= -->
+
+          <div class="text-right ml-md">
+
+            <!-- COTISATION PAYÉE -->
+            @if (cotisation.statut === 'paye') {
+
+              <p class="text-anthracite/50">
+                Date de paiement
+              </p>
+
+              <p class="font-semibold text-anthracite">
+                {{ cotisation.datePaiement | date:'dd/MM/yyyy à HH:mm' }}
+              </p>
+
+            }
+
+            <!-- COTISATION NON PAYÉE -->
+            @else {
+
+              <p class="text-anthracite/50 mb-xs">
+                Paiement
+              </p>
+
+              <button
+                type="button"
+                (click)="
+                  $event.stopPropagation();
+                  ouvrirConfirmationPaiement(cotisation)
+                "
+                class="px-sm py-xs rounded-lg bg-vert-foret text-white text-xs font-semibold"
+              >
+                Payer
+              </button>
+
+            }
+
+          </div>
+
         </div>
+
       </div>
+
     }
 
   </div>
 
 </div>
 
-<!-- Bouton fixe -->
+
+
+<!-- ========================================= -->
+<!-- BOUTON NOUVELLE SESSION -->
+<!-- ========================================= -->
+
 <div class="fixed bottom-16 left-0 right-0 px-lg">
-  <button routerLink="/mon-espace/cotisations/session-cotisation"
-    class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm shadow-lg">
+
+  <button
+    type="button"
+    routerLink="/mon-espace/cotisations/session-cotisation"
+    class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm shadow-lg"
+  >
+
     <i class="pi pi-plus"></i>
+
     Nouvelle session
+
   </button>
+
 </div>
 
+
+
+<!-- ========================================= -->
+<!-- BOTTOM NAVIGATION -->
+<!-- ========================================= -->
+
 <app-bottom-nav />
+
+
+
+<!-- ========================================= -->
+<!-- POPUP : CONFIRMATION DU PAIEMENT -->
+<!-- ========================================= -->
+
+<p-dialog
+  header="Confirmer le paiement"
+  [visible]="voirConfirmation()"
+  (visibleChange)="voirConfirmation.set($event)"
+  [modal]="true"
+  [style]="{
+    width: '90%',
+    maxWidth: '450px'
+  }"
+>
+
+  @if (cotisationAPayer(); as cotisation) {
+
+    <div class="flex flex-col gap-lg">
+
+      <!-- =================================== -->
+      <!-- ICÔNE -->
+      <!-- =================================== -->
+
+      <div class="flex justify-center">
+
+        <div
+          class="w-14 h-14 rounded-full bg-vert-clair flex items-center justify-center"
+        >
+
+          <i class="pi pi-wallet text-2xl text-vert-foret"></i>
+
+        </div>
+
+      </div>
+
+
+      <!-- =================================== -->
+      <!-- MESSAGE -->
+      <!-- =================================== -->
+
+      <div class="text-center">
+
+        <p class="text-anthracite/60 text-sm mb-sm">
+          Vous êtes sur le point d'enregistrer le paiement de
+        </p>
+
+
+        <!-- Montant -->
+        <p class="font-bold text-xl text-anthracite">
+
+          {{ cotisation.session.montant | number }}
+          FCFA
+
+        </p>
+
+
+        <!-- Membre -->
+        <p class="font-semibold text-anthracite mt-sm">
+
+          {{ cotisation.membre.prenom }}
+          {{ cotisation.membre.nom }}
+
+        </p>
+
+
+        <!-- Session -->
+        <p class="text-sm text-anthracite/50 mt-xs">
+
+          {{ cotisation.session.libelle }}
+
+        </p>
+
+      </div>
+
+
+      <!-- =================================== -->
+      <!-- BOUTONS -->
+      <!-- =================================== -->
+
+      <div class="flex gap-sm">
+
+        <!-- Annuler -->
+        <button
+          type="button"
+          (click)="annulerPaiement()"
+          class="flex-1 px-md py-md rounded-xl border border-anthracite/10 text-anthracite font-semibold"
+        >
+          Annuler
+        </button>
+
+
+        <!-- Confirmer -->
+        <button
+          type="button"
+          (click)="confirmerPaiement()"
+          class="flex-1 px-md py-md rounded-xl bg-vert-foret text-white font-semibold"
+        >
+          Confirmer
+        </button>
+
+      </div>
+
+    </div>
+
+  }
+
+</p-dialog>
+
+
+
+<!-- ========================================= -->
+<!-- POPUP : DÉTAIL COTISATION -->
+<!-- ========================================= -->
+
+<p-dialog
+  header="Détail de la cotisation"
+  [visible]="voirDetail()"
+  (visibleChange)="voirDetail.set($event)"
+  [modal]="true"
+  [style]="{
+    width: '90%',
+    maxWidth: '500px'
+  }"
+>
+
+  @if (cotisationSelectionnee(); as cotisation) {
+
+    <div class="flex flex-col gap-lg">
+
+
+      <!-- =================================== -->
+      <!-- MEMBRE -->
+      <!-- =================================== -->
+
+      <div class="flex items-center gap-md">
+
+        <!-- Avatar -->
+        <div
+          class="w-12 h-12 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-bleu-nuit shrink-0"
+        >
+
+          {{
+            (cotisation.membre.prenom + ' ' + cotisation.membre.nom)
+              | initiales
+          }}
+
+        </div>
+
+
+        <!-- Informations membre -->
+        <div>
+
+          <p class="font-bold text-anthracite">
+
+            {{ cotisation.membre.prenom }}
+            {{ cotisation.membre.nom }}
+
+          </p>
+
+          <p class="text-sm text-anthracite/50">
+
+            {{ cotisation.membre.telephone }}
+
+          </p>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- =================================== -->
+      <!-- INFORMATIONS COTISATION -->
+      <!-- =================================== -->
+
+      <div class="flex flex-col gap-md">
+
+
+        <!-- Session -->
+        <div class="flex justify-between gap-md">
+
+          <span class="text-sm text-anthracite/50">
+            Session
+          </span>
+
+          <span class="font-semibold text-anthracite text-right">
+
+            {{ cotisation.session.libelle }}
+
+          </span>
+
+        </div>
+
+
+        <!-- Montant -->
+        <div class="flex justify-between gap-md">
+
+          <span class="text-sm text-anthracite/50">
+            Montant
+          </span>
+
+          <span class="font-bold text-anthracite text-right">
+
+            {{ cotisation.session.montant | number }}
+            FCFA
+
+          </span>
+
+        </div>
+
+
+        <!-- Statut -->
+        <div class="flex justify-between gap-md">
+
+          <span class="text-sm text-anthracite/50">
+            Statut
+          </span>
+
+          <span class="font-semibold text-anthracite">
+
+            {{
+              cotisation.statut === 'paye'
+                ? 'PAYÉ'
+                : cotisation.statut === 'en_retard'
+                  ? 'EN RETARD'
+                  : 'EN COURS'
+            }}
+
+          </span>
+
+        </div>
+
+
+        <!-- Date paiement -->
+        @if (cotisation.datePaiement) {
+
+          <div class="flex justify-between gap-md">
+
+            <span class="text-sm text-anthracite/50">
+              Date de paiement
+            </span>
+
+            <span class="font-semibold text-anthracite text-right">
+
+              {{ cotisation.datePaiement | date:'dd/MM/yyyy à HH:mm' }}
+
+            </span>
+
+          </div>
+
+        }
+
+
+        <!-- Mode paiement -->
+        @if (cotisation.modePaiement) {
+
+          <div class="flex justify-between gap-md">
+
+            <span class="text-sm text-anthracite/50">
+              Mode de paiement
+            </span>
+
+            <span class="font-semibold text-anthracite">
+
+              {{
+                cotisation.modePaiement === 'especes'
+                  ? 'Espèces'
+                  : cotisation.modePaiement
+              }}
+
+            </span>
+
+          </div>
+
+        }
+
+      </div>
+
+    </div>
+
+  }
+
+</p-dialog>
