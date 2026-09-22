@@ -8,12 +8,13 @@ import { SunugestionPreset } from './theme/sunugestion-preset';
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { caseInterceptor } from './core/interceptors/case.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor, caseInterceptor])),
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {

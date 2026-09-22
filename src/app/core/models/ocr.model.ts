@@ -9,8 +9,6 @@ export interface PersonExtraite {
   telephone?: string;
   role?: string;
   email?: string;
-  dateNaissance?: string;
-  numeroPiece?: string;
   adresse?: string;
   erreurs?: string[];
   [key: string]: any;

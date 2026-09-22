@@ -1,0 +1,133 @@
+<app-navbar />
+
+<div class="min-h-screen bg-gris-fond pb-24">
+
+  <!-- En-tête -->
+  <div class="p-lg">
+    <h1 class="font-bold text-2xl text-anthracite mb-lg">Prêts</h1>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-3 gap-sm mb-lg">
+      <div class="bg-white rounded-xl p-md text-center shadow-sm">
+        <p class="text-xs text-anthracite/50 mb-xs">En attente</p>
+        <p class="font-bold text-xl text-anthracite">{{ service.statsEnAttente() }}</p>
+      </div>
+      <div class="bg-white rounded-xl p-md text-center shadow-sm">
+        <p class="text-xs text-anthracite/50 mb-xs">Approuvés</p>
+        <p class="font-bold text-xl text-bleu-nuit">{{ service.statsApprouve() }}</p>
+      </div>
+      <div class="bg-white rounded-xl p-md text-center shadow-sm">
+        <p class="text-xs text-anthracite/50 mb-xs">En cours</p>
+        <p class="font-bold text-xl text-vert-foret">{{ service.statsEnCours() }}</p>
+      </div>
+    </div>
+
+    <!-- Bouton demander (tous les membres du GIE) -->
+    @if (peutDemanderPret()) {
+      <a routerLink="/mon-espace/prets/demande"
+        class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm mb-lg">
+        <i class="pi pi-plus"></i>
+        Demander un prêt
+      </a>
+    }
+
+    <!-- Bouton demandes à traiter (président uniquement) -->
+    @if (estPresident()) {
+      <a routerLink="/mon-espace/prets/demandes-a-traiter"
+        class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm mb-lg">
+        <i class="pi pi-list-check"></i>
+        Demandes à traiter
+      </a>
+    }
+
+    <!-- Recherche -->
+    <div class="flex items-center gap-sm bg-white rounded-xl px-md py-sm shadow-sm mb-md">
+      <i class="pi pi-search text-anthracite/40"></i>
+      <input type="text"
+        [ngModel]="termeRecherche()"
+        (ngModelChange)="termeRecherche.set($event)"
+        placeholder="Rechercher un membre ou un prêt..."
+        class="flex-1 bg-transparent outline-none text-sm text-anthracite placeholder:text-anthracite/40" />
+    </div>
+
+    <!-- Filtres -->
+    <div class="flex gap-sm overflow-x-auto pb-xs">
+      @for (f of filtres; track f.label) {
+        <button (click)="filtreStatut.set(f.value)"
+          [class]="filtreStatut() === f.value
+            ? 'px-lg py-sm rounded-full bg-bleu-nuit text-blanc-lait font-semibold text-sm whitespace-nowrap'
+            : 'px-lg py-sm rounded-full bg-white text-anthracite/60 text-sm border border-anthracite/10 whitespace-nowrap'">
+          {{ f.label }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Liste -->
+  <div class="px-lg flex flex-col gap-sm">
+
+    @if (service.isLoading()) {
+      <div class="flex justify-center py-xl">
+        <i class="pi pi-spin pi-spinner text-2xl text-bleu-nuit"></i>
+      </div>
+    }
+
+    @if (!service.isLoading() && pretsFiltres().length === 0) {
+      <div class="flex flex-col items-center py-2xl text-center">
+        <i class="pi pi-inbox text-4xl text-anthracite/30 mb-md"></i>
+        <p class="font-semibold text-anthracite/60">Aucun prêt trouvé</p>
+      </div>
+    }
+
+    @for (pret of pretsFiltres(); track pret.id) {
+      <a [routerLink]="['/mon-espace/prets', pret.id]"
+        class="bg-white rounded-xl p-md shadow-sm block">
+
+        <!-- Membre + statut -->
+        <div class="flex items-center gap-md mb-sm">
+          <div class="w-10 h-10 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-sm text-bleu-nuit shrink-0">
+            {{ pret.membre.prenom?.[0] ?? '?' }}{{ pret.membre.nom?.[0] ?? '?' }}
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-anthracite truncate">{{ pret.membre.prenom }} {{ pret.membre.nom }}</p>
+            <p class="text-xs text-anthracite/50">Demandé le {{ pret.dateDemande | date:'dd/MM/yyyy' }}</p>
+          </div>
+          <span [class]="'text-xs font-semibold px-sm py-xs rounded-full ' + badgeStatut(pret.statut)">
+            {{ labelStatut(pret.statut) }}
+          </span>
+        </div>
+
+        <!-- Montant + info contextuelle -->
+        <div class="flex justify-between text-xs border-t border-anthracite/10 pt-sm">
+          <div>
+            <p class="text-anthracite/50">MONTANT</p>
+            <p class="font-bold text-anthracite">{{ +pret.montant | number:'1.0-0' }} FCFA</p>
+          </div>
+          @if (pret.statut === 'en_cours' && pret.dateEcheance) {
+            <div class="text-right">
+              <p class="text-anthracite/50">ÉCHÉANCE</p>
+              <p class="font-bold text-anthracite">
+                {{ pret.dateEcheance | date:'dd/MM/yyyy' }}
+              </p>
+            </div>
+          }
+          @if (pret.statut === 'approuve' && pret.dureeMois) {
+            <div class="text-right">
+              <p class="text-anthracite/50">DURÉE</p>
+              <p class="font-bold text-anthracite">{{ pret.dureeMois }} mois</p>
+            </div>
+          }
+          @if (pret.statut === 'rembourse' && pret.dateRemboursement) {
+            <div class="text-right">
+              <p class="text-anthracite/50">DATE REMBOURSEMENT</p>
+              <p class="font-bold text-anthracite">{{ pret.dateRemboursement | date:'dd/MM/yyyy' }}</p>
+            </div>
+          }
+        </div>
+      </a>
+    }
+
+  </div>
+</div>
+
+<app-bottom-nav />

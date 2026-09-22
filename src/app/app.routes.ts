@@ -11,6 +11,7 @@ import { EtapeOtp } from './features/inscription/pages/etape-otp/etape-otp';
 import { EtapeSucces } from './features/inscription/pages/etape-succes/etape-succes';
 import { MobileLayout } from './layout/mobile-layout/mobile-layout';
 import { AccueilEspace } from './features/espace-gie/pages/accueil-espace/accueil-espace';
+import { AccueilTresorier } from './features/espace-gie/pages/accueil-tresorier/accueil-tresorier';
 import { Historique } from './features/espace-gie/pages/operations/pages/historiques/historique';
 import { ProfilMembre } from './features/espace-gie/pages/profil-membre/profil-membre';
 import { ListeMembre } from './features/espace-gie/pages/membres/pages/liste-membre/liste-membre';
@@ -21,6 +22,11 @@ import { NouvelleOperation } from './features/espace-gie/pages/operations/pages/
 import { ListeCotisations } from './features/espace-gie/pages/cotisations/pages/liste-cotisation/liste-cotisation';
 import { SessionCotisation } from './features/espace-gie/pages/cotisations/pages/session-cotisation/session-cotisation';
 import { ActiverCompte } from './features/espace-gie/pages/membres/pages/activer-compte/activer-compte';
+import { ListePrets } from './features/espace-gie/pages/prets/pages/liste-prets/liste-prets';
+import { DemandePret } from './features/espace-gie/pages/prets/pages/demande-pret/demande-pret';
+import { DetailPret } from './features/espace-gie/pages/prets/pages/detail-pret/detail-pret';
+import { ReglesPret } from './features/espace-gie/pages/prets/pages/regles-pret/regles-pret';
+import { DemandesATraiter } from './features/espace-gie/pages/prets/pages/demandes-a-traiter/demandes-a-traiter';
 
 
 
@@ -57,6 +63,7 @@ export const routes: Routes = [
   children: [
 
     { path: '', component: AccueilEspace },
+    { path: 'tableau-bord-tresorier', component: AccueilTresorier },
     { path: 'informations-gie', component: InformationsGie },
     { path: 'historiques', component: Historique },
     { path: 'historiques/nouvelle-operation', component: NouvelleOperation },
@@ -65,6 +72,13 @@ export const routes: Routes = [
     { path: 'membres', component: ListeMembre },
     { path: 'cotisations', component: ListeCotisations },
     { path: 'cotisations/session-cotisation', component: SessionCotisation },
+
+    // ── Prêts ──
+    { path: 'prets', component: ListePrets },
+    { path: 'prets/demande', component: DemandePret },
+    { path: 'prets/regles', component: ReglesPret },
+    { path: 'prets/demandes-a-traiter', component: DemandesATraiter },
+    { path: 'prets/:id', component: DetailPret },
 
     { path: 'profil-membre', component: ProfilMembre }
 

@@ -1,0 +1,135 @@
+<app-navbar />
+
+<!-- ===== ÉCRAN SUCCÈS ===== -->
+@if (succesVisible()) {
+  <div class="h-screen bg-gris-fond flex flex-col items-center justify-center px-lg text-center gap-xl">
+
+    <div class="w-20 h-20 rounded-full bg-vert-foret flex items-center justify-center">
+      <i class="pi pi-check text-blanc-lait text-3xl"></i>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-xl text-anthracite mb-sm">Votre demande de prêt a été envoyée avec succès.</h2>
+      <p class="text-sm text-anthracite/60">
+        Elle est désormais en attente d'approbation par le président.<br>
+        Vous recevrez une notification dès qu'une décision sera prise.
+      </p>
+    </div>
+
+    <!-- Récapitulatif -->
+    <div class="bg-white rounded-xl p-lg shadow-sm w-full">
+      <p class="text-xs text-anthracite/50 uppercase mb-md">Montant de la demande</p>
+      <p class="font-bold text-3xl text-anthracite mb-lg">
+        {{ +(pretCree()?.montant ?? 0) | number:'1.0-0' }} FCFA
+      </p>
+      <div class="flex flex-col gap-sm text-sm border-t border-anthracite/10 pt-md">
+        <div class="flex justify-between">
+          <span class="text-anthracite/50">Date d'envoi</span>
+          <span class="font-semibold text-anthracite">Aujourd'hui</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-anthracite/50">Statut</span>
+          <span class="font-semibold text-or-senegal flex items-center gap-xs">
+            <i class="pi pi-clock text-xs"></i> En attente
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <button (click)="retourListe()"
+      class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md">
+      Retour aux prêts
+    </button>
+  </div>
+}
+
+<!-- ===== FORMULAIRE ===== -->
+@if (!succesVisible()) {
+  <div class="min-h-screen bg-gris-fond pb-24">
+    <div class="p-lg">
+
+      <!-- Retour -->
+      <a routerLink="/mon-espace/prets" class="text-anthracite/60 mb-lg block">
+        <i class="pi pi-chevron-left text-lg"></i>
+      </a>
+      <h1 class="font-bold text-2xl text-anthracite mb-lg">Demander un Prêt</h1>
+
+      <!-- Conditions & disponibilité -->
+      @if (service.regle(); as regle) {
+        <div class="bg-white rounded-xl p-lg shadow-sm mb-lg">
+          <div class="flex items-center gap-sm mb-md">
+            <div class="w-7 h-7 rounded-full bg-bleu-nuit flex items-center justify-center">
+              <i class="pi pi-info-circle text-blanc-lait text-xs"></i>
+            </div>
+            <p class="font-semibold text-anthracite">Conditions & Disponibilité</p>
+          </div>
+
+          <div class="flex flex-col gap-sm text-sm">
+            <div class="flex justify-between">
+              <span class="text-anthracite/60">Montant maximum autorisé</span>
+              <span class="font-bold text-anthracite">{{ +regle.montantMax | number:'1.0-0' }} FCFA</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-anthracite/60">Prêts simultanés (max)</span>
+              <span class="font-bold text-anthracite">{{ regle.nombrePretsSimultanes }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-anthracite/60">Durée maximale</span>
+              <span class="font-bold text-anthracite">{{ regle.dureeMaxMois }} mois</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-anthracite/60">Cotisation à jour</span>
+              <span class="font-bold" [class]="regle.cotisationAJourObligatoire ? 'text-vert-foret' : 'text-anthracite/40'">
+                {{ regle.cotisationAJourObligatoire ? 'Oui ✓' : 'Non' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Champ montant -->
+      <div class="bg-white rounded-xl p-lg shadow-sm mb-lg">
+        <label class="text-xs font-semibold text-anthracite/60 uppercase mb-sm block">
+          Montant demandé
+        </label>
+        <div class="flex items-center border border-anthracite/20 rounded-xl overflow-hidden">
+          <input type="number" min="0"
+            [ngModel]="montant()"
+            (ngModelChange)="montant.set($event)"
+            placeholder="Ex: 250 000"
+            class="flex-1 px-md py-md text-anthracite text-lg outline-none" />
+          <span class="bg-gris-fond px-md py-md text-sm font-semibold text-anthracite/60 border-l border-anthracite/20">
+            FCFA
+          </span>
+        </div>
+        @if (service.regle()) {
+          <p class="text-xs text-anthracite/40 mt-xs">
+            Maximum autorisé : {{ +service.regle()!.montantMax | number:'1.0-0' }} FCFA
+          </p>
+        }
+      </div>
+
+      <!-- Bouton envoi -->
+      @if (service.errorMessage()) {
+        <div class="bg-rouge-clair border border-rouge-alerte/30 text-rouge-alerte text-sm rounded-xl p-md mb-md flex items-start gap-sm">
+          <i class="pi pi-exclamation-triangle shrink-0 mt-xs text-base"></i>
+          <span>{{ service.errorMessage() }}</span>
+        </div>
+      }
+
+      <button (click)="envoyer()"
+        [disabled]="service.isLoading() || !montant()"
+        class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-50 mb-sm">
+        @if (service.isLoading()) { <i class="pi pi-spin pi-spinner"></i> }
+        Envoyer la demande
+      </button>
+
+      <p class="text-xs text-anthracite/40 text-center px-md">
+        En cliquant sur envoyer, vous acceptez les conditions générales d'utilisation du service de prêt de SunuGestion.
+      </p>
+
+    </div>
+  </div>
+
+  <app-bottom-nav />
+}

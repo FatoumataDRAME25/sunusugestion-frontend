@@ -1,0 +1,75 @@
+<!-- Header global -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-bleu-nuit flex items-center justify-between px-lg py-md shadow-sm">
+
+  <!-- Logo -->
+  <a routerLink="/mon-espace">
+    <img src="images/logo-sunugestion-fond-bleu.png" alt="SunuGestion" class="h-8" />
+  </a>
+
+  <!-- Bouton menu ⋮ -->
+  <button (click)="toggleMenu()" class="text-blanc-lait p-xs rounded-lg">
+    <i class="pi pi-ellipsis-v text-xl"></i>
+  </button>
+</header>
+
+<!-- Overlay cliquable pour fermer -->
+@if (menuOuvert()) {
+  <div class="fixed inset-0 z-40" (click)="fermerMenu()"></div>
+
+  <!-- Dropdown menu -->
+  <div class="fixed top-14 right-lg z-50 bg-white rounded-xl shadow-xl w-52 overflow-hidden border border-anthracite/10">
+
+    <div class="px-md py-sm border-b border-anthracite/10">
+      <p class="text-xs text-anthracite/40 uppercase font-semibold">Modules</p>
+    </div>
+
+    <a routerLink="/mon-espace/cotisations" (click)="fermerMenu()"
+      class="flex items-center gap-md px-md py-md text-sm text-anthracite hover:bg-gris-fond">
+      <div class="w-8 h-8 rounded-lg bg-vert-clair flex items-center justify-center">
+        <i class="pi pi-wallet text-vert-foret text-sm"></i>
+      </div>
+      Cotisations
+    </a>
+
+    <a routerLink="/mon-espace/prets" (click)="fermerMenu()"
+      class="flex items-center gap-md px-md py-md text-sm text-anthracite hover:bg-gris-fond">
+      <div class="w-8 h-8 rounded-lg bg-or-clair flex items-center justify-center">
+        <i class="pi pi-credit-card text-or-senegal text-sm"></i>
+      </div>
+      Prêts
+    </a>
+
+    <a routerLink="/mon-espace/prets/regles" (click)="fermerMenu()"
+      class="flex items-center gap-md px-md py-md text-sm text-anthracite hover:bg-gris-fond">
+      <div class="w-8 h-8 rounded-lg bg-or-clair/50 flex items-center justify-center">
+        <i class="pi pi-cog text-or-senegal text-sm"></i>
+      </div>
+      Règles de prêt
+    </a>
+    <a routerLink="/mon-espace/historiques" (click)="fermerMenu()"
+      class="flex items-center gap-md px-md py-md text-sm text-anthracite hover:bg-gris-fond">
+      <div class="w-8 h-8 rounded-lg bg-bleu-clair flex items-center justify-center">
+        <i class="pi pi-chart-line text-bleu-nuit text-sm"></i>
+      </div>
+      Activités
+    </a>
+
+    <a routerLink="/mon-espace/rapports" (click)="fermerMenu()"
+      class="flex items-center gap-md px-md py-md text-sm text-anthracite hover:bg-gris-fond border-b border-anthracite/10">
+      <div class="w-8 h-8 rounded-lg bg-rouge-clair flex items-center justify-center">
+        <i class="pi pi-file-pdf text-rouge-alerte text-sm"></i>
+      </div>
+      Rapports
+    </a>
+
+    <button (click)="deconnecter()"
+      class="flex items-center gap-md px-md py-md text-sm text-rouge-alerte w-full hover:bg-rouge-clair/30">
+      <i class="pi pi-sign-out text-sm"></i>
+      Se déconnecter
+    </button>
+
+  </div>
+}
+
+<!-- Spacer pour compenser le header fixe -->
+<div class="h-14"></div>
