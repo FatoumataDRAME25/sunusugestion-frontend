@@ -1,0 +1,297 @@
+<app-navbar />
+
+@if (service.isLoading() && !activite()) {
+  <div class="min-h-screen flex items-center justify-center bg-gris-fond">
+    <div class="flex flex-col items-center gap-md">
+      <i class="pi pi-spin pi-spinner text-3xl text-bleu-nuit"></i>
+      <p class="text-sm text-anthracite/50">Chargement...</p>
+    </div>
+  </div>
+}
+
+@if (!service.isLoading() && !activite()) {
+  <div class="min-h-screen flex flex-col items-center justify-center bg-gris-fond px-lg text-center gap-md">
+    <i class="pi pi-calendar text-4xl text-anthracite/30"></i>
+    <p class="text-anthracite/60 font-semibold">Activité introuvable</p>
+    <a routerLink="/mon-espace/activites" class="text-bleu-nuit font-semibold text-sm">
+      Retour à la liste
+    </a>
+  </div>
+}
+
+@if (activite(); as a) {
+  <div class="min-h-screen bg-gris-fond pb-28">
+    <div class="p-lg">
+
+      <!-- Retour -->
+      <a routerLink="/mon-espace/activites" class="text-anthracite/60 mb-md block">
+        <i class="pi pi-chevron-left text-lg"></i>
+      </a>
+      <h1 class="font-bold text-xl text-anthracite mb-md">Détail de l'activité</h1>
+
+      @if (service.errorMessage()) {
+        <div class="bg-rouge-clair text-rouge-alerte text-sm rounded-xl p-md mb-md">
+          {{ service.errorMessage() }}
+        </div>
+      }
+
+      <!-- ── CARTE PRINCIPALE ── -->
+      <div [class]="'bg-white rounded-xl shadow-sm p-lg mb-md '
+        + (a.statut === 'en_cours'  ? 'border-l-4 border-vert-foret'
+         : a.statut === 'planifiee' ? 'border-l-4 border-bleu-nuit'
+         : a.statut === 'terminee'  ? 'border-l-4 border-anthracite/30'
+         : 'border-l-4 border-rouge-alerte')">
+
+        <!-- Type + Statut -->
+        <div class="flex items-center justify-between mb-sm">
+          <span class="text-xs font-bold text-anthracite/50 uppercase tracking-wide bg-gris-fond px-sm py-xs rounded-lg">
+            {{ labelType(a.typeActivite) }}
+          </span>
+          <span [class]="'text-xs font-semibold px-sm py-xs rounded-full flex items-center gap-xs '
+            + (a.statut === 'planifiee' ? 'bg-bleu-clair text-bleu-nuit'
+             : a.statut === 'en_cours'  ? 'bg-vert-clair text-vert-foret'
+             : a.statut === 'terminee'  ? 'bg-anthracite/10 text-anthracite/60'
+             : 'bg-rouge-clair text-rouge-alerte')">
+            @if (a.statut === 'en_cours') { <span class="w-2 h-2 rounded-full bg-vert-foret"></span> }
+            {{ a.statut === 'planifiee' ? 'Planifiée'
+             : a.statut === 'en_cours'  ? 'En cours'
+             : a.statut === 'terminee'  ? '● Terminée'
+             : 'Annulée' }}
+          </span>
+        </div>
+
+        <!-- Titre -->
+        <h2 class="font-bold text-lg text-anthracite mb-md leading-snug">{{ a.titre }}</h2>
+
+        <!-- Infos -->
+        <div class="flex flex-col gap-sm text-sm">
+          <div class="flex items-start gap-md">
+            <i class="pi pi-calendar text-anthracite/40 mt-xs shrink-0"></i>
+            <div>
+              <p class="text-xs text-anthracite/50">Date prévue</p>
+              <p class="font-semibold text-anthracite">{{ a.dateActivite | date:'dd/MM/yyyy' }}</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-md">
+            <i class="pi pi-clock text-anthracite/40 mt-xs shrink-0"></i>
+            <div>
+              <p class="text-xs text-anthracite/50">Heure</p>
+              <p class="font-semibold text-anthracite">{{ a.dateActivite | date:'HH:mm' }}</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-md">
+            <i class="pi pi-map-marker text-anthracite/40 mt-xs shrink-0"></i>
+            <div>
+              <p class="text-xs text-anthracite/50">Lieu</p>
+              <p class="font-semibold text-anthracite">{{ a.lieu }}</p>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-xs text-anthracite/40 mt-md">
+          Créée le {{ a.dateCreation | date:'dd/MM/yyyy' }}
+        </p>
+      </div>
+
+      <!-- ── ORDRE DU JOUR ── -->
+      <div class="bg-white rounded-xl shadow-sm p-lg mb-md">
+        <div class="flex items-center gap-sm mb-md">
+          <div class="w-1 h-5 bg-vert-foret rounded-full"></div>
+          <p class="font-bold text-anthracite text-sm uppercase tracking-wide">Ordre du jour</p>
+        </div>
+        @if (a.ordreDuJour) {
+          <div class="text-sm text-anthracite/70 leading-relaxed whitespace-pre-line">
+            {{ a.ordreDuJour }}
+          </div>
+        } @else {
+          <div class="flex flex-col items-center py-lg text-center text-anthracite/40">
+            <i class="pi pi-calendar text-3xl mb-sm"></i>
+            <p class="text-sm">Aucun ordre du jour disponible</p>
+          </div>
+        }
+      </div>
+
+      <!-- ── COMPTE RENDU ── -->
+      <div class="bg-white rounded-xl shadow-sm p-lg mb-lg">
+        <div class="flex items-center gap-sm mb-md">
+          <div class="w-1 h-5 bg-bleu-nuit rounded-full"></div>
+          <p class="font-bold text-anthracite text-sm uppercase tracking-wide">Compte rendu</p>
+        </div>
+        @if (a.compteRendu) {
+          <div class="text-sm text-anthracite/70 leading-relaxed whitespace-pre-line border border-anthracite/10 rounded-xl p-md">
+            {{ a.compteRendu }}
+            <div class="flex justify-end mt-sm">
+              <i class="pi pi-check-square text-bleu-nuit"></i>
+            </div>
+          </div>
+        } @else {
+          <div class="flex flex-col items-center py-lg text-center text-anthracite/40">
+            <i class="pi pi-calendar text-3xl mb-sm"></i>
+            <p class="text-sm">Aucun compte rendu disponible</p>
+          </div>
+        }
+      </div>
+
+      <!-- ── ACTIONS SELON STATUT ── -->
+
+      @if (estPlanifiee()) {
+        <div class="flex flex-col gap-sm mb-lg">
+          <button (click)="modalDemarrerVisible.set(true)"
+            class="w-full bg-bleu-nuit text-blanc-lait font-bold rounded-xl py-md flex items-center justify-center gap-sm uppercase tracking-wide">
+            <i class="pi pi-play"></i> Démarrer l'activité
+          </button>
+          <button (click)="naviguerModifier()"
+            class="w-full bg-white border border-anthracite/20 text-anthracite font-bold rounded-xl py-md flex items-center justify-center gap-sm uppercase tracking-wide">
+            <i class="pi pi-pencil"></i> Modifier
+          </button>
+          <button (click)="modalAnnulerVisible.set(true)"
+            class="w-full text-rouge-alerte font-semibold py-sm flex items-center justify-center gap-xs">
+            <i class="pi pi-times text-sm"></i> Annuler l'activité
+          </button>
+        </div>
+      }
+
+      @if (estEnCours()) {
+        <div class="flex flex-col gap-sm mb-lg">
+          <button (click)="naviguerPresences()"
+            class="w-full bg-bleu-nuit text-blanc-lait font-bold rounded-xl py-md flex items-center justify-center gap-sm uppercase tracking-wide">
+            <i class="pi pi-users"></i> Gérer les présences
+          </button>
+          <button (click)="modalTerminerVisible.set(true)"
+            class="w-full bg-white border border-bleu-nuit text-bleu-nuit font-bold rounded-xl py-md flex items-center justify-center gap-sm uppercase tracking-wide">
+            <i class="pi pi-check"></i> Terminer l'activité
+          </button>
+        </div>
+      }
+
+      @if (estTerminee()) {
+        <div class="mb-lg">
+          <button (click)="naviguerPresences()"
+            class="w-full bg-bleu-nuit text-blanc-lait font-bold rounded-xl py-md flex items-center justify-center gap-sm uppercase tracking-wide">
+            <i class="pi pi-users"></i> Voir les présences
+          </button>
+        </div>
+      }
+
+    </div>
+  </div>
+
+  <app-bottom-nav />
+
+  <!-- ── MODAL DÉMARRER ── -->
+  @if (modalDemarrerVisible()) {
+    <div class="fixed inset-0 z-50 flex items-end bg-black/50"
+         (click)="modalDemarrerVisible.set(false)">
+      <div class="bg-white rounded-t-2xl w-full max-h-[80vh] overflow-y-auto p-lg"
+           (click)="$event.stopPropagation()">
+
+        <div class="w-10 h-1 bg-anthracite/20 rounded-full mx-auto mb-lg"></div>
+        <h2 class="font-bold text-lg text-anthracite mb-xs">Démarrer l'activité</h2>
+        <p class="text-sm text-anthracite/60 mb-lg">L'ordre du jour est optionnel.</p>
+
+        <label class="text-xs font-semibold text-anthracite/60 uppercase mb-sm block">
+          Ordre du jour <span class="normal-case font-normal text-anthracite/40">(Optionnel)</span>
+        </label>
+        <textarea rows="4"
+          [ngModel]="ordreDuJour()" (ngModelChange)="ordreDuJour.set($event)"
+          placeholder="Présentation des résultats et échanges..."
+          class="w-full border border-anthracite/20 rounded-xl px-md py-sm text-anthracite outline-none bg-white resize-none focus:border-bleu-nuit mb-lg">
+        </textarea>
+
+        <div class="flex flex-col gap-sm">
+          <button (click)="confirmerDemarrer()"
+            [disabled]="service.isLoading()"
+            class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-50">
+            @if (service.isLoading()) { <i class="pi pi-spin pi-spinner"></i> }
+            @else { <i class="pi pi-play"></i> }
+            Démarrer
+          </button>
+          <button (click)="modalDemarrerVisible.set(false)"
+            class="w-full text-anthracite font-semibold py-sm">Annuler</button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+  <!-- ── MODAL TERMINER ── -->
+  @if (modalTerminerVisible()) {
+    <div class="fixed inset-0 z-50 flex items-end bg-black/50"
+         (click)="modalTerminerVisible.set(false)">
+      <div class="bg-white rounded-t-2xl w-full max-h-[85vh] overflow-y-auto p-lg"
+           (click)="$event.stopPropagation()">
+
+        <div class="w-10 h-1 bg-anthracite/20 rounded-full mx-auto mb-lg"></div>
+        <h2 class="font-bold text-lg text-anthracite mb-xs">Terminer l'activité</h2>
+        <p class="text-sm text-anthracite/60 mb-lg">Le compte rendu est obligatoire.</p>
+
+        <label class="text-xs font-semibold text-anthracite/60 uppercase mb-sm block">
+          Compte rendu <span class="text-rouge-alerte">*</span>
+        </label>
+        <textarea rows="5"
+          [ngModel]="compteRendu()" (ngModelChange)="compteRendu.set($event); erreurCompteRendu.set(false)"
+          placeholder="Les décisions prises lors de la réunion..."
+          [class]="erreurCompteRendu()
+            ? 'w-full border border-rouge-alerte rounded-xl px-md py-sm text-anthracite outline-none bg-white resize-none mb-xs'
+            : 'w-full border border-anthracite/20 rounded-xl px-md py-sm text-anthracite outline-none bg-white resize-none focus:border-bleu-nuit mb-lg'">
+        </textarea>
+        @if (erreurCompteRendu()) {
+          <p class="text-xs text-rouge-alerte mb-md flex items-center gap-xs">
+            <i class="pi pi-exclamation-triangle text-xs"></i>
+            Le compte rendu est obligatoire
+          </p>
+        }
+
+        <div class="flex flex-col gap-sm">
+          <button (click)="confirmerTerminer()"
+            [disabled]="service.isLoading()"
+            class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-50">
+            @if (service.isLoading()) { <i class="pi pi-spin pi-spinner"></i> }
+            @else { <i class="pi pi-check"></i> }
+            Terminer l'activité
+          </button>
+          <button (click)="modalTerminerVisible.set(false)"
+            class="w-full text-anthracite font-semibold py-sm">Annuler</button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+  <!-- ── MODAL ANNULER ── -->
+  @if (modalAnnulerVisible()) {
+    <div class="fixed inset-0 z-50 flex items-end bg-black/50"
+         (click)="modalAnnulerVisible.set(false)">
+      <div class="bg-white rounded-t-2xl w-full p-lg"
+           (click)="$event.stopPropagation()">
+
+        <div class="w-10 h-1 bg-anthracite/20 rounded-full mx-auto mb-lg"></div>
+
+        <div class="flex justify-center mb-md">
+          <div class="w-14 h-14 rounded-full bg-rouge-clair flex items-center justify-center">
+            <i class="pi pi-exclamation-triangle text-rouge-alerte text-2xl"></i>
+          </div>
+        </div>
+
+        <h2 class="font-bold text-lg text-anthracite text-center mb-xs">Annuler l'activité ?</h2>
+        <p class="text-sm text-anthracite/60 text-center mb-lg">
+          Cette action est irréversible. L'activité sera marquée comme annulée.
+        </p>
+
+        <div class="flex flex-col gap-sm">
+          <button (click)="confirmerAnnuler()"
+            [disabled]="service.isLoading()"
+            class="w-full bg-rouge-alerte text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-50">
+            @if (service.isLoading()) { <i class="pi pi-spin pi-spinner"></i> }
+            @else { <i class="pi pi-times"></i> }
+            Confirmer l'annulation
+          </button>
+          <button (click)="modalAnnulerVisible.set(false)"
+            class="w-full text-anthracite font-semibold py-sm">Garder l'activité</button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+}

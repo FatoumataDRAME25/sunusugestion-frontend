@@ -1,0 +1,178 @@
+<app-navbar />
+
+<!-- ===== ÉCRAN SUCCÈS ===== -->
+@if (mode() === 'succes') {
+  <div class="min-h-screen bg-gris-fond flex flex-col items-center justify-center px-lg text-center gap-xl pb-24">
+
+    <div class="w-20 h-20 rounded-full bg-vert-foret flex items-center justify-center">
+      <i class="pi pi-check text-blanc-lait text-3xl"></i>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-2xl text-anthracite mb-xs">Enregistré !</h2>
+      <p class="text-sm text-anthracite/60">Les présences ont été enregistrées avec succès.</p>
+    </div>
+
+    <!-- Récapitulatif -->
+    <div class="bg-white rounded-xl shadow-sm p-lg w-full text-left">
+      <p class="text-xs font-bold text-anthracite/50 uppercase tracking-wide text-center mb-lg">Récapitulatif</p>
+
+      @if (activite()) {
+        <div class="flex flex-col gap-md mb-lg">
+          <div class="flex items-center gap-md">
+            <div class="w-8 h-8 rounded-lg bg-bleu-clair flex items-center justify-center shrink-0">
+              <i class="pi pi-calendar text-bleu-nuit text-sm"></i>
+            </div>
+            <div>
+              <p class="text-xs text-anthracite/50">ACTIVITÉ</p>
+              <p class="font-bold text-anthracite">{{ activite()!.titre }}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-md">
+            <div class="w-8 h-8 rounded-lg bg-bleu-clair flex items-center justify-center shrink-0">
+              <i class="pi pi-clock text-bleu-nuit text-sm"></i>
+            </div>
+            <div>
+              <p class="text-xs text-anthracite/50">DATE</p>
+              <p class="font-bold text-anthracite">{{ activite()!.dateActivite | date:'dd/MM/yyyy' }}</p>
+            </div>
+          </div>
+        </div>
+      }
+
+      <p class="text-xs font-semibold text-anthracite/50 uppercase mb-md">Statistiques de participation</p>
+      <div class="grid grid-cols-3 gap-sm text-center">
+        <div class="bg-vert-clair/30 rounded-xl p-md">
+          <p class="font-bold text-xl text-vert-foret">{{ nbPresents() }}</p>
+          <p class="text-xs text-anthracite/50 uppercase">Présents</p>
+        </div>
+        <div class="bg-rouge-clair/30 rounded-xl p-md">
+          <p class="font-bold text-xl text-rouge-alerte">{{ nbAbsents() }}</p>
+          <p class="text-xs text-anthracite/50 uppercase">Absents</p>
+        </div>
+        <div class="bg-gris-fond rounded-xl p-md">
+          <p class="font-bold text-xl text-anthracite">{{ nbTotal() }}</p>
+          <p class="text-xs text-anthracite/50 uppercase">Total</p>
+        </div>
+      </div>
+    </div>
+
+    <button (click)="retourActivite()"
+      class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md">
+      Retour à l'activité
+    </button>
+
+  </div>
+}
+
+<!-- ===== LISTE DES PRÉSENCES ===== -->
+@if (mode() === 'liste') {
+  <div class="min-h-screen bg-gris-fond pb-32">
+    <div class="p-lg">
+
+      <!-- Retour -->
+      <button (click)="retourActivite()" class="text-anthracite/60 mb-xs block">
+        <i class="pi pi-chevron-left text-lg"></i>
+      </button>
+      <h1 class="font-bold text-xl text-anthracite">Présences</h1>
+      @if (activite()) {
+        <p class="text-sm text-anthracite/50 mb-lg">
+          {{ activite()!.titre }} — {{ activite()!.dateActivite | date:'dd/MM/yyyy' }}
+        </p>
+      }
+
+      @if (service.errorMessage()) {
+        <div class="bg-rouge-clair text-rouge-alerte text-sm rounded-xl p-md mb-md">
+          {{ service.errorMessage() }}
+        </div>
+      }
+
+      <!-- Stats -->
+      <div class="grid grid-cols-3 gap-sm mb-lg">
+        <div class="bg-white rounded-xl p-md text-center shadow-sm">
+          <i class="pi pi-users text-bleu-nuit text-lg mb-xs block"></i>
+          <p class="font-bold text-xl text-anthracite">{{ nbTotal() }}</p>
+          <p class="text-xs text-anthracite/50">TOTAL</p>
+        </div>
+        <div class="bg-white rounded-xl p-md text-center shadow-sm">
+          <div class="w-6 h-6 rounded-full bg-vert-foret flex items-center justify-center mx-auto mb-xs">
+            <i class="pi pi-check text-blanc-lait text-xs"></i>
+          </div>
+          <p class="font-bold text-xl text-vert-foret">{{ nbPresents() }}</p>
+          <p class="text-xs text-anthracite/50">PRÉSENTS</p>
+        </div>
+        <div class="bg-white rounded-xl p-md text-center shadow-sm">
+          <div class="w-6 h-6 rounded-full bg-rouge-alerte flex items-center justify-center mx-auto mb-xs">
+            <i class="pi pi-times text-blanc-lait text-xs"></i>
+          </div>
+          <p class="font-bold text-xl text-rouge-alerte">{{ nbAbsents() }}</p>
+          <p class="text-xs text-anthracite/50">ABSENTS</p>
+        </div>
+      </div>
+
+      <!-- Chargement -->
+      @if (service.isLoading()) {
+        <div class="flex justify-center py-xl">
+          <i class="pi pi-spin pi-spinner text-2xl text-bleu-nuit"></i>
+        </div>
+      }
+
+      <!-- Liste membres -->
+      <div class="flex flex-col gap-sm">
+        @for (membre of membres(); track membre.id) {
+          <div class="bg-white rounded-xl p-md shadow-sm">
+
+            <!-- Nom + badge statut actuel -->
+            <div class="flex items-center gap-md mb-sm">
+              <div class="w-10 h-10 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-sm text-bleu-nuit shrink-0">
+                {{ (membre.prenom + ' ' + membre.nom) | initiales }}
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-anthracite truncate">{{ membre.prenom }} {{ membre.nom }}</p>
+                <p class="text-xs text-anthracite/50">{{ membre.telephone }}</p>
+              </div>
+              @if (membre.statut === 'present') {
+                <span class="text-xs font-bold text-vert-foret bg-vert-clair px-sm py-xs rounded-full">PRÉSENT</span>
+              }
+              @if (membre.statut === 'absent') {
+                <span class="text-xs font-bold text-rouge-alerte bg-rouge-clair px-sm py-xs rounded-full">ABSENT</span>
+              }
+            </div>
+
+            <!-- Boutons toggle -->
+            <div class="flex gap-sm">
+              <button (click)="setStatut(membre, 'present')"
+                [class]="membre.statut === 'present'
+                  ? 'flex-1 bg-vert-foret text-blanc-lait font-semibold rounded-xl py-sm text-sm flex items-center justify-center gap-xs'
+                  : 'flex-1 border border-anthracite/20 text-anthracite font-semibold rounded-xl py-sm text-sm flex items-center justify-center gap-xs'">
+                @if (membre.statut === 'present') { <i class="pi pi-check text-xs"></i> }
+                Présent
+              </button>
+              <button (click)="setStatut(membre, 'absent')"
+                [class]="membre.statut === 'absent'
+                  ? 'flex-1 bg-rouge-alerte text-blanc-lait font-semibold rounded-xl py-sm text-sm flex items-center justify-center gap-xs'
+                  : 'flex-1 border border-anthracite/20 text-anthracite font-semibold rounded-xl py-sm text-sm flex items-center justify-center gap-xs'">
+                @if (membre.statut === 'absent') { <i class="pi pi-times text-xs"></i> }
+                Absent
+              </button>
+            </div>
+
+          </div>
+        }
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bouton fixe -->
+  <div class="fixed bottom-16 left-0 right-0 px-lg pb-sm">
+    <button (click)="enregistrer()"
+      [disabled]="service.isLoading()"
+      class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm shadow-lg disabled:opacity-50">
+      @if (service.isLoading()) { <i class="pi pi-spin pi-spinner"></i> }
+      Enregistrer les présences
+    </button>
+  </div>
+
+  <app-bottom-nav />
+}

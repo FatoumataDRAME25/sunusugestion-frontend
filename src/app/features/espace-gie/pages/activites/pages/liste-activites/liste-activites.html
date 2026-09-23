@@ -1,0 +1,95 @@
+<app-navbar />
+
+<div class="min-h-screen bg-gris-fond pb-24">
+
+  <!-- En-tête -->
+  <div class="p-lg pt-md">
+    <div class="flex items-center gap-md mb-lg">
+      <a routerLink="/mon-espace" class="text-anthracite/60">
+        <i class="pi pi-chevron-left text-lg"></i>
+      </a>
+      <h1 class="font-bold text-2xl text-anthracite">Activités</h1>
+    </div>
+
+    <!-- Bouton planifier -->
+    <a routerLink="/mon-espace/activites/planifier"
+      class="w-full bg-bleu-nuit text-blanc-lait font-bold rounded-xl py-md flex items-center justify-center gap-sm mb-lg uppercase tracking-wide">
+      <i class="pi pi-plus"></i>
+      Planifier une activité
+    </a>
+
+    <!-- Filtres -->
+    <div class="flex gap-sm overflow-x-auto pb-xs">
+      @for (f of filtres; track f.label) {
+        <button (click)="filtreStatut.set(f.value)"
+          [class]="filtreStatut() === f.value
+            ? 'px-md py-xs rounded-full bg-bleu-nuit text-blanc-lait font-semibold text-sm whitespace-nowrap flex items-center gap-xs'
+            : 'px-md py-xs rounded-full bg-white text-anthracite/60 text-sm border border-anthracite/10 whitespace-nowrap'">
+          @if (filtreStatut() === f.value && f.value === null) {
+            <span class="w-2 h-2 rounded-full bg-blanc-lait"></span>
+          }
+          {{ f.label }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Liste -->
+  <div class="px-lg flex flex-col gap-md">
+
+    @if (service.isLoading()) {
+      <div class="flex justify-center py-2xl">
+        <i class="pi pi-spin pi-spinner text-2xl text-bleu-nuit"></i>
+      </div>
+    }
+
+    @if (!service.isLoading() && activitesFiltrees().length === 0) {
+      <div class="flex flex-col items-center py-2xl text-center">
+        <i class="pi pi-calendar text-4xl text-anthracite/30 mb-md"></i>
+        <p class="font-semibold text-anthracite/60">Aucune activité trouvée</p>
+      </div>
+    }
+
+    @for (activite of activitesFiltrees(); track activite.id) {
+      <a [routerLink]="['/mon-espace/activites', activite.id]"
+        class="bg-white rounded-xl shadow-sm overflow-hidden block"
+        [class]="bordureGauche(activite.statut)">
+
+        <div class="p-md">
+          <!-- Type + Statut -->
+          <div class="flex items-center justify-between mb-sm">
+            <span class="text-xs font-bold text-anthracite/50 uppercase tracking-wide">
+              {{ labelType(activite.typeActivite) }}
+            </span>
+            <span [class]="'text-xs font-semibold px-sm py-xs rounded-full ' + badgeStatut(activite.statut)">
+              {{ labelStatut(activite.statut) }}
+            </span>
+          </div>
+
+          <!-- Titre -->
+          <p class="font-bold text-anthracite mb-sm leading-snug">{{ activite.titre }}</p>
+
+          <!-- Infos -->
+          <div class="flex flex-col gap-xs text-xs text-anthracite/60">
+            <div class="flex items-center gap-xs">
+              <i class="pi pi-calendar text-xs"></i>
+              <span>{{ activite.dateActivite | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="flex items-center gap-xs">
+              <i class="pi pi-clock text-xs"></i>
+              <span>{{ activite.dateActivite | date:'HH:mm' }}</span>
+            </div>
+            <div class="flex items-center gap-xs">
+              <i class="pi pi-map-marker text-xs"></i>
+              <span>{{ activite.lieu }}</span>
+            </div>
+          </div>
+        </div>
+
+      </a>
+    }
+
+  </div>
+</div>
+
+<app-bottom-nav />

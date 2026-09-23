@@ -27,6 +27,10 @@ import { DemandePret } from './features/espace-gie/pages/prets/pages/demande-pre
 import { DetailPret } from './features/espace-gie/pages/prets/pages/detail-pret/detail-pret';
 import { ReglesPret } from './features/espace-gie/pages/prets/pages/regles-pret/regles-pret';
 import { DemandesATraiter } from './features/espace-gie/pages/prets/pages/demandes-a-traiter/demandes-a-traiter';
+import { ListeActivites } from './features/espace-gie/pages/activites/pages/liste-activites/liste-activites';
+import { PlanifierActivite } from './features/espace-gie/pages/activites/pages/planifier-activite/planifier-activite';
+import { DetailActivite } from './features/espace-gie/pages/activites/pages/detail-activite/detail-activite';
+import { PresencesActivite } from './features/espace-gie/pages/activites/pages/presences-activite/presences-activite';
 
 
 
@@ -79,6 +83,12 @@ export const routes: Routes = [
     { path: 'prets/regles', component: ReglesPret },
     { path: 'prets/demandes-a-traiter', component: DemandesATraiter },
     { path: 'prets/:id', component: DetailPret },
+
+    // ── Activités ──
+    { path: 'activites', component: ListeActivites },
+    { path: 'activites/planifier', component: PlanifierActivite },
+    { path: 'activites/:id', component: DetailActivite },
+    { path: 'activites/:id/presences', component: PresencesActivite },
 
     { path: 'profil-membre', component: ProfilMembre }
 

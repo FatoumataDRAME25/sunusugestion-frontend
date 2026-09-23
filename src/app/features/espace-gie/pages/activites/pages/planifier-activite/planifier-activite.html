@@ -1,0 +1,190 @@
+<app-navbar />
+
+<!-- ===== ÉCRAN SUCCÈS ===== -->
+@if (mode() === 'succes') {
+  <div class="min-h-screen bg-gris-fond flex flex-col items-center justify-center px-lg text-center gap-xl pb-24">
+
+    <div class="w-20 h-20 rounded-full bg-vert-foret flex items-center justify-center">
+      <i class="pi pi-check text-blanc-lait text-3xl"></i>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-xl text-anthracite mb-sm">Activité planifiée avec succès</h2>
+      <p class="text-sm text-anthracite/60 leading-relaxed">
+        Votre activité a été enregistrée et ajoutée au calendrier de l'équipe.
+        Les participants recevront une notification sous peu.
+      </p>
+    </div>
+
+    <div class="flex flex-col gap-sm w-full">
+      <button (click)="retourListe()"
+        class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md">
+        Retour aux activités
+      </button>
+      <button (click)="planifierUneAutre()"
+        class="w-full text-anthracite font-semibold py-md flex items-center justify-center gap-xs">
+        <i class="pi pi-plus text-sm"></i>
+        Planifier une autre activité
+      </button>
+    </div>
+
+  </div>
+}
+
+<!-- ===== FORMULAIRE ===== -->
+@if (mode() === 'formulaire') {
+  <div class="min-h-screen bg-gris-fond pb-24">
+    <div class="p-lg">
+
+      <a routerLink="/mon-espace/activites" class="text-anthracite/60 mb-md block">
+        <i class="pi pi-chevron-left text-lg"></i>
+      </a>
+      <h1 class="font-bold text-xl text-anthracite mb-lg">
+        {{ activiteAModifier() ? 'Modifier l\'activité' : 'Planifier une activité' }}
+      </h1>
+
+      <!-- Erreur globale backend -->
+      @if (service.errorMessage()) {
+        <div class="bg-rouge-clair text-rouge-alerte text-sm rounded-xl p-md mb-md flex items-start gap-sm">
+          <i class="pi pi-exclamation-circle shrink-0 mt-xs"></i>
+          <span>{{ service.errorMessage() }}</span>
+        </div>
+      }
+
+      <!-- Erreurs de validation -->
+      @if (soumis() && (erreurs()['titre'] || erreurs()['type'] || erreurs()['date'] || erreurs()['lieu'])) {
+        <div class="bg-rouge-clair text-rouge-alerte text-sm rounded-xl p-md mb-md flex items-start gap-sm">
+          <i class="pi pi-exclamation-circle shrink-0 mt-xs"></i>
+          <span>Veuillez corriger les erreurs ci-dessous.</span>
+        </div>
+      }
+
+      <div class="flex flex-col gap-lg">
+
+        <!-- Titre -->
+        <div>
+          <label class="text-xs font-semibold text-anthracite/70 uppercase mb-xs block">
+            Titre de l'activité
+          </label>
+          <input type="text"
+            [ngModel]="titre()" (ngModelChange)="titre.set($event)"
+            placeholder="Exemple : Réunion mensuelle du GIE"
+            [class]="estEnErreur('titre')
+              ? 'w-full border border-rouge-alerte rounded-xl px-md py-sm text-anthracite outline-none bg-white'
+              : 'w-full border border-anthracite/20 rounded-xl px-md py-sm text-anthracite outline-none bg-white focus:border-bleu-nuit'" />
+          @if (estEnErreur('titre')) {
+            <p class="text-xs text-rouge-alerte mt-xs flex items-center gap-xs">
+              <i class="pi pi-exclamation-triangle text-xs"></i>
+              {{ erreurs()['titre'] }}
+            </p>
+          }
+        </div>
+
+        <!-- Type d'activité -->
+        <div>
+          <label class="text-xs font-semibold text-anthracite/70 uppercase mb-xs block">
+            Type d'activité
+          </label>
+          <div class="relative">
+            <select
+              [ngModel]="typeActivite()" (ngModelChange)="typeActivite.set($event)"
+              [class]="estEnErreur('type')
+                ? 'w-full border border-rouge-alerte rounded-xl px-md py-sm text-anthracite outline-none bg-white appearance-none'
+                : 'w-full border border-anthracite/20 rounded-xl px-md py-sm text-anthracite outline-none bg-white appearance-none focus:border-bleu-nuit'">
+              <option value="" disabled>Sélectionner un type</option>
+              @for (t of typesActivite; track t.value) {
+                <option [value]="t.value">{{ t.label }}</option>
+              }
+            </select>
+            <i class="pi pi-chevron-down absolute right-md top-1/2 -translate-y-1/2 text-anthracite/40 pointer-events-none"></i>
+          </div>
+          @if (estEnErreur('type')) {
+            <p class="text-xs text-rouge-alerte mt-xs flex items-center gap-xs">
+              <i class="pi pi-exclamation-triangle text-xs"></i>
+              {{ erreurs()['type'] }}
+            </p>
+          }
+        </div>
+
+        <!-- Date et heure -->
+        <div>
+          <label class="text-xs font-semibold text-anthracite/70 uppercase mb-xs block">
+            Date et heure de l'activité
+          </label>
+          <div class="flex gap-sm">
+            <div class="flex-1 relative">
+              <i class="pi pi-calendar absolute left-md top-1/2 -translate-y-1/2 text-anthracite/40 pointer-events-none"></i>
+              <input type="date"
+                [ngModel]="dateActivite()" (ngModelChange)="dateActivite.set($event)"
+                [class]="estEnErreur('date')
+                  ? 'w-full border border-rouge-alerte rounded-xl pl-9 pr-md py-sm text-anthracite outline-none bg-white'
+                  : 'w-full border border-anthracite/20 rounded-xl pl-9 pr-md py-sm text-anthracite outline-none bg-white focus:border-bleu-nuit'" />
+            </div>
+            <div class="flex-1 relative">
+              <i class="pi pi-clock absolute left-md top-1/2 -translate-y-1/2 text-anthracite/40 pointer-events-none"></i>
+              <input type="time"
+                [ngModel]="heureActivite()" (ngModelChange)="heureActivite.set($event)"
+                [class]="estEnErreur('date')
+                  ? 'w-full border border-rouge-alerte rounded-xl pl-9 pr-md py-sm text-anthracite outline-none bg-white'
+                  : 'w-full border border-anthracite/20 rounded-xl pl-9 pr-md py-sm text-anthracite outline-none bg-white focus:border-bleu-nuit'" />
+            </div>
+          </div>
+          @if (estEnErreur('date')) {
+            <p class="text-xs text-rouge-alerte mt-xs flex items-center gap-xs">
+              <i class="pi pi-exclamation-triangle text-xs"></i>
+              {{ erreurs()['date'] }}
+            </p>
+          }
+        </div>
+
+        <!-- Lieu -->
+        <div>
+          <label class="text-xs font-semibold text-anthracite/70 uppercase mb-xs block">Lieu</label>
+          <div class="relative">
+            <i class="pi pi-map-marker absolute left-md top-1/2 -translate-y-1/2 text-anthracite/40 pointer-events-none"></i>
+            <input type="text"
+              [ngModel]="lieu()" (ngModelChange)="lieu.set($event)"
+              placeholder="Exemple : Siège du GIE"
+              [class]="estEnErreur('lieu')
+                ? 'w-full border border-rouge-alerte rounded-xl pl-9 pr-md py-sm text-anthracite outline-none bg-white'
+                : 'w-full border border-anthracite/20 rounded-xl pl-9 pr-md py-sm text-anthracite outline-none bg-white focus:border-bleu-nuit'" />
+          </div>
+          @if (estEnErreur('lieu')) {
+            <p class="text-xs text-rouge-alerte mt-xs flex items-center gap-xs">
+              <i class="pi pi-exclamation-triangle text-xs"></i>
+              {{ erreurs()['lieu'] }}
+            </p>
+          }
+        </div>
+
+        <!-- Description (optionnel) -->
+        <div>
+          <label class="text-xs font-semibold text-anthracite/70 uppercase mb-xs block">
+            Description <span class="normal-case font-normal text-anthracite/40">(Optionnel)</span>
+          </label>
+          <textarea rows="4"
+            [ngModel]="description()" (ngModelChange)="description.set($event)"
+            placeholder="Détails supplémentaires..."
+            class="w-full border border-anthracite/20 rounded-xl px-md py-sm text-anthracite outline-none bg-white resize-none focus:border-bleu-nuit">
+          </textarea>
+        </div>
+
+        <!-- Bouton -->
+        <button (click)="planifier()"
+          [disabled]="service.isLoading()"
+          class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-60">
+          @if (service.isLoading()) {
+            <i class="pi pi-spin pi-spinner"></i>
+            En cours...
+          } @else {
+            {{ activiteAModifier() ? 'Enregistrer les modifications' : 'Planifier l\'activité' }}
+            <i class="pi pi-calendar"></i>
+          }
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <app-bottom-nav />
+}
