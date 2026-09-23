@@ -42,12 +42,12 @@ export class DetailPret implements OnInit {
     return this.pret()?.membre?.id === userId;
   });
 
-  // Le trésorier ne peut rembourser que par espèces sauf si c'est son propre prêt
+  // Modes selon règle : paie pour soi → Wave/Orange Money, pour un autre → Espèces
   modesPaiementRemboursement = computed(() => {
-    if (this.estTresorier() && !this.estMonPret()) {
+    if (!this.estMonPret()) {
       return this.modesPaiement.filter(m => m.value === 'especes');
     }
-    return this.modesPaiement;
+    return this.modesPaiement.filter(m => m.value === 'wave' || m.value === 'orange_money');
   });
 
   // Modal de confirmation remboursement
@@ -61,7 +61,12 @@ export class DetailPret implements OnInit {
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.service.chargerPret(id).subscribe();
+    this.service.chargerPret(id).subscribe({
+      next: () => {
+        // Initialiser le mode selon contexte : soi → wave, autre → especes
+        this.modePaiementSelectionne.set(this.estMonPret() ? 'wave' : 'especes');
+      }
+    });
     this.service.chargerRegle().subscribe();
   }
 

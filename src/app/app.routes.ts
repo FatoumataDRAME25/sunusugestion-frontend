@@ -21,6 +21,7 @@ import { InformationsGie } from './features/espace-gie/pages/informations-gie/im
 import { NouvelleOperation } from './features/espace-gie/pages/operations/pages/nouvelle-operation/nouvelle-operation';
 import { ListeCotisations } from './features/espace-gie/pages/cotisations/pages/liste-cotisation/liste-cotisation';
 import { SessionCotisation } from './features/espace-gie/pages/cotisations/pages/session-cotisation/session-cotisation';
+import { PayerCotisation } from './features/espace-gie/pages/cotisations/pages/payer-cotisation/payer-cotisation';
 import { ActiverCompte } from './features/espace-gie/pages/membres/pages/activer-compte/activer-compte';
 import { ListePrets } from './features/espace-gie/pages/prets/pages/liste-prets/liste-prets';
 import { DemandePret } from './features/espace-gie/pages/prets/pages/demande-pret/demande-pret';
@@ -76,6 +77,7 @@ export const routes: Routes = [
     { path: 'membres', component: ListeMembre },
     { path: 'cotisations', component: ListeCotisations },
     { path: 'cotisations/session-cotisation', component: SessionCotisation },
+    { path: 'cotisations/payer/:id', component: PayerCotisation },
 
     // ── Prêts ──
     { path: 'prets', component: ListePrets },

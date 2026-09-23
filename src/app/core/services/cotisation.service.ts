@@ -80,7 +80,7 @@ export class CotisationService {
 
   payerCotisation(
     cotisationId: number,
-    modePaiement: 'especes'
+    modePaiement: 'especes' | 'wave' | 'orange_money'
   ): Observable<Cotisation> {
 
     return this.http.post<Cotisation>(

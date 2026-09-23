@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { InitialesPipe } from '../../../../../../shared/pipes/initiales-pipe';
 import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
@@ -24,6 +24,7 @@ import { DialogModule } from 'primeng/dialog';
 export class ListeCotisations implements OnInit {
 
   protected service = inject(CotisationService);
+  private router = inject(Router);
 
   filtreStatut = signal<string | null>(null);
   termeRecherche = signal('');
@@ -82,8 +83,8 @@ export class ListeCotisations implements OnInit {
   // -------------------------
 
   ouvrirConfirmationPaiement(cotisation: Cotisation): void {
-    this.cotisationAPayer.set(cotisation);
-    this.voirConfirmation.set(true);
+    // Naviguer vers la page de paiement
+    this.router.navigate(['/mon-espace/cotisations/payer', cotisation.id]);
   }
 
   annulerPaiement(): void {
