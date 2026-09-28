@@ -1,23 +1,20 @@
+<app-navbar />
+
 <div class="min-h-screen bg-gris-fond pb-52">
 
-  <!-- En-tête bleu -->
-  <div class="bg-bleu-nuit p-lg pt-xl pb-xl">
-    <div class="flex justify-between items-center mb-lg">
-      <h1 class="text-blanc-lait font-bold text-xl">Historique</h1>
-      <button class="w-10 h-10 rounded-xl bg-blanc-lait/10 flex items-center justify-center text-blanc-lait">
-        <i class="pi pi-bell"></i>
-      </button>
-    </div>
+  <!-- En-tête -->
+  <div class="p-lg">
+    <h1 class="font-bold text-2xl text-anthracite mb-lg">Opérations</h1>
 
     <!-- Barre de recherche -->
-    <div class="flex items-center gap-sm bg-blanc-lait/10 rounded-xl px-md py-sm">
-      <i class="pi pi-search text-blanc-lait/50"></i>
+    <div class="flex items-center gap-sm bg-white border border-anthracite/10 rounded-xl px-md py-sm shadow-sm">
+      <i class="pi pi-search text-anthracite/40"></i>
       <input
         type="text"
         [ngModel]="termeRecherche()"
         (ngModelChange)="termeRecherche.set($event)"
         placeholder="Rechercher une opération..."
-        class="flex-1 bg-transparent outline-none text-sm text-blanc-lait placeholder:text-blanc-lait/40"
+        class="flex-1 bg-transparent outline-none text-sm text-anthracite placeholder:text-anthracite/40"
       />
     </div>
   </div>

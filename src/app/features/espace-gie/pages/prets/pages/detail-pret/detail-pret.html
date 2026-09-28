@@ -23,6 +23,10 @@
           <h2 class="font-bold text-xl text-anthracite mb-sm">Décaissement effectué</h2>
           <p class="text-sm text-anthracite/60">Les fonds ont été remis au bénéficiaire. Le remboursement a débuté.</p>
         }
+        @if (succesAction() === 'decaisse_en_attente') {
+          <h2 class="font-bold text-xl text-anthracite mb-sm">Décaissement en cours de traitement</h2>
+          <p class="text-sm text-anthracite/60">Le décaissement est en attente de confirmation par le prestataire de paiement.</p>
+        }
         @if (succesAction() === 'rembourse') {
           <h2 class="font-bold text-xl text-anthracite mb-sm">Remboursement enregistré</h2>
           <p class="text-sm text-anthracite/60">Le prêt a été entièrement remboursé.</p>

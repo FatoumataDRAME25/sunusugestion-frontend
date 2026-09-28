@@ -32,6 +32,7 @@ import { ListeActivites } from './features/espace-gie/pages/activites/pages/list
 import { PlanifierActivite } from './features/espace-gie/pages/activites/pages/planifier-activite/planifier-activite';
 import { DetailActivite } from './features/espace-gie/pages/activites/pages/detail-activite/detail-activite';
 import { PresencesActivite } from './features/espace-gie/pages/activites/pages/presences-activite/presences-activite';
+import { RetourPaiement } from './features/espace-gie/pages/paiement/retour-paiement';
 
 
 
@@ -91,6 +92,9 @@ export const routes: Routes = [
     { path: 'activites/planifier', component: PlanifierActivite },
     { path: 'activites/:id', component: DetailActivite },
     { path: 'activites/:id/presences', component: PresencesActivite },
+
+    // ── Paiement PayDunya retour ──
+    { path: 'paiement/retour', component: RetourPaiement },
 
     { path: 'profil-membre', component: ProfilMembre }
 

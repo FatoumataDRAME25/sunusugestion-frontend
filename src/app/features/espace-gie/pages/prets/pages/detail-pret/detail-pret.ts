@@ -28,7 +28,7 @@ export class DetailPret implements OnInit {
   modePaiementSelectionne = signal<ModePaiement>('especes');
 
   // Succès
-  succesAction = signal<'approuve' | 'decaisse' | 'rembourse' | null>(null);
+  succesAction = signal<'approuve' | 'decaisse' | 'decaisse_en_attente' | 'rembourse' | null>(null);
 
   pret = computed(() => this.service.pretSelectionne());
   regle = computed(() => this.service.regle());
@@ -87,7 +87,15 @@ export class DetailPret implements OnInit {
     const id = this.pret()?.id;
     if (!id) return;
     this.service.decaisserPret(id, { modePaiement: this.modePaiementSelectionne() }).subscribe({
-      next: () => this.succesAction.set('decaisse')
+      next: (reponse) => {
+        // wave/orange_money : en_attente_decaissement → pas de succès local
+        if (reponse?.statut === 'en_attente_decaissement') {
+          this.succesAction.set('decaisse_en_attente');
+          return;
+        }
+        // especes : décaissement immédiat confirmé
+        this.succesAction.set('decaisse');
+      }
     });
   }
 
@@ -96,7 +104,15 @@ export class DetailPret implements OnInit {
     const id = this.pret()?.id;
     if (!id) return;
     this.service.rembourserPret(id, { modePaiement: this.modePaiementSelectionne() }).subscribe({
-      next: () => this.succesAction.set('rembourse')
+      next: (reponse) => {
+        // wave/orange_money : urlPaiement → redirection PayDunya
+        if (reponse?.urlPaiement) {
+          window.location.href = reponse.urlPaiement;
+          return;
+        }
+        // especes : remboursement immédiat confirmé
+        this.succesAction.set('rembourse');
+      }
     });
   }
 

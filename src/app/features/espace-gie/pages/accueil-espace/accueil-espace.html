@@ -1,27 +1,28 @@
-<div class="p-lg pb-2xl">
+<app-navbar />
+
+<div class="min-h-screen bg-gris-fond pb-20">
 
   <!-- En-tête -->
-  <div class="flex justify-between items-center mb-xl">
-    <div>
-      <h1 class="font-sans font-semibold text-xl text-anthracite">
-        Bonjour, {{ service.prenomUtilisateur() }}
-      </h1>
-      <p class="text-sm text-anthracite/60">{{ service.nomGie() }}</p>
-    </div>
-
-    <div class="flex items-center gap-md">
-      <div class="relative">
-        <i class="pi pi-bell text-xl text-anthracite/60"></i>
-        <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-rouge-alerte"></span>
+  <div class="p-lg">
+    <div class="flex items-center justify-between mb-lg">
+      <div>
+        <h1 class="font-sans font-semibold text-xl text-anthracite">
+          Bonjour, {{ service.prenomUtilisateur() }}
+        </h1>
+        <p class="text-sm text-anthracite/60">{{ service.nomGie() }}</p>
       </div>
-
-      @if (authService.currentUser(); as utilisateur) {
-        <div class="w-10 h-10 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-sm text-bleu-nuit">
-          {{ (utilisateur.prenom + ' ' + utilisateur.nom) | initiales }}
+      <div class="flex items-center gap-md">
+        <div class="relative">
+          <i class="pi pi-bell text-xl text-anthracite/60"></i>
+          <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-rouge-alerte"></span>
         </div>
-      }
+        @if (authService.currentUser(); as utilisateur) {
+          <div class="w-10 h-10 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-sm text-bleu-nuit">
+            {{ (utilisateur.prenom + ' ' + utilisateur.nom) | initiales }}
+          </div>
+        }
+      </div>
     </div>
-  </div>
 
   <!-- Bouton principal -->
   <button
@@ -100,3 +101,6 @@
     Voir les informations du GIE
   </button>
 </div>
+</div>
+
+<app-bottom-nav />

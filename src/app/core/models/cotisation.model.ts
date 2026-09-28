@@ -44,3 +44,13 @@ export interface CreerSessionRequest {
   dateDebut: string;
   dateFin: string;
 }
+
+/**
+ * Réponse PayDunya pour le paiement d'une cotisation via wave/orange_money.
+ */
+export interface ReponsePaiementCotisation {
+  statut: 'paye' | 'en_attente_paiement' | 'paiement_echoue';
+  token?: string;
+  urlPaiement?: string;
+  cotisation?: Cotisation;
+}

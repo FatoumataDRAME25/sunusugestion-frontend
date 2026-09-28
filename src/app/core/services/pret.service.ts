@@ -113,14 +113,18 @@ export class PretService {
   }
 
   // ─── DÉCAISSEMENT ─────────────────────────────────────────
-  decaisserPret(id: number, body: DecaisserPretRequest): Observable<Pret> {
+  // Retourne any : especes → Pret mis à jour, wave/orange_money → { statut: 'en_attente_decaissement', token }
+  decaisserPret(id: number, body: DecaisserPretRequest): Observable<any> {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    return this.http.post<Pret>(`${this.BASE_URL}prets/${id}/decaisser/`, body).pipe(
-      tap((pret) => {
-        this.pretSelectionne.set(pret);
-        this._mettreAJourListe(pret);
+    return this.http.post<any>(`${this.BASE_URL}prets/${id}/decaisser/`, body).pipe(
+      tap((reponse) => {
+        // Mettre à jour le prêt seulement si le backend confirme le décaissement (especes)
+        if (reponse?.id) {
+          this.pretSelectionne.set(reponse);
+          this._mettreAJourListe(reponse);
+        }
         this.isLoading.set(false);
       }),
       catchError((err) => {
@@ -132,14 +136,18 @@ export class PretService {
   }
 
   // ─── REMBOURSEMENT ────────────────────────────────────────
-  rembourserPret(id: number, body: RembourserPretRequest): Observable<Pret> {
+  // Retourne any : especes → Pret mis à jour, wave/orange_money → { statut: 'en_attente_paiement', urlPaiement }
+  rembourserPret(id: number, body: RembourserPretRequest): Observable<any> {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    return this.http.post<Pret>(`${this.BASE_URL}prets/${id}/rembourser/`, body).pipe(
-      tap((pret) => {
-        this.pretSelectionne.set(pret);
-        this._mettreAJourListe(pret);
+    return this.http.post<any>(`${this.BASE_URL}prets/${id}/rembourser/`, body).pipe(
+      tap((reponse) => {
+        // Mettre à jour le prêt seulement si le backend confirme le remboursement (especes)
+        if (reponse?.id) {
+          this.pretSelectionne.set(reponse);
+          this._mettreAJourListe(reponse);
+        }
         this.isLoading.set(false);
       }),
       catchError((err) => {

@@ -139,23 +139,25 @@
               }
             </div>
 
-            <!-- Boutons toggle -->
-            <div class="flex gap-sm">
-              <button (click)="setStatut(membre, 'present')"
-                [class]="membre.statut === 'present'
-                  ? 'flex-1 bg-vert-foret text-blanc-lait font-semibold rounded-xl py-sm text-sm flex items-center justify-center gap-xs'
-                  : 'flex-1 border border-anthracite/20 text-anthracite font-semibold rounded-xl py-sm text-sm flex items-center justify-center gap-xs'">
-                @if (membre.statut === 'present') { <i class="pi pi-check text-xs"></i> }
-                Présent
-              </button>
-              <button (click)="setStatut(membre, 'absent')"
-                [class]="membre.statut === 'absent'
-                  ? 'flex-1 bg-rouge-alerte text-blanc-lait font-semibold rounded-xl py-sm text-sm flex items-center justify-center gap-xs'
-                  : 'flex-1 border border-anthracite/20 text-anthracite font-semibold rounded-xl py-sm text-sm flex items-center justify-center gap-xs'">
-                @if (membre.statut === 'absent') { <i class="pi pi-times text-xs"></i> }
-                Absent
-              </button>
-            </div>
+            <!-- Boutons toggle — masqués si présences déjà enregistrées -->
+            @if (!presencesDejaEnregistrees()) {
+              <div class="flex gap-sm">
+                <button (click)="setStatut(membre, 'present')"
+                  [class]="membre.statut === 'present'
+                    ? 'flex-1 bg-vert-foret text-blanc-lait font-semibold rounded-xl py-sm text-sm flex items-center justify-center gap-xs'
+                    : 'flex-1 border border-anthracite/20 text-anthracite font-semibold rounded-xl py-sm text-sm flex items-center justify-center gap-xs'">
+                  @if (membre.statut === 'present') { <i class="pi pi-check text-xs"></i> }
+                  Présent
+                </button>
+                <button (click)="setStatut(membre, 'absent')"
+                  [class]="membre.statut === 'absent'
+                    ? 'flex-1 bg-rouge-alerte text-blanc-lait font-semibold rounded-xl py-sm text-sm flex items-center justify-center gap-xs'
+                    : 'flex-1 border border-anthracite/20 text-anthracite font-semibold rounded-xl py-sm text-sm flex items-center justify-center gap-xs'">
+                  @if (membre.statut === 'absent') { <i class="pi pi-times text-xs"></i> }
+                  Absent
+                </button>
+              </div>
+            }
 
           </div>
         }
@@ -164,15 +166,17 @@
     </div>
   </div>
 
-  <!-- Bouton fixe -->
-  <div class="fixed bottom-16 left-0 right-0 px-lg pb-sm">
-    <button (click)="enregistrer()"
-      [disabled]="service.isLoading()"
-      class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm shadow-lg disabled:opacity-50">
-      @if (service.isLoading()) { <i class="pi pi-spin pi-spinner"></i> }
-      Enregistrer les présences
-    </button>
-  </div>
+  <!-- Bouton fixe — masqué si présences déjà enregistrées -->
+  @if (!presencesDejaEnregistrees()) {
+    <div class="fixed bottom-16 left-0 right-0 px-lg pb-sm">
+      <button (click)="enregistrer()"
+        [disabled]="service.isLoading()"
+        class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm shadow-lg disabled:opacity-50">
+        @if (service.isLoading()) { <i class="pi pi-spin pi-spinner"></i> }
+        Enregistrer les présences
+      </button>
+    </div>
+  }
 
   <app-bottom-nav />
 }

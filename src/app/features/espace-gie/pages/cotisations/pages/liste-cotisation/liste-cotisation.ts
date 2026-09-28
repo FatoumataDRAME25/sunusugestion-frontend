@@ -8,6 +8,8 @@ import { CotisationService } from '../../../../../../core/services/cotisation.se
 import { Cotisation } from '../../../../../../core/models/cotisation.model';
 import { DialogModule } from 'primeng/dialog';
 
+import { Navbar } from '../../../../../../shared/ui/navbar/navbar';
+
 @Component({
   selector: 'app-liste-cotisations',
   imports: [
@@ -17,7 +19,8 @@ import { DialogModule } from 'primeng/dialog';
     InitialesPipe,
     BottomNav,
     DialogModule,
-    DecimalPipe
+    DecimalPipe,
+    Navbar
   ],
   templateUrl: './liste-cotisation.html'
 })

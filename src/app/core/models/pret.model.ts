@@ -6,6 +6,12 @@ export type StatutPret =
   | 'refuse'
   | 'en_retard';
 
+export type StatutPaiementPayDunya =
+  | 'en_attente_paiement'
+  | 'en_attente_decaissement'
+  | 'paiement_confirme'
+  | 'paiement_echoue';
+
 export type ModePaiement = 'especes' | 'wave' | 'orange_money';
 
 export interface MembrePret {
@@ -28,6 +34,16 @@ export interface Pret {
   modePaiement: ModePaiement | null;
 }
 
+/**
+ * Réponse PayDunya retournée par le backend pour wave/orange_money.
+ * Présent uniquement quand modePaiement !== 'especes'.
+ */
+export interface ReponsePayDunya {
+  statut: StatutPaiementPayDunya;
+  token?: string;
+  urlPaiement?: string;
+}
+
 export interface ReglePret {
   id?: number;
   gie?: number;
@@ -36,9 +52,6 @@ export interface ReglePret {
   nombrePretsSimultanes: number;
   cotisationAJourObligatoire: boolean;
 }
-
-// ── Requêtes envoyées au backend ─────────────────────────────────────────────
-// L'intercepteur caseInterceptor convertit automatiquement camelCase → snake_case
 
 export interface DemanderPretRequest {
   montant: string;

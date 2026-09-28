@@ -32,6 +32,13 @@ export class PresencesActivite implements OnInit {
   nbAbsents  = computed(() => this.membres().filter(m => m.statut === 'absent').length);
   nbTotal    = computed(() => this.membres().length);
 
+  // Vrai si toutes les présences sont déjà enregistrées (aucun null)
+  // → mode lecture seule
+  presencesDejaEnregistrees = computed(() =>
+    this.membres().length > 0 &&
+    this.membres().every(m => m.statut !== null)
+  );
+
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.activiteId.set(id);

@@ -17,51 +17,75 @@
   <div class="fixed inset-0 z-40" (click)="fermerMenu()"></div>
 
   <!-- Dropdown menu -->
-  <div class="fixed top-14 right-lg z-50 bg-white rounded-xl shadow-xl w-52 overflow-hidden border border-anthracite/10">
+  <div class="fixed top-14 right-lg z-50 bg-white rounded-xl shadow-xl w-56 overflow-hidden border border-anthracite/10">
 
     <div class="px-md py-sm border-b border-anthracite/10">
       <p class="text-xs text-anthracite/40 uppercase font-semibold">Modules</p>
     </div>
 
-    <a routerLink="/mon-espace/cotisations" (click)="fermerMenu()"
-      class="flex items-center gap-md px-md py-md text-sm text-anthracite hover:bg-gris-fond">
-      <div class="w-8 h-8 rounded-lg bg-vert-clair flex items-center justify-center">
+    <!-- Cotisations -->
+    <button (click)="ouvrirModule('cotisations', '/mon-espace/cotisations')"
+      class="flex items-center gap-md px-md py-md text-sm text-anthracite hover:bg-gris-fond w-full text-left">
+      <div class="w-8 h-8 rounded-lg bg-vert-clair flex items-center justify-center shrink-0">
         <i class="pi pi-wallet text-vert-foret text-sm"></i>
       </div>
-      Cotisations
-    </a>
+      <span class="flex-1">Cotisations</span>
+      @if (notifService.badges().cotisations.count > 0) {
+        <span class="min-w-5 h-5 px-xs rounded-full bg-rouge-alerte text-blanc-lait text-xs font-bold flex items-center justify-center">
+          {{ notifService.badges().cotisations.count }}
+        </span>
+      }
+    </button>
 
-    <a routerLink="/mon-espace/prets" (click)="fermerMenu()"
-      class="flex items-center gap-md px-md py-md text-sm text-anthracite hover:bg-gris-fond">
-      <div class="w-8 h-8 rounded-lg bg-or-clair flex items-center justify-center">
+    <!-- Prêts -->
+    <button (click)="ouvrirModule('prets', '/mon-espace/prets')"
+      class="flex items-center gap-md px-md py-md text-sm text-anthracite hover:bg-gris-fond w-full text-left">
+      <div class="w-8 h-8 rounded-lg bg-or-clair flex items-center justify-center shrink-0">
         <i class="pi pi-credit-card text-or-senegal text-sm"></i>
       </div>
-      Prêts
-    </a>
+      <span class="flex-1">Prêts</span>
+      @if (notifService.badges().prets.count > 0) {
+        <span class="min-w-5 h-5 px-xs rounded-full bg-rouge-alerte text-blanc-lait text-xs font-bold flex items-center justify-center">
+          {{ notifService.badges().prets.count }}
+        </span>
+      }
+    </button>
 
-    <a routerLink="/mon-espace/prets/regles" (click)="fermerMenu()"
-      class="flex items-center gap-md px-md py-md text-sm text-anthracite hover:bg-gris-fond">
-      <div class="w-8 h-8 rounded-lg bg-or-clair/50 flex items-center justify-center">
-        <i class="pi pi-cog text-or-senegal text-sm"></i>
-      </div>
-      Règles de prêt
-    </a>
-    <a routerLink="/mon-espace/activites" (click)="fermerMenu()"
-      class="flex items-center gap-md px-md py-md text-sm text-anthracite hover:bg-gris-fond">
-      <div class="w-8 h-8 rounded-lg bg-bleu-clair flex items-center justify-center">
+    <!-- Règles de prêt (pas de badge) -->
+    @if (estPresident()) {
+      <a routerLink="/mon-espace/prets/regles" (click)="fermerMenu()"
+        class="flex items-center gap-md px-md py-md text-sm text-anthracite hover:bg-gris-fond">
+        <div class="w-8 h-8 rounded-lg bg-or-clair/50 flex items-center justify-center shrink-0">
+          <i class="pi pi-cog text-or-senegal text-sm"></i>
+        </div>
+        <span class="flex-1">Règles de prêt</span>
+      </a>
+    }
+
+    <!-- Activités -->
+    <button (click)="ouvrirModule('activites', '/mon-espace/activites')"
+      class="flex items-center gap-md px-md py-md text-sm text-anthracite hover:bg-gris-fond w-full text-left">
+      <div class="w-8 h-8 rounded-lg bg-bleu-clair flex items-center justify-center shrink-0">
         <i class="pi pi-calendar text-bleu-nuit text-sm"></i>
       </div>
-      Activités
-    </a>
+      <span class="flex-1">Activités</span>
+      @if (notifService.badges().activites.count > 0) {
+        <span class="min-w-5 h-5 px-xs rounded-full bg-rouge-alerte text-blanc-lait text-xs font-bold flex items-center justify-center">
+          {{ notifService.badges().activites.count }}
+        </span>
+      }
+    </button>
 
+    <!-- Rapports (pas de badge) -->
     <a routerLink="/mon-espace/rapports" (click)="fermerMenu()"
       class="flex items-center gap-md px-md py-md text-sm text-anthracite hover:bg-gris-fond border-b border-anthracite/10">
-      <div class="w-8 h-8 rounded-lg bg-rouge-clair flex items-center justify-center">
+      <div class="w-8 h-8 rounded-lg bg-rouge-clair flex items-center justify-center shrink-0">
         <i class="pi pi-file-pdf text-rouge-alerte text-sm"></i>
       </div>
-      Rapports
+      <span class="flex-1">Rapports</span>
     </a>
 
+    <!-- Déconnexion -->
     <button (click)="deconnecter()"
       class="flex items-center gap-md px-md py-md text-sm text-rouge-alerte w-full hover:bg-rouge-clair/30">
       <i class="pi pi-sign-out text-sm"></i>

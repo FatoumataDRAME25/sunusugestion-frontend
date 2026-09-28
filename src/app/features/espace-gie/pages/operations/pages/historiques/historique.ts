@@ -6,11 +6,12 @@ import { HistoriqueOperation } from '../../../../../../core/models/historique-op
 import { Solde } from '../../../../../../core/models/solde.model';
 import { Dialog } from 'primeng/dialog';
 import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
+import { Navbar } from '../../../../../../shared/ui/navbar/navbar';
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-operations',
-  imports: [Dialog, FormsModule, DecimalPipe, DatePipe, BottomNav,RouterLink],
+  imports: [Dialog, FormsModule, DecimalPipe, DatePipe, BottomNav, RouterLink, Navbar],
   templateUrl: './historique.html',
   styleUrl: './historique.css'
 })

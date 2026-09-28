@@ -59,8 +59,17 @@ export class PayerCotisation implements OnInit {
     if (!c) return;
 
     this.service.payerCotisation(c.id, this.modePaiement()).subscribe({
-      next: () => {
+      next: (reponse) => {
         this.voirConfirmation.set(false);
+
+        // Si le backend retourne une urlPaiement (wave/orange_money via PayDunya)
+        if (reponse?.urlPaiement) {
+          // Redirection vers PayDunya — NE PAS naviguer dans Angular
+          window.location.href = reponse.urlPaiement;
+          return;
+        }
+
+        // Espèces : paiement direct confirmé → retour liste
         this.router.navigate(['/mon-espace/cotisations']);
       },
       error: (err) => {

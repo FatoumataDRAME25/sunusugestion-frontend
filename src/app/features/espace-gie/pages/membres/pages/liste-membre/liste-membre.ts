@@ -3,11 +3,12 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MembresService } from '../../../../../../core/services/membres.service';
 import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
+import { Navbar } from '../../../../../../shared/ui/navbar/navbar';
 import { InitialesPipe } from '../../../../../../shared/pipes/initiales-pipe';
 
 @Component({
   selector: 'app-liste-membre',
-  imports: [RouterLink, FormsModule, BottomNav, InitialesPipe],
+  imports: [RouterLink, FormsModule, BottomNav, InitialesPipe, Navbar],
   styleUrl: './liste-membre.css',
   templateUrl: './liste-membre.html'
 })

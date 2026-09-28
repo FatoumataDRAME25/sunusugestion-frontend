@@ -8,6 +8,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { AuthService } from '../../../../core/services/auth.service';
 import { InitialesPipe } from '../../../../shared/pipes/initiales-pipe';
 import { BottomNav } from '../../../../shared/ui/bottom-nav/bottom-nav';
+import { Navbar } from '../../../../shared/ui/navbar/navbar';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 
@@ -21,7 +22,8 @@ import { environment } from '../../../../../environments/environment';
     IconFieldModule,
     InputIconModule,
     InitialesPipe,
-    BottomNav
+    BottomNav,
+    Navbar
   ],
   styleUrl: './profil-membre.css',
   templateUrl: './profil-membre.html',
@@ -36,8 +38,12 @@ export class ProfilMembre {
   succes = signal(false);
   errorMessage = signal<string | null>(null);
 
-  // Section sécurité visible ou non
-  securityExpanded = signal(true);
+  isSavingPin = signal(false);
+  succesPin = signal(false);
+  errorMessagePin = signal<string | null>(null);
+
+  // Section sécurité visible ou non — repliée par défaut
+  securityExpanded = signal(false);
 
   // Formulaire infos personnelles
   formInfos: FormGroup = this.fb.group({
@@ -86,6 +92,45 @@ export class ProfilMembre {
       error: (err) => {
         this.isSaving.set(false);
         this.errorMessage.set(err?.error?.detail ?? 'Erreur lors de la sauvegarde');
+      }
+    });
+  }
+
+  changerPin(): void {
+    if (this.formPin.invalid) {
+      this.formPin.markAllAsTouched();
+      return;
+    }
+
+    const { nouveauPin, confirmationPin } = this.formPin.value;
+
+    if (nouveauPin !== confirmationPin) {
+      this.errorMessagePin.set('Le nouveau PIN et la confirmation ne correspondent pas.');
+      return;
+    }
+
+    this.isSavingPin.set(true);
+    this.errorMessagePin.set(null);
+
+    this.http.post(
+      `${this.BASE_URL}membres/membres/changer-pin/`,
+      {
+        pinActuel:       this.formPin.value.pinActuel,
+        nouveauPin:      this.formPin.value.nouveauPin,
+        confirmationPin: this.formPin.value.confirmationPin,
+      }
+    ).subscribe({
+      next: () => {
+        this.isSavingPin.set(false);
+        this.succesPin.set(true);
+        this.formPin.reset();
+        setTimeout(() => this.succesPin.set(false), 3000);
+      },
+      error: (err) => {
+        this.isSavingPin.set(false);
+        this.errorMessagePin.set(
+          err?.error?.erreur ?? err?.error?.detail ?? 'Erreur lors du changement de PIN'
+        );
       }
     });
   }

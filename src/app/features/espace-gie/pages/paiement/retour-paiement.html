@@ -1,0 +1,85 @@
+<app-navbar />
+
+<div class="min-h-screen bg-gris-fond flex flex-col items-center justify-center px-lg text-center gap-xl pb-24">
+
+  <!-- Chargement -->
+  @if (statut() === 'chargement') {
+    <div class="flex flex-col items-center gap-lg">
+      <i class="pi pi-spin pi-spinner text-4xl text-bleu-nuit"></i>
+      <p class="font-semibold text-anthracite">Vérification du paiement...</p>
+      <p class="text-sm text-anthracite/60">Merci de patienter.</p>
+    </div>
+  }
+
+  <!-- Confirmé -->
+  @if (statut() === 'confirme') {
+    <div class="w-20 h-20 rounded-full bg-vert-foret flex items-center justify-center">
+      <i class="pi pi-check text-blanc-lait text-3xl"></i>
+    </div>
+    <div>
+      <h2 class="font-bold text-xl text-anthracite mb-sm">Paiement confirmé</h2>
+      <p class="text-sm text-anthracite/60">
+        Votre paiement a été validé avec succès.
+      </p>
+    </div>
+    <button (click)="retour()"
+      class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md">
+      Retour
+    </button>
+  }
+
+  <!-- En attente -->
+  @if (statut() === 'en_attente') {
+    <div class="w-20 h-20 rounded-full bg-or-clair flex items-center justify-center">
+      <i class="pi pi-clock text-or-senegal text-3xl"></i>
+    </div>
+    <div>
+      <h2 class="font-bold text-xl text-anthracite mb-sm">Paiement en attente de confirmation</h2>
+      <p class="text-sm text-anthracite/60">
+        Votre paiement est en cours de traitement.<br>
+        Vous serez notifié dès confirmation.
+      </p>
+    </div>
+    <button (click)="retour()"
+      class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md">
+      Retour
+    </button>
+  }
+
+  <!-- Échoué -->
+  @if (statut() === 'echoue') {
+    <div class="w-20 h-20 rounded-full bg-rouge-clair flex items-center justify-center">
+      <i class="pi pi-times text-rouge-alerte text-3xl"></i>
+    </div>
+    <div>
+      <h2 class="font-bold text-xl text-anthracite mb-sm">Paiement échoué ou annulé</h2>
+      <p class="text-sm text-anthracite/60">
+        Le paiement n'a pas abouti. Vous pouvez réessayer.
+      </p>
+    </div>
+    <button (click)="retour()"
+      class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md">
+      Réessayer
+    </button>
+  }
+
+  <!-- Erreur technique -->
+  @if (statut() === 'erreur') {
+    <div class="w-20 h-20 rounded-full bg-anthracite/10 flex items-center justify-center">
+      <i class="pi pi-exclamation-triangle text-anthracite/60 text-3xl"></i>
+    </div>
+    <div>
+      <h2 class="font-bold text-xl text-anthracite mb-sm">Impossible de vérifier le paiement</h2>
+      <p class="text-sm text-anthracite/60">
+        Une erreur est survenue. Vérifiez votre connexion et réessayez.
+      </p>
+    </div>
+    <button (click)="retour()"
+      class="w-full border border-anthracite/20 text-anthracite font-semibold rounded-xl py-md">
+      Retour
+    </button>
+  }
+
+</div>
+
+<app-bottom-nav />
