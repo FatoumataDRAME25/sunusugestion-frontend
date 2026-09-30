@@ -9,13 +9,8 @@
         <h1 class="font-sans font-semibold text-xl text-anthracite">
           Bonjour, {{ service.prenomUtilisateur() }}
         </h1>
-        <p class="text-sm text-anthracite/60">{{ service.nomGie() }}</p>
       </div>
       <div class="flex items-center gap-md">
-        <div class="relative">
-          <i class="pi pi-bell text-xl text-anthracite/60"></i>
-          <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-rouge-alerte"></span>
-        </div>
         @if (authService.currentUser(); as utilisateur) {
           <div class="w-10 h-10 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-sm text-bleu-nuit">
             {{ (utilisateur.prenom + ' ' + utilisateur.nom) | initiales }}
@@ -24,83 +19,134 @@
       </div>
     </div>
 
-  <!-- Bouton principal -->
-  <button
-    routerLink="/mon-espace/membres/"
-    class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-lg py-md flex items-center justify-center gap-sm mb-xl"
-  >
-    <i class="pi pi-plus"></i>
-    Ajouter un membre
-  </button>
+    <!-- Bouton principal -->
+    <button
+      routerLink="/mon-espace/membres/"
+      class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-lg py-md flex items-center justify-center gap-sm mb-xl"
+    >
+      <i class="pi pi-plus"></i>
+      Ajouter un membre
+    </button>
 
-  <!-- Vue d'ensemble -->
-  <h2 class="font-sans font-semibold text-lg text-anthracite mb-md">Vue d'ensemble</h2>
-  <div class="grid grid-cols-2 gap-md mb-xl">
-    <div class="bg-white rounded-lg p-lg">
-      <p class="text-xs text-anthracite/50 mb-sm">Membres</p>
-      <p class="text-2xl font-semibold text-anthracite">{{ service.stats().nombreMembres }}</p>
-    </div>
-    <div class="bg-white rounded-lg p-lg">
-      <p class="text-xs text-anthracite/50 mb-sm">Cotisations mois</p>
-      <p class="text-2xl font-semibold text-anthracite">
-        {{ service.stats().cotisationsMois | number: '1.0-0' }} <span class="text-sm font-normal">FCFA</span>
-      </p>
-    </div>
-    <div class="bg-white rounded-lg p-lg">
-      <p class="text-xs text-anthracite/50 mb-sm">En attente</p>
-      <p class="text-2xl font-semibold text-anthracite">
-        {{ service.stats().montantEnAttente | number: '1.0-0' }} <span class="text-sm font-normal">FCFA</span>
-      </p>
-    </div>
-    <div class="bg-white rounded-lg p-lg">
-      <p class="text-xs text-anthracite/50 mb-sm">Prêts en cours</p>
-      <p class="text-2xl font-semibold text-anthracite">{{ service.stats().pretsEnCours }}</p>
-    </div>
-  </div>
+    <!-- Vue d'ensemble -->
+    <h2 class="font-sans font-semibold text-lg text-anthracite mb-md">Vue d'ensemble</h2>
+    <div class="grid grid-cols-2 gap-md mb-xl">
 
-  <!-- À traiter -->
-  <h2 class="font-sans font-semibold text-lg text-anthracite mb-md">À traiter</h2>
-  <button
-    routerLink="/mon-espace/operations"
-    class="w-full bg-white rounded-lg p-lg flex items-center gap-md mb-xl text-left"
-  >
-    <div class="w-10 h-10 rounded-md bg-or-clair flex items-center justify-center">
-      <i class="pi pi-credit-card text-or-senegal"></i>
-    </div>
-    <div class="flex-1">
-      <p class="text-sm font-medium text-anthracite">Demandes d'approbation de prêts</p>
-    </div>
-    <span class="bg-rouge-clair text-rouge-alerte text-xs font-semibold w-6 h-6 rounded-full flex items-center justify-center">
-      {{ service.stats().demandesApprobationPrets }}
-    </span>
-    <i class="pi pi-chevron-right text-anthracite/30"></i>
-  </button>
-
-  <!-- Activité récente -->
-  <div class="flex justify-between items-center mb-md">
-    <h2 class="font-sans font-semibold text-lg text-anthracite">Activité récente</h2>
-    <a class="text-sm text-bleu-nuit font-medium">Tout voir</a>
-  </div>
-
-  <div class="flex flex-col gap-lg mb-xl">
-    @for (activite of service.activitesRecentes(); track activite.id) {
-      <div class="flex gap-md">
-        <span class="w-2 h-2 rounded-full bg-bleu-nuit mt-xs"></span>
-        <div>
-          <p class="text-sm text-anthracite">{{ activite.message }}</p>
-          <p class="text-xs text-anthracite/50 uppercase">{{ activite.tempsEcoule }}</p>
-        </div>
+      <div class="bg-white rounded-lg p-lg">
+        <p class="text-xs text-anthracite/50 mb-sm">Membres</p>
+        <p class="text-2xl font-semibold text-anthracite">{{ service.stats().nombreMembres }}</p>
       </div>
-    }
-  </div>
 
-  <button
-    routerLink="/mon-espace/informations-gie"
-    class="w-full bg-white text-bleu-nuit font-medium rounded-lg py-md"
-  >
-    Voir les informations du GIE
-  </button>
-</div>
+      <!-- Solde de la caisse (remplace cotisations du mois) -->
+      <div class="bg-white rounded-lg p-lg">
+        <p class="text-xs text-anthracite/50 mb-sm">Solde caisse</p>
+        <p class="text-2xl font-semibold text-anthracite">
+          @if (solde()) {
+            {{ solde()!.solde | number:'1.0-0' }} <span class="text-sm font-normal">FCFA</span>
+          } @else {
+            <span class="text-anthracite/30 text-base">—</span>
+          }
+        </p>
+      </div>
+
+      <!-- <div class="bg-white rounded-lg p-lg">
+        <p class="text-xs text-anthracite/50 mb-sm">En attente</p>
+        <p class="text-2xl font-semibold text-anthracite">
+          {{ service.stats().montantEnAttente | number:'1.0-0' }} <span class="text-sm font-normal">FCFA</span>
+        </p>
+      </div>
+
+      <div class="bg-white rounded-lg p-lg">
+        <p class="text-xs text-anthracite/50 mb-sm">Prêts en cours</p>
+        <p class="text-2xl font-semibold text-anthracite">{{ service.stats().pretsEnCours }}</p>
+      </div> -->
+
+    </div>
+
+    <!-- À traiter — visible président uniquement -->
+    @if (estPresident()) {
+      <h2 class="font-sans font-semibold text-lg text-anthracite mb-md">À traiter</h2>
+      <button
+        routerLink="/mon-espace/prets/demandes-a-traiter"
+        class="w-full bg-white rounded-lg p-lg flex items-center gap-md mb-xl text-left"
+      >
+        <div class="w-10 h-10 rounded-md bg-or-clair flex items-center justify-center">
+          <i class="pi pi-credit-card text-or-senegal"></i>
+        </div>
+        <div class="flex-1">
+          <p class="text-sm font-medium text-anthracite">Demandes d'approbation de prêts</p>
+        </div>
+        @if (demandesEnAttente() > 0) {
+          <span class="bg-rouge-clair text-rouge-alerte text-xs font-semibold w-6 h-6 rounded-full flex items-center justify-center">
+            {{ demandesEnAttente() }}
+          </span>
+        }
+        <i class="pi pi-chevron-right text-anthracite/30"></i>
+      </button>
+    }
+
+    <!-- Activité récente — cotisations et prêts du membre connecté -->
+    <div class="flex justify-between items-center mb-md">
+      <h2 class="font-sans font-semibold text-lg text-anthracite">Cotisations et Prets</h2>
+    </div>
+
+    <div class="flex flex-col gap-md mb-xl">
+
+      @if (cotisationsEnCours().length === 0 && pretsEnCours().length === 0) {
+        <div class="bg-white rounded-lg p-lg text-center text-anthracite/50 text-sm">
+          Aucune cotisation ni prêt en cours
+        </div>
+      }
+
+      <!-- Cotisations non payées -->
+      @for (cotisation of cotisationsEnCours(); track cotisation.id) {
+        <a [routerLink]="['/mon-espace/cotisations/payer', cotisation.id]"
+          class="bg-white rounded-lg p-md flex items-center gap-md shadow-sm">
+          <div class="w-10 h-10 rounded-full bg-or-clair flex items-center justify-center shrink-0">
+            <i class="pi pi-wallet text-or-senegal"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold text-anthracite truncate">
+              Cotisation — {{ cotisation.session.libelle }}
+            </p>
+            <p class="text-xs text-anthracite/50">
+              {{ cotisation.session.montant | number:'1.0-0' }} FCFA · Non payée
+            </p>
+          </div>
+          <i class="pi pi-chevron-right text-anthracite/30 text-xs shrink-0"></i>
+        </a>
+      }
+
+      <!-- Prêts en cours -->
+      @for (pret of pretsEnCours(); track pret.id) {
+        <a [routerLink]="['/mon-espace/prets', pret.id]"
+          class="bg-white rounded-lg p-md flex items-center gap-md shadow-sm">
+          <div class="w-10 h-10 rounded-full bg-bleu-clair flex items-center justify-center shrink-0">
+            <i class="pi pi-credit-card text-bleu-nuit"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold text-anthracite truncate">
+              Prêt en cours
+            </p>
+            <p class="text-xs text-anthracite/50">
+              {{ pret.montant | number:'1.0-0' }} FCFA
+              @if (pret.dateEcheance) { · Échéance {{ pret.dateEcheance }} }
+            </p>
+          </div>
+          <i class="pi pi-chevron-right text-anthracite/30 text-xs shrink-0"></i>
+        </a>
+      }
+
+    </div>
+
+    <button
+      routerLink="/mon-espace/informations-gie"
+      class="w-full bg-white text-bleu-nuit font-medium rounded-lg py-md"
+    >
+      Voir les informations du GIE
+    </button>
+
+  </div>
 </div>
 
 <app-bottom-nav />

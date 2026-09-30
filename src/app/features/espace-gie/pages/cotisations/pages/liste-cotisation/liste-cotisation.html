@@ -192,16 +192,20 @@
                 Paiement
               </p>
 
-              <button
-                type="button"
-                (click)="
-                  $event.stopPropagation();
-                  ouvrirConfirmationPaiement(cotisation)
-                "
-                class="px-sm py-xs rounded-lg bg-vert-foret text-white text-xs font-semibold"
-              >
-                Payer
-              </button>
+              @if (peutPayer(cotisation)) {
+                <button
+                  type="button"
+                  (click)="
+                    $event.stopPropagation();
+                    ouvrirConfirmationPaiement(cotisation)
+                  "
+                  class="px-sm py-xs rounded-lg bg-vert-foret text-white text-xs font-semibold"
+                >
+                  Payer
+                </button>
+              } @else {
+                <span class="text-xs text-anthracite/40">En attente</span>
+              }
 
             }
 
@@ -220,24 +224,26 @@
 
 
 <!-- ========================================= -->
-<!-- BOUTON NOUVELLE SESSION -->
+<!-- BOUTON NOUVELLE SESSION — trésorier uniquement -->
 <!-- ========================================= -->
 
-<div class="fixed bottom-16 left-0 right-0 px-lg">
+@if (estTresorier()) {
+  <div class="fixed bottom-16 left-0 right-0 px-lg">
 
-  <button
-    type="button"
-    routerLink="/mon-espace/cotisations/session-cotisation"
-    class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm shadow-lg"
-  >
+    <button
+      type="button"
+      routerLink="/mon-espace/cotisations/session-cotisation"
+      class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm shadow-lg"
+    >
 
-    <i class="pi pi-plus"></i>
+      <i class="pi pi-plus"></i>
 
-    Nouvelle session
+      Nouvelle session
 
-  </button>
+    </button>
 
-</div>
+  </div>
+}
 
 
 

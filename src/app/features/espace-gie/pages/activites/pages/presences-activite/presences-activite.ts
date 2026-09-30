@@ -2,6 +2,7 @@ import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { ActiviteService } from '../../../../../../core/services/activite.service';
+import { AuthService } from '../../../../../../core/services/auth.service';
 import { Navbar } from '../../../../../../shared/ui/navbar/navbar';
 import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
 import { InitialesPipe } from '../../../../../../shared/pipes/initiales-pipe';
@@ -15,8 +16,15 @@ import { MembrePresence } from '../../../../../../core/models/activite.model';
 export class PresencesActivite implements OnInit {
 
   protected service = inject(ActiviteService);
+  protected authService = inject(AuthService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+
+  // Vrai si l'utilisateur peut enregistrer les présences
+  estPresidentOuSecretaire = computed(() => {
+    const role = this.authService.currentUser()?.role;
+    return role === 'president' || role === 'secretaire';
+  });
 
   activiteId = signal(0);
 

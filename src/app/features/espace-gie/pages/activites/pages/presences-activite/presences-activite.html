@@ -139,8 +139,8 @@
               }
             </div>
 
-            <!-- Boutons toggle — masqués si présences déjà enregistrées -->
-            @if (!presencesDejaEnregistrees()) {
+            <!-- Boutons toggle — masqués si présences déjà enregistrées OU si l'utilisateur ne peut pas les modifier -->
+            @if (!presencesDejaEnregistrees() && estPresidentOuSecretaire()) {
               <div class="flex gap-sm">
                 <button (click)="setStatut(membre, 'present')"
                   [class]="membre.statut === 'present'
@@ -166,8 +166,8 @@
     </div>
   </div>
 
-  <!-- Bouton fixe — masqué si présences déjà enregistrées -->
-  @if (!presencesDejaEnregistrees()) {
+  <!-- Bouton fixe — masqué si présences déjà enregistrées OU si l'utilisateur ne peut pas les modifier -->
+  @if (!presencesDejaEnregistrees() && estPresidentOuSecretaire()) {
     <div class="fixed bottom-16 left-0 right-0 px-lg pb-sm">
       <button (click)="enregistrer()"
         [disabled]="service.isLoading()"

@@ -3,7 +3,7 @@ export interface GIE {
   nom: string;
   code: string;
   region: string;
-  secteur: string;
+  typeGie: string;
   dateCreation: string;
   statut: 'actif' | 'inactif';
 }
@@ -13,7 +13,7 @@ export interface InfosGie {
   id: number;
   nom: string;
   region: string;
-  secteur: string;
+  typeGie: string;
   telephone?: string;
   code: string;
   dateCreation: string;
@@ -24,6 +24,6 @@ export interface InfosGie {
 export interface ModifierGieRequest {
   nom?: string;
   region?: string;
-  secteur?: string;
+  typeGie?: string;
   telephone?: string;
 }

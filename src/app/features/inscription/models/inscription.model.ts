@@ -1,11 +1,11 @@
 import { Utilisateur } from "../../../core/models/utilisateur.model";
 
-export type SecteurGie = 'agriculture' | 'commerce' | 'peche' | 'artisanat' | 'services' | 'autre';
+export type TypeGie = 'association' | 'organisation_communautaire' | 'groupement' |  'autre';
 
 export interface CreerGieRequest {
   nom: string;
   region: string;
-  secteur: SecteurGie;
+  typeGie: TypeGie;
   telephone?: string;
   photo?: string;
 }

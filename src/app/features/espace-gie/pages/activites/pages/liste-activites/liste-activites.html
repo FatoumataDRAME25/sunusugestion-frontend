@@ -11,12 +11,14 @@
       <h1 class="font-bold text-2xl text-anthracite">Activités</h1>
     </div>
 
-    <!-- Bouton planifier -->
-    <a routerLink="/mon-espace/activites/planifier"
-      class="w-full bg-bleu-nuit text-blanc-lait font-bold rounded-xl py-md flex items-center justify-center gap-sm mb-lg uppercase tracking-wide">
-      <i class="pi pi-plus"></i>
-      Planifier une activité
-    </a>
+    <!-- Bouton planifier — président ou secrétaire uniquement -->
+    @if (estPresidentOuSecretaire()) {
+      <a routerLink="/mon-espace/activites/planifier"
+        class="w-full bg-bleu-nuit text-blanc-lait font-bold rounded-xl py-md flex items-center justify-center gap-sm mb-lg uppercase tracking-wide">
+        <i class="pi pi-plus"></i>
+        Planifier une activité
+      </a>
+    }
 
     <!-- Filtres -->
     <div class="flex gap-sm overflow-x-auto pb-xs">
@@ -26,7 +28,7 @@
             ? 'px-md py-xs rounded-full bg-bleu-nuit text-blanc-lait font-semibold text-sm whitespace-nowrap flex items-center gap-xs'
             : 'px-md py-xs rounded-full bg-white text-anthracite/60 text-sm border border-anthracite/10 whitespace-nowrap'">
           @if (filtreStatut() === f.value && f.value === null) {
-            <span class="w-2 h-2 rounded-full bg-blanc-lait"></span>
+            
           }
           {{ f.label }}
         </button>

@@ -42,7 +42,7 @@ export class ListePrets implements OnInit {
   // Tous les membres du GIE peuvent faire une demande de prêt
   peutDemanderPret = computed(() => {
     const r = this.authService.currentUser()?.role;
-    return r === 'membre_simple' || r === 'secretaire' || r === 'president' || r === 'tresorier';
+    return r === 'membre' || r === 'secretaire' || r === 'president' || r === 'tresorier';
   });
 
   ngOnInit(): void {

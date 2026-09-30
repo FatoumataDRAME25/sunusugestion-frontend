@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActiviteService } from '../../../../../../core/services/activite.service';
+import { AuthService } from '../../../../../../core/services/auth.service';
 import { Navbar } from '../../../../../../shared/ui/navbar/navbar';
 import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
 import { StatutActivite, TypeActivite, TYPES_ACTIVITE } from '../../../../../../core/models/activite.model';
@@ -15,6 +16,12 @@ import { StatutActivite, TypeActivite, TYPES_ACTIVITE } from '../../../../../../
 export class ListeActivites implements OnInit {
 
   protected service = inject(ActiviteService);
+  protected authService = inject(AuthService);
+
+  estPresidentOuSecretaire = computed(() => {
+    const role = this.authService.currentUser()?.role;
+    return role === 'president' || role === 'secretaire';
+  });
 
   termeRecherche = signal('');
   filtreStatut = signal<StatutActivite | null>(null);

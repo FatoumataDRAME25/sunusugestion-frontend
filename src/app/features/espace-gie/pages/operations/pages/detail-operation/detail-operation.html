@@ -1,0 +1,134 @@
+<app-navbar />
+
+<div class="min-h-screen bg-gris-fond pb-24">
+  <div class="p-lg">
+
+    <!-- Retour -->
+    <button (click)="retour()" class="text-anthracite/60 mb-md block">
+      <i class="pi pi-chevron-left text-lg"></i>
+    </button>
+    <h1 class="font-bold text-xl text-anthracite mb-lg">Détail de l'opération</h1>
+
+    <!-- Chargement -->
+    @if (isLoading()) {
+      <div class="flex justify-center py-2xl">
+        <i class="pi pi-spin pi-spinner text-2xl text-bleu-nuit"></i>
+      </div>
+    }
+
+    <!-- Erreur -->
+    @if (errorMessage()) {
+      <div class="bg-rouge-clair text-rouge-alerte text-sm rounded-xl p-md mb-md">
+        {{ errorMessage() }}
+      </div>
+    }
+
+    @if (operation(); as op) {
+
+      <!-- Carte principale -->
+      <div class="bg-white rounded-xl shadow-sm p-lg mb-md"
+        [class]="op.typeOperation === 'entree' ? 'border-l-4 border-vert-foret' : 'border-l-4 border-rouge-alerte'">
+
+        <!-- Type + montant -->
+        <div class="flex items-center justify-between mb-md">
+          <div class="flex items-center gap-sm">
+            <div [class]="op.typeOperation === 'entree'
+              ? 'w-10 h-10 rounded-full bg-vert-clair flex items-center justify-center'
+              : 'w-10 h-10 rounded-full bg-rouge-clair flex items-center justify-center'">
+              <i [class]="op.typeOperation === 'entree'
+                ? 'pi pi-arrow-down text-vert-foret'
+                : 'pi pi-arrow-up text-rouge-alerte'"></i>
+            </div>
+            <div>
+              <p class="text-xs text-anthracite/50 uppercase font-semibold">
+                {{ op.typeOperation === 'entree' ? 'Entrée' : 'Sortie' }}
+              </p>
+              <p [class]="op.typeOperation === 'entree'
+                ? 'font-bold text-2xl text-vert-foret'
+                : 'font-bold text-2xl text-rouge-alerte'">
+                {{ op.typeOperation === 'entree' ? '+' : '-' }}{{ op.montant | number:'1.0-0' }}
+                <span class="text-base font-normal text-anthracite/60">FCFA</span>
+              </p>
+            </div>
+          </div>
+          <p class="text-xs text-anthracite/40">{{ op.dateOperation | date:'dd/MM/yyyy' }}</p>
+        </div>
+
+        <!-- Libellé -->
+        <div class="border-t border-anthracite/10 pt-md">
+          <p class="text-xs text-anthracite/50 uppercase font-semibold mb-xs">Libellé</p>
+          <p class="text-anthracite font-semibold">{{ op.libelle }}</p>
+        </div>
+
+        <!-- Heure -->
+        <div class="mt-md">
+          <p class="text-xs text-anthracite/50 uppercase font-semibold mb-xs">Heure</p>
+          <p class="text-anthracite">{{ op.dateOperation | date:'HH:mm' }}</p>
+        </div>
+
+      </div>
+
+      <!-- Cotisation liée -->
+      @if (op.cotisationDetail) {
+        <div class="bg-white rounded-xl shadow-sm p-lg mb-md">
+          <div class="flex items-center gap-sm mb-md">
+            <div class="w-1 h-5 bg-bleu-nuit rounded-full"></div>
+            <p class="font-bold text-anthracite text-sm uppercase tracking-wide">Cotisation liée</p>
+          </div>
+          <div class="flex flex-col gap-sm text-sm">
+            @if (op.cotisationDetail.libelleSession) {
+              <div class="flex justify-between">
+                <span class="text-anthracite/50">Session</span>
+                <span class="font-semibold text-anthracite">{{ op.cotisationDetail.libelleSession }}</span>
+              </div>
+            }
+            @if (op.cotisationDetail.membreNom) {
+              <div class="flex justify-between">
+                <span class="text-anthracite/50">Membre</span>
+                <span class="font-semibold text-anthracite">{{ op.cotisationDetail.membreNom }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Prêt lié -->
+      @if (op.pretDetail) {
+        <div class="bg-white rounded-xl shadow-sm p-lg mb-md">
+          <div class="flex items-center gap-sm mb-md">
+            <div class="w-1 h-5 bg-vert-foret rounded-full"></div>
+            <p class="font-bold text-anthracite text-sm uppercase tracking-wide">Prêt lié</p>
+          </div>
+          <div class="flex flex-col gap-sm text-sm">
+            @if (op.pretDetail.membreNom) {
+              <div class="flex justify-between">
+                <span class="text-anthracite/50">Membre</span>
+                <span class="font-semibold text-anthracite">{{ op.pretDetail.membreNom }}</span>
+              </div>
+            }
+            <div class="flex justify-between">
+              <span class="text-anthracite/50">Montant</span>
+              <span class="font-semibold text-anthracite">{{ op.pretDetail.montant | number:'1.0-0' }} FCFA</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-anthracite/50">Statut</span>
+              <span class="font-semibold text-anthracite capitalize">{{ op.pretDetail.statut }}</span>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Opération manuelle (pas de cotisation ni prêt) -->
+      @if (!op.cotisationDetail && !op.pretDetail) {
+        <div class="bg-gris-fond rounded-xl p-md flex items-center gap-sm">
+          <i class="pi pi-info-circle text-anthracite/40"></i>
+          <p class="text-sm text-anthracite/60">Opération manuelle enregistrée par le trésorier.</p>
+        </div>
+      }
+
+    }
+
+  </div>
+</div>
+
+<app-bottom-nav />

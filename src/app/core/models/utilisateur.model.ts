@@ -1,4 +1,4 @@
-export type Role = 'administrateur' | 'president' | 'tresorier' | 'secretaire' | 'membre_simple';
+export type Role = 'administrateur' | 'president' | 'tresorier' | 'secretaire' | 'membre';
 
 export interface Utilisateur {
   id: number;

@@ -56,7 +56,7 @@
     </div>
 
     <!-- Filtres -->
-    <div class="flex gap-sm overflow-x-auto pb-xs">
+    <div class="flex gap-sm justify-center pb-xs">
       @for (f of filtres; track f.label) {
         <button (click)="filtreStatut.set(f.value)"
           [class]="filtreStatut() === f.value

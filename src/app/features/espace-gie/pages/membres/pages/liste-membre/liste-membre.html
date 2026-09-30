@@ -7,19 +7,21 @@
     <h1 class="font-bold text-2xl text-anthracite mb-xs">Membres</h1>
     <p class="text-sm text-anthracite/60 mb-lg">Gérez les membres de votre GIE.</p>
 
-    <!-- Boutons d'action -->
-    <div class="flex flex-col gap-sm mb-lg">
-      <a routerLink="/mon-espace/membres/ajouter"
-        class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm">
-        <i class="pi pi-plus"></i>
-        Ajouter un membre
-      </a>
-      <a routerLink="/mon-espace/membres/importer"
-        class="w-full border border-bleu-nuit/30 text-bleu-nuit font-semibold rounded-xl py-md flex items-center justify-center gap-sm bg-white">
-        <i class="pi pi-file-excel"></i>
-        Importer fichier excel ou image
-      </a>
-    </div>
+    <!-- Boutons d'action — visibles uniquement pour président et secrétaire -->
+    @if (['president', 'secretaire'].includes(authService.currentUser()?.role ?? '')) {
+      <div class="flex flex-col gap-sm mb-lg">
+        <a routerLink="/mon-espace/membres/ajouter"
+          class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm">
+          <i class="pi pi-plus"></i>
+          Ajouter un membre
+        </a>
+        <a routerLink="/mon-espace/membres/importer"
+          class="w-full border border-bleu-nuit/30 text-bleu-nuit font-semibold rounded-xl py-md flex items-center justify-center gap-sm bg-white">
+          <i class="pi pi-file-excel"></i>
+          Importer fichier excel ou image
+        </a>
+      </div>
+    }
   </div>
 
   <!-- Statistiques -->

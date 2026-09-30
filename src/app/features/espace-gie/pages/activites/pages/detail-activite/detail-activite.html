@@ -134,7 +134,7 @@
 
       <!-- ── ACTIONS SELON STATUT ── -->
 
-      @if (estPlanifiee()) {
+      @if (estPlanifiee() && estPresidentOuSecretaire()) {
         <div class="flex flex-col gap-sm mb-lg">
           <button (click)="modalDemarrerVisible.set(true)"
             class="w-full bg-bleu-nuit text-blanc-lait font-bold rounded-xl py-md flex items-center justify-center gap-sm uppercase tracking-wide">
@@ -155,12 +155,15 @@
         <div class="flex flex-col gap-sm mb-lg">
           <button (click)="naviguerPresences()"
             class="w-full bg-bleu-nuit text-blanc-lait font-bold rounded-xl py-md flex items-center justify-center gap-sm uppercase tracking-wide">
-            <i class="pi pi-users"></i> Gérer les présences
+            <i class="pi pi-users"></i>
+            @if (estPresidentOuSecretaire()) { Gérer les présences } @else { Voir les présences }
           </button>
-          <button (click)="modalTerminerVisible.set(true)"
-            class="w-full bg-white border border-bleu-nuit text-bleu-nuit font-bold rounded-xl py-md flex items-center justify-center gap-sm uppercase tracking-wide">
-            <i class="pi pi-check"></i> Terminer l'activité
-          </button>
+          @if (estPresidentOuSecretaire()) {
+            <button (click)="modalTerminerVisible.set(true)"
+              class="w-full bg-white border border-bleu-nuit text-bleu-nuit font-bold rounded-xl py-md flex items-center justify-center gap-sm uppercase tracking-wide">
+              <i class="pi pi-check"></i> Terminer l'activité
+            </button>
+          }
         </div>
       }
 

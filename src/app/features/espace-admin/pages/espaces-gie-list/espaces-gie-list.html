@@ -2,8 +2,8 @@
 <div class="p-2xl">
 
   <div class="mb-xl">
-    <h1 class="font-sans font-semibold text-2xl text-anthracite">Espaces GIE</h1>
-    <p class="text-sm text-anthracite/60">Supervisez les espaces GIE présents sur la plateforme.</p>
+    <h1 class="font-sans font-semibold text-2xl text-anthracite">organisations</h1>
+    <p class="text-sm text-anthracite/60">Supervisez  organisations présentes sur la plateforme.</p>
   </div>
 
   <!-- Barre de recherche et filtres -->
@@ -13,7 +13,8 @@
       <input
         type="text"
         pInputText
-        [(ngModel)]="service.termeRecherche"
+        [ngModel]="service.termeRecherche()"
+        (ngModelChange)="service.termeRecherche.set($event)"
         placeholder="Rechercher un GIE..."
         class="w-full"
       />
@@ -21,7 +22,8 @@
 
     <p-select
       [options]="optionsStatut"
-      [(ngModel)]="service.filtreStatut"
+      [ngModel]="service.filtreStatut()"
+      (ngModelChange)="service.filtreStatut.set($event)"
       optionLabel="label"
       optionValue="value"
       placeholder="Tous les statuts"
@@ -29,7 +31,8 @@
 
     <p-select
       [options]="service.regionsDisponibles()"
-      [(ngModel)]="service.filtreRegion"
+      [ngModel]="service.filtreRegion()"
+      (ngModelChange)="service.filtreRegion.set($event)"
       placeholder="Toutes les régions"
       [showClear]="true"
     />
@@ -40,9 +43,9 @@
     <p-table [value]="service.gieFiltres()" [paginator]="true" [rows]="20">
       <ng-template pTemplate="header">
         <tr>
-          <th>GIE (Nom)</th>
+          <th>organisation (Nom)</th>
           <th>Région</th>
-          <th>Secteur</th>
+          <th>Type Organisation</th>
           <th>Membres</th>
           <th>Statut</th>
           <th>Actions</th>
@@ -63,7 +66,7 @@
           </td>
           <td>{{ gie.region }}</td>
           <td>
-            <p-tag [value]="gie.secteur" styleClass="bg-blanc-lait text-anthracite" />
+            <p-tag [value]="gie.typeGie" styleClass="bg-blanc-lait text-anthracite" />
           </td>
           <td>
             <span class="flex items-center gap-xs">
