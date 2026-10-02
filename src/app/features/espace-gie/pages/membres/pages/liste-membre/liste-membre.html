@@ -1,34 +1,31 @@
+<app-navbar />
+
 <div class="min-h-screen bg-gris-fond pb-20">
 
-  <!-- En-tête bleu -->
-  <div class="bg-bleu-nuit p-lg pt-xl pb-2xl">
-    <div class="flex justify-between items-center mb-lg">
-      <div>
-        <h1 class="text-blanc-lait font-bold text-xl">Membres</h1>
-        <p class="text-blanc-lait/60 text-sm">Gérez les membres de votre GIE.</p>
-      </div>
-      <button class="text-blanc-lait/70">
-        <i class="pi pi-bell text-xl"></i>
-      </button>
-    </div>
+  <!-- En-tête -->
+  <div class="p-lg">
+    <h1 class="font-bold text-2xl text-anthracite mb-xs">Membres</h1>
+    <p class="text-sm text-anthracite/60 mb-lg">Gérez les membres de votre GIE.</p>
 
-    <!-- Boutons d'action -->
-    <div class="flex flex-col gap-sm">
-      <a routerLink="/mon-espace/membres/ajouter"
-        class="w-full bg-blanc-lait text-bleu-nuit font-semibold rounded-xl py-md flex items-center justify-center gap-sm">
-        <i class="pi pi-plus"></i>
-        Ajouter un membre
-      </a>
-      <a routerLink="/mon-espace/membres/importer"
-        class="w-full border border-blanc-lait/40 text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm">
-        <i class="pi pi-file-excel"></i>
-        Importer fichier excel ou image
-      </a>
-    </div>
+    <!-- Boutons d'action — visibles uniquement pour président et secrétaire -->
+    @if (['president', 'secretaire'].includes(authService.currentUser()?.role ?? '')) {
+      <div class="flex flex-col gap-sm mb-lg">
+        <a routerLink="/mon-espace/membres/ajouter"
+          class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm">
+          <i class="pi pi-plus"></i>
+          Ajouter un membre
+        </a>
+        <a routerLink="/mon-espace/membres/importer"
+          class="w-full border border-bleu-nuit/30 text-bleu-nuit font-semibold rounded-xl py-md flex items-center justify-center gap-sm bg-white">
+          <i class="pi pi-file-excel"></i>
+          Importer fichier excel ou image
+        </a>
+      </div>
+    }
   </div>
 
-  <!-- Statistiques — chevauchement sur l'en-tête -->
-  <div class="mx-lg -mt-lg bg-white rounded-xl p-lg shadow-sm flex justify-around mb-lg">
+  <!-- Statistiques -->
+  <div class="mx-lg bg-white rounded-xl p-lg shadow-sm flex justify-around mb-lg">
     <div class="text-center">
       <p class="text-xs text-anthracite/50 uppercase">Total</p>
       <p class="text-2xl font-bold text-anthracite">{{ service.statsMembres()?.total ?? '—' }}</p>
@@ -53,7 +50,7 @@
   <div class="mx-lg flex flex-col gap-md">
 
     <!-- Barre de recherche -->
-    <div class="flex items-center gap-sm bg-white rounded-xl px-md py-sm shadow-sm">
+    <div class="flex items-center gap-sm bg-white border border-anthracite/10 rounded-xl px-md py-sm shadow-sm">
       <i class="pi pi-search text-anthracite/40"></i>
       <input
         type="text"

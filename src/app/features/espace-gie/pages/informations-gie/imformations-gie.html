@@ -60,7 +60,8 @@
         <label class="text-sm font-medium text-anthracite">Nom du GIE</label>
         <input pInputText formControlName="nom"
           [readonly]="!estPresident"
-          [class]="!estPresident ? 'w-full bg-gris-fond' : 'w-full'" />
+          class="w-full border border-anthracite/20 rounded-xl px-md py-sm text-anthracite outline-none"
+          [ngClass]="!estPresident ? 'bg-gris-fond' : 'bg-white focus:border-bleu-nuit'" />
       </div>
 
       <!-- Région -->
@@ -68,7 +69,8 @@
         <label class="text-sm font-medium text-anthracite">Région</label>
         <input pInputText formControlName="region"
           [readonly]="!estPresident"
-          [class]="!estPresident ? 'w-full bg-gris-fond' : 'w-full'" />
+          class="w-full border border-anthracite/20 rounded-xl px-md py-sm text-anthracite outline-none"
+          [ngClass]="!estPresident ? 'bg-gris-fond' : 'bg-white focus:border-bleu-nuit'" />
       </div>
 
       <!-- Secteur d'activité -->
@@ -76,7 +78,8 @@
         <label class="text-sm font-medium text-anthracite">Secteur d'activité</label>
         <input pInputText formControlName="secteur"
           [readonly]="!estPresident"
-          [class]="!estPresident ? 'w-full bg-gris-fond' : 'w-full'" />
+          class="w-full border border-anthracite/20 rounded-xl px-md py-sm text-anthracite outline-none"
+          [ngClass]="!estPresident ? 'bg-gris-fond' : 'bg-white focus:border-bleu-nuit'" />
       </div>
 
       <!-- Téléphone -->
@@ -84,7 +87,8 @@
         <label class="text-sm font-medium text-anthracite">Téléphone du GIE</label>
         <input pInputText formControlName="telephone"
           [readonly]="!estPresident"
-          [class]="!estPresident ? 'w-full bg-gris-fond' : 'w-full'" />
+          class="w-full border border-anthracite/20 rounded-xl px-md py-sm text-anthracite outline-none"
+          [ngClass]="!estPresident ? 'bg-gris-fond' : 'bg-white focus:border-bleu-nuit'" />
       </div>
 
       <!-- Informations du compte (lecture seule) -->

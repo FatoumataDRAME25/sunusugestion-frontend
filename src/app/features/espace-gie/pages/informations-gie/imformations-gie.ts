@@ -4,11 +4,11 @@ import { EspaceGieService } from '../../../../core/services/espace-gie.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { BottomNav } from '../../../../shared/ui/bottom-nav/bottom-nav';
 import { InputTextModule } from 'primeng/inputtext';
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 @Component({
-  imports: [BottomNav, ReactiveFormsModule, RouterLink, DatePipe, InputTextModule],
+  imports: [BottomNav, ReactiveFormsModule, RouterLink, DatePipe, InputTextModule, NgClass],
   selector: 'app-imformations-gie',
   styleUrl: './imformations-gie.css',
   templateUrl: './imformations-gie.html',
@@ -40,7 +40,7 @@ export class InformationsGie {
         this.form.patchValue({
           nom: infos.nom,
           region: infos.region,
-          secteur: infos.secteur,
+          secteur: infos.typeGie,
           telephone: infos.telephone ?? '',
         });
       }

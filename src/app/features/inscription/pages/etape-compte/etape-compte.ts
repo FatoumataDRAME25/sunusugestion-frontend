@@ -27,8 +27,16 @@ export class EtapeCompte {
   accepteConditions = signal(false);
 
   erreurConfirmation = signal<string | null>(null);
+  submitted = signal(false);
 
   continuer(): void {
+    this.submitted.set(true);
+
+    // Validation email obligatoire
+    if (!this.email().trim()) {
+      return;
+    }
+
     if (this.pin() !== this.confirmationPin()) {
       this.erreurConfirmation.set('Les codes ne correspondent pas');
       return;
@@ -40,7 +48,7 @@ export class EtapeCompte {
         nom: this.nom(),
         prenom: this.prenom(),
         telephone: this.telephone(),
-        email: this.email() || undefined,
+        email: this.email(),
         pin: this.pin(),
         confirmationPin: this.confirmationPin()
       })

@@ -2,18 +2,21 @@ import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MembresService } from '../../../../../../core/services/membres.service';
+import { AuthService } from '../../../../../../core/services/auth.service';
 import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
+import { Navbar } from '../../../../../../shared/ui/navbar/navbar';
 import { InitialesPipe } from '../../../../../../shared/pipes/initiales-pipe';
 
 @Component({
   selector: 'app-liste-membre',
-  imports: [RouterLink, FormsModule, BottomNav, InitialesPipe],
+  imports: [RouterLink, FormsModule, BottomNav, InitialesPipe, Navbar],
   styleUrl: './liste-membre.css',
   templateUrl: './liste-membre.html'
 })
 export class ListeMembre implements OnInit {
 
   protected service = inject(MembresService);
+  protected authService = inject(AuthService);
 
   optionsStatut : { label: string; value: 'en_attente' | 'actif' | 'inactif' | null }[] = [
     { label: 'Tous', value: null },

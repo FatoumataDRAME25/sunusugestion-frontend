@@ -2,20 +2,25 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DecimalPipe, DatePipe } from '@angular/common';
 import { HistoriqueOperationService } from '../../../../../../core/services/historique-operation.service';
+import { AuthService } from '../../../../../../core/services/auth.service';
 import { HistoriqueOperation } from '../../../../../../core/models/historique-operation.model';
 import { Solde } from '../../../../../../core/models/solde.model';
 import { Dialog } from 'primeng/dialog';
 import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
+import { Navbar } from '../../../../../../shared/ui/navbar/navbar';
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-operations',
-  imports: [Dialog, FormsModule, DecimalPipe, DatePipe, BottomNav,RouterLink],
+  imports: [Dialog, FormsModule, DecimalPipe, DatePipe, BottomNav, RouterLink, Navbar],
   templateUrl: './historique.html',
   styleUrl: './historique.css'
 })
 export class Historique implements OnInit {
   private historiqueService = inject(HistoriqueOperationService);
+  protected authService = inject(AuthService);
+
+  estTresorier = computed(() => this.authService.currentUser()?.role === 'tresorier');
 
   solde = signal<Solde | null>(null);
   operations = signal<HistoriqueOperation[]>([]);

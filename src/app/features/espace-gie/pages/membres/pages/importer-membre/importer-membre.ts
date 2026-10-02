@@ -7,7 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { UpperCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MembreExcel } from '../../../../../../core/models/membre.model';
+import { MembreExcel, MembreImporte } from '../../../../../../core/models/membre.model';
 
 @Component({
   imports: [BottomNav, RouterLink, ButtonModule, DialogModule, UpperCasePipe, FormsModule],
@@ -48,6 +48,9 @@ export class ImporterMembre implements OnInit {
   modalSuccesVisible = signal(false);
 
   readonly rolesDisponibles = ['president', 'tresorier', 'secretaire', 'membre'];
+
+  // URL de base pour les liens d'activation (même valeur que ajouter-membre.ts)
+  private readonly urlNgrok = 'https://stitch-freebie-dreamless.ngrok-free.dev';
 
   ngOnInit(): void {
     this.service.reinitialiserExcel();
@@ -198,6 +201,23 @@ export class ImporterMembre implements OnInit {
       },
       error: (err) => console.error('Erreur import :', err)
     });
+  }
+
+  /** Ouvre WhatsApp pour envoyer le lien d'activation à un membre donné */
+  envoyerWhatsApp(membre: MembreImporte): void {
+    let numTel = membre.telephone.replace(/\s+/g, '');
+    if (!numTel.startsWith('221')) {
+      numTel = '221' + numTel;
+    }
+
+    const lienActivation = `${this.urlNgrok}/activation?token=${membre.tokenInvitation}`;
+    const message =
+      `Bonjour ${membre.prenom},\n\n` +
+      `Bienvenue sur SunuGestion ! Pour activer votre compte ` +
+      `et configurer votre code PIN d'accès, veuillez cliquer ` +
+      `sur ce lien sécurisé : ${lienActivation}`;
+
+    window.open(`https://wa.me/${numTel}?text=${encodeURIComponent(message)}`, '_blank');
   }
 
   retourSelection(): void {

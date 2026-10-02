@@ -16,6 +16,6 @@ export interface EvolutionGie {
 }
 
 export interface RepartitionSecteur {
-  secteur: string;
+  typeGie: string;
   pourcentage: number;
 }

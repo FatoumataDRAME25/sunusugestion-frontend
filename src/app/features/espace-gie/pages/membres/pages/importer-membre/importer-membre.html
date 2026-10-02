@@ -563,22 +563,56 @@
 
 <!-- Modal succès -->
 <p-dialog [(visible)]="modalSuccesVisible" [modal]="true" [closable]="false" [draggable]="false"
-  [style]="{ width: '90vw', 'max-width': '400px' }">
-  <div class="flex flex-col items-center text-center px-md pt-xl pb-lg gap-lg">
-    <div style="width:80px; height:80px; border-radius:50%; background-color:#2E8B57; display:flex; align-items:center; justify-content:center;">
-      <i class="pi pi-check" style="font-size:2rem; color:white;"></i>
+  [style]="{ width: '90vw', 'max-width': '420px' }">
+  <div class="flex flex-col px-md pt-xl pb-lg gap-lg">
+
+    <!-- Icône + titre -->
+    <div class="flex flex-col items-center text-center gap-md">
+      <div style="width:80px; height:80px; border-radius:50%; background-color:#2E8B57; display:flex; align-items:center; justify-content:center;">
+        <i class="pi pi-check" style="font-size:2rem; color:white;"></i>
+      </div>
+      <div>
+        <h2 style="font-weight:700; font-size:1.2rem;">Import réussi</h2>
+        <p style="font-size:0.875rem; color:#6b7280; margin-top:4px;">
+          <strong>{{ service.nombreMembresImportes() }} membre(s)</strong> ajouté(s) à votre GIE.
+        </p>
+      </div>
     </div>
-    <div>
-      <h2 style="font-weight:700; font-size:1.2rem;">Import réussi</h2>
-      <p style="font-size:0.875rem; color:#6b7280; margin-top:4px;">
-        <strong>{{ service.nombreMembresImportes() }} membres</strong> ont été ajoutés à votre GIE.
-      </p>
-    </div>
+
+    <!-- Liste des membres avec bouton WhatsApp individuel -->
+    @if (service.membresImportesAvecToken().length > 0) {
+      <div class="flex flex-col gap-sm">
+        <p class="text-sm font-semibold text-anthracite">
+          Envoyez le lien d'activation à chaque membre :
+        </p>
+        @for (membre of service.membresImportesAvecToken(); track membre.telephone) {
+          <div class="flex items-center justify-between gap-md bg-gris-fond rounded-xl px-md py-sm">
+            <div class="flex items-center gap-sm min-w-0">
+              <div class="w-9 h-9 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-sm text-bleu-nuit shrink-0">
+                {{ (membre.prenom[0] || '?').toUpperCase() }}{{ (membre.nom[0] || '?').toUpperCase() }}
+              </div>
+              <div class="min-w-0">
+                <p class="text-sm font-semibold text-anthracite truncate">{{ membre.prenom }} {{ membre.nom }}</p>
+                <p class="text-xs text-anthracite/50">{{ membre.telephone }}</p>
+              </div>
+            </div>
+            <button (click)="envoyerWhatsApp(membre)"
+              class="shrink-0 flex items-center gap-xs bg-vert-foret text-blanc-lait text-xs font-semibold px-md py-xs rounded-lg">
+              <i class="pi pi-whatsapp"></i>
+              Envoyer
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Bouton voir les membres -->
     <button (click)="voirLesMembres()"
       style="width:100%; background-color:#1A3C5E; color:white; font-weight:600; border-radius:12px; padding:14px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
       <i class="pi pi-users"></i>
       Voir les membres
     </button>
+
   </div>
 </p-dialog>
 

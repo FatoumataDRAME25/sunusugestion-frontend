@@ -47,13 +47,26 @@
           <label class="text-sm font-medium text-anthracite">Date de début</label>
           <input type="date" formControlName="dateDebut"
             class="w-full border border-anthracite/20 rounded-xl px-md py-sm text-anthracite bg-white" />
+          @if (dateDebut.invalid && dateDebut.touched) {
+            <span class="text-xs text-rouge-alerte">Date de début obligatoire</span>
+          }
         </div>
         <div class="flex flex-col gap-xs">
           <label class="text-sm font-medium text-anthracite">Date de fin</label>
           <input type="date" formControlName="dateFin"
             class="w-full border border-anthracite/20 rounded-xl px-md py-sm text-anthracite bg-white" />
+          @if (dateFin.invalid && dateFin.touched) {
+            <span class="text-xs text-rouge-alerte">Date de fin obligatoire</span>
+          }
         </div>
       </div>
+
+      @if (erreurDates()) {
+        <div class="bg-rouge-clair text-rouge-alerte text-sm rounded-xl p-md flex items-center gap-sm">
+          <i class="pi pi-exclamation-circle shrink-0"></i>
+          {{ erreurDates() }}
+        </div>
+      }
 
     </form>
 
@@ -70,7 +83,7 @@
         </div>
         <div class="flex justify-between">
           <p class="text-sm text-anthracite/60">Montant par membre</p>
-          <p class="text-sm font-bold text-anthracite">{{ (montant.value ?? 0) | number:'1.0-0' }} FCFA</p>
+          <p class="text-sm font-bold text-anthracite">{{ montantSaisi() | number:'1.0-0' }} FCFA</p>
         </div>
         <div class="flex justify-between border-t border-anthracite/10 pt-sm">
           <p class="text-sm font-bold text-anthracite">Total attendu</p>
@@ -114,7 +127,7 @@
       <h2 style="font-weight:700; font-size:1.2rem; color:#1a1a2e; margin-bottom:8px;">Confirmer le lancement</h2>
       <p style="font-size:0.875rem; color:#6b7280;">Voulez-vous vraiment lancer cette session de cotisation ?</p>
       <p style="font-size:0.875rem; font-weight:700; color:#1a1a2e; margin-top:8px;">
-        {{ nombreMembresActifs() }} cotisations de {{ (montant.value ?? 0) | number:'1.0-0' }} FCFA
+        {{ nombreMembresActifs() }} cotisations de {{ montantSaisi() | number:'1.0-0' }} FCFA
         seront générées pour vos membres.
       </p>
     </div>

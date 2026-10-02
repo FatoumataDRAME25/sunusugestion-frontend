@@ -18,9 +18,24 @@ import { AjouterMembre } from './features/espace-gie/pages/membres/pages/ajouter
 import { ImporterMembre } from './features/espace-gie/pages/membres/pages/importer-membre/importer-membre';
 import { InformationsGie } from './features/espace-gie/pages/informations-gie/imformations-gie';
 import { NouvelleOperation } from './features/espace-gie/pages/operations/pages/nouvelle-operation/nouvelle-operation';
+import { DetailOperation } from './features/espace-gie/pages/operations/pages/detail-operation/detail-operation';
 import { ListeCotisations } from './features/espace-gie/pages/cotisations/pages/liste-cotisation/liste-cotisation';
 import { SessionCotisation } from './features/espace-gie/pages/cotisations/pages/session-cotisation/session-cotisation';
+import { PayerCotisation } from './features/espace-gie/pages/cotisations/pages/payer-cotisation/payer-cotisation';
 import { ActiverCompte } from './features/espace-gie/pages/membres/pages/activer-compte/activer-compte';
+import { ListePrets } from './features/espace-gie/pages/prets/pages/liste-prets/liste-prets';
+import { DemandePret } from './features/espace-gie/pages/prets/pages/demande-pret/demande-pret';
+import { DetailPret } from './features/espace-gie/pages/prets/pages/detail-pret/detail-pret';
+import { ReglesPret } from './features/espace-gie/pages/prets/pages/regles-pret/regles-pret';
+import { DemandesATraiter } from './features/espace-gie/pages/prets/pages/demandes-a-traiter/demandes-a-traiter';
+import { ListeActivites } from './features/espace-gie/pages/activites/pages/liste-activites/liste-activites';
+import { PlanifierActivite } from './features/espace-gie/pages/activites/pages/planifier-activite/planifier-activite';
+import { DetailActivite } from './features/espace-gie/pages/activites/pages/detail-activite/detail-activite';
+import { PresencesActivite } from './features/espace-gie/pages/activites/pages/presences-activite/presences-activite';
+import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
+import { adminGuard } from './core/guards/admin.guard';
+import { RetourPaiement } from './features/espace-gie/pages/paiement/retour-paiement';
 
 
 
@@ -29,18 +44,19 @@ import { ActiverCompte } from './features/espace-gie/pages/membres/pages/activer
 
 export const routes: Routes = [
 
-  { path: 'acceuil', component: Accueil },
+  { path: 'sunugestion-vitrine', component: Accueil },
   { path: 'login', component: Login },
   { path: 'inscription/gie', component: EtapeGie },
   { path: 'inscription/compte', component: EtapeCompte },
   { path: 'inscription/otp', component: EtapeOtp },
   { path: 'inscription/succes', component: EtapeSucces },
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: '', redirectTo: 'sunugestion-vitrine', pathMatch: 'full' },
 
   // Les routes pour l'admin
   {
     path: '',
     component: MainLayout,
+    canActivate: [adminGuard],
     children: [
       { path: 'espaces-gie', component: EspacesGieList },
       { path: 'dashboard', component: Dashboard },
@@ -54,20 +70,71 @@ export const routes: Routes = [
   {
   path: 'mon-espace',
   component: MobileLayout,
+  canActivate: [authGuard],
   children: [
 
     { path: '', component: AccueilEspace },
     { path: 'informations-gie', component: InformationsGie },
     { path: 'historiques', component: Historique },
-    { path: 'historiques/nouvelle-operation', component: NouvelleOperation },
-    { path: 'membres/ajouter', component: AjouterMembre },
-    { path: 'membres/importer', component: ImporterMembre },
+    {
+      path: 'historiques/nouvelle-operation',
+      component: NouvelleOperation,
+      canActivate: [roleGuard],
+      data: { roles: ['tresorier'] }
+    },
+    { path: 'historiques/:id', component: DetailOperation },
+    {
+      path: 'membres/ajouter',
+      component: AjouterMembre,
+      canActivate: [roleGuard],
+      data: { roles: ['president', 'secretaire'] }
+    },
+    {
+      path: 'membres/importer',
+      component: ImporterMembre,
+      canActivate: [roleGuard],
+      data: { roles: ['president', 'secretaire'] }
+    },
     { path: 'membres', component: ListeMembre },
     { path: 'cotisations', component: ListeCotisations },
-    { path: 'cotisations/session-cotisation', component: SessionCotisation },
+    {
+      path: 'cotisations/session-cotisation',
+      component: SessionCotisation,
+      canActivate: [roleGuard],
+      data: { roles: ['tresorier'] }
+    },
+    { path: 'cotisations/payer/:id', component: PayerCotisation },
+
+    // ── Prêts ──
+    { path: 'prets', component: ListePrets },
+    { path: 'prets/demande', component: DemandePret },
+    { path: 'prets/regles', component: ReglesPret },
+    {
+      path: 'prets/demandes-a-traiter',
+      component: DemandesATraiter,
+      canActivate: [roleGuard],
+      data: { roles: ['president'] }
+    },
+    { path: 'prets/:id', component: DetailPret },
+
+    // ── Activités ──
+    { path: 'activites', component: ListeActivites },
+    {
+      path: 'activites/planifier',
+      component: PlanifierActivite,
+      canActivate: [roleGuard],
+      data: { roles: ['president', 'secretaire'] }
+    },
+    { path: 'activites/:id', component: DetailActivite },
+    { path: 'activites/:id/presences', component: PresencesActivite },
+
+    // ── Paiement PayDunya retour ──
+
+
 
     { path: 'profil-membre', component: ProfilMembre }
 
   ]
-}
+},
+{ path: 'paiement/retour', component: RetourPaiement },
 ];

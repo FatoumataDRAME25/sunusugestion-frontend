@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Solde } from '../models/solde.model';
 import { environment } from '../../../environments/environment';
-import { HistoriqueOperation } from '../models/historique-operation.model';
+import { HistoriqueOperation, HistoriqueOperationDetail } from '../models/historique-operation.model';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +17,12 @@ export class HistoriqueOperationService {
   getOperations(): Observable<HistoriqueOperation[]> {
     return this.http.get<HistoriqueOperation[]>(
       `${this.BASE_URL}historiques/`
+    );
+  }
+
+  getOperation(id: number): Observable<HistoriqueOperationDetail> {
+    return this.http.get<HistoriqueOperationDetail>(
+      `${this.BASE_URL}historiques/${id}/`
     );
   }
 

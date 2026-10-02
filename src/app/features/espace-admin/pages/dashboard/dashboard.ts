@@ -40,7 +40,7 @@ export class Dashboard implements OnInit{
 
  donutChartData = computed(() => ({
   labels: this.dashboardService.repartitionSecteurs().map(
-    (s) => `${s.secteur} (${s.pourcentage}%)`
+    (s) => `${s.typeGie} (${s.pourcentage}%)`
   ),
   datasets: [
     {

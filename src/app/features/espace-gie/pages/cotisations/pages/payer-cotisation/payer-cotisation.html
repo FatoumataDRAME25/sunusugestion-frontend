@@ -1,0 +1,218 @@
+<app-navbar />
+
+<div class="min-h-screen bg-gris-fond pb-24">
+  <div class="p-lg">
+
+    <!-- Retour -->
+    <button (click)="retour()" class="text-anthracite/60 mb-md block">
+      <i class="pi pi-chevron-left text-lg"></i>
+    </button>
+    <h1 class="font-bold text-xl text-anthracite mb-lg">
+      {{ payePourSoi() ? 'Payer ma cotisation' : 'Enregistrer un paiement' }}
+    </h1>
+
+    @if (cotisation(); as c) {
+
+      <!-- Erreur paiement -->
+      @if (erreurPaiement()) {
+        <div class="bg-rouge-clair text-rouge-alerte text-sm rounded-xl p-md mb-md flex items-start gap-sm">
+          <i class="pi pi-exclamation-triangle shrink-0 mt-xs"></i>
+          <span>{{ erreurPaiement() }}</span>
+        </div>
+      }
+
+      <!-- ── CAS TRÉSORIER : affiche le membre concerné ── -->
+      @if (!payePourSoi()) {
+        <div class="bg-white rounded-xl p-lg shadow-sm mb-md flex items-center justify-between">
+          <div class="flex items-center gap-md">
+            <div class="w-10 h-10 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-sm text-bleu-nuit shrink-0">
+              {{ (c.membre.prenom + ' ' + c.membre.nom) | initiales }}
+            </div>
+            <div>
+              <p class="text-xs text-anthracite/50 uppercase">Membre concerné</p>
+              <p class="font-bold text-anthracite">{{ c.membre.prenom }} {{ c.membre.nom }}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="font-bold text-anthracite text-lg">{{ c.session.montant | number:'1.0-0' }}</p>
+            <p class="text-xs text-anthracite/50">FCFA</p>
+          </div>
+        </div>
+      }
+
+      <!-- ── INFOS COTISATION ── -->
+      <div class="bg-white rounded-xl p-lg shadow-sm mb-lg">
+
+        @if (payePourSoi()) {
+          <!-- Version membre : montant en évidence -->
+          <div class="mb-md">
+            <p class="text-xs text-anthracite/50 mb-xs">Montant à régler</p>
+            <p class="font-bold text-3xl text-anthracite">{{ c.session.montant | number:'1.0-0' }} <span class="text-lg font-normal text-anthracite/60">FCFA</span></p>
+          </div>
+        }
+
+        <div class="flex items-start justify-between mb-sm">
+          <div>
+            <p class="text-xs text-anthracite/50 mb-xs">Libellé</p>
+            <p class="font-bold text-anthracite">{{ c.session.libelle }}</p>
+          </div>
+          @if (!payePourSoi()) {
+            <span class="text-xs font-semibold px-sm py-xs rounded-full bg-or-clair text-or-senegal ml-md">
+              EN ATTENTE
+            </span>
+          }
+        </div>
+
+        <p class="text-sm text-anthracite/60 flex items-center gap-xs">
+          <i class="pi pi-calendar text-xs"></i>
+          Échéance : {{ c.session.dateFin ? c.session.dateFin.substring(0, 10) : '' }}
+        </p>
+
+      </div>
+
+      <!-- ── CHOIX MODE DE PAIEMENT ── -->
+      <div class="mb-lg">
+        <p class="font-semibold text-anthracite mb-md">Choisir le mode de paiement</p>
+
+        <div class="flex flex-col gap-sm">
+
+          @if (modesDisponibles().includes('wave')) {
+            <button (click)="modePaiement.set('wave')"
+              [class]="modePaiement() === 'wave'
+                ? 'flex items-center gap-md p-md rounded-xl border-2 border-bleu-nuit bg-bleu-clair/10'
+                : 'flex items-center gap-md p-md rounded-xl border border-anthracite/20 bg-white'">
+              <div class="w-12 h-12 rounded-xl bg-gris-fond flex items-center justify-center shrink-0 overflow-hidden">
+                <img src="images/wave.png" alt="Wave" class="h-8 object-contain" />
+              </div>
+              <span class="flex-1 font-semibold text-anthracite text-left">Payer avec Wave</span>
+              <div [class]="modePaiement() === 'wave'
+                ? 'w-6 h-6 rounded-full bg-bleu-nuit flex items-center justify-center shrink-0'
+                : 'w-6 h-6 rounded-full border-2 border-anthracite/30 shrink-0'">
+                @if (modePaiement() === 'wave') {
+                  <i class="pi pi-check text-blanc-lait text-xs"></i>
+                }
+              </div>
+            </button>
+          }
+
+          @if (modesDisponibles().includes('orange_money')) {
+            <button (click)="modePaiement.set('orange_money')"
+              [class]="modePaiement() === 'orange_money'
+                ? 'flex items-center gap-md p-md rounded-xl border-2 border-bleu-nuit bg-bleu-clair/10'
+                : 'flex items-center gap-md p-md rounded-xl border border-anthracite/20 bg-white'">
+              <div class="w-12 h-12 rounded-xl bg-gris-fond flex items-center justify-center shrink-0 overflow-hidden">
+                <img src="images/orange_money.png" alt="Orange Money" class="h-8 object-contain" />
+              </div>
+              <span class="flex-1 font-semibold text-anthracite text-left">Payer avec Orange Money</span>
+              <div [class]="modePaiement() === 'orange_money'
+                ? 'w-6 h-6 rounded-full bg-bleu-nuit flex items-center justify-center shrink-0'
+                : 'w-6 h-6 rounded-full border-2 border-anthracite/30 shrink-0'">
+                @if (modePaiement() === 'orange_money') {
+                  <i class="pi pi-check text-blanc-lait text-xs"></i>
+                }
+              </div>
+            </button>
+          }
+
+          @if (modesDisponibles().includes('especes')) {
+            <button (click)="modePaiement.set('especes')"
+              [class]="modePaiement() === 'especes'
+                ? 'flex items-center gap-md p-md rounded-xl border-2 border-bleu-nuit bg-bleu-clair/10'
+                : 'flex items-center gap-md p-md rounded-xl border border-anthracite/20 bg-white'">
+              <div class="w-12 h-12 rounded-xl bg-vert-clair/30 flex items-center justify-center shrink-0">
+                <i class="pi pi-money-bill text-vert-foret text-2xl"></i>
+              </div>
+              <div class="flex-1 text-left">
+                <p class="font-semibold text-anthracite">Espèces</p>
+                <p class="text-xs text-anthracite/50">Enregistrer un paiement reçu directement</p>
+              </div>
+              <div [class]="modePaiement() === 'especes'
+                ? 'w-6 h-6 rounded-full bg-bleu-nuit flex items-center justify-center shrink-0'
+                : 'w-6 h-6 rounded-full border-2 border-anthracite/30 shrink-0'">
+                @if (modePaiement() === 'especes') {
+                  <i class="pi pi-check text-blanc-lait text-xs"></i>
+                }
+              </div>
+            </button>
+          }
+
+        </div>
+      </div>
+
+      <!-- ── BOUTON ── -->
+      <button (click)="ouvrirConfirmation()"
+        class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm">
+        {{ payePourSoi() ? 'Continuer le paiement' : 'Enregistrer le paiement' }}
+      </button>
+
+    } @else {
+      <div class="flex flex-col items-center py-2xl text-center">
+        <i class="pi pi-exclamation-triangle text-4xl text-anthracite/30 mb-md"></i>
+        <p class="font-semibold text-anthracite/60">Cotisation introuvable</p>
+      </div>
+    }
+
+  </div>
+</div>
+
+<app-bottom-nav />
+
+<!-- ── MODAL CONFIRMATION ── -->
+@if (voirConfirmation() && cotisation()) {
+  <div class="fixed inset-0 z-50 flex items-end bg-black/50"
+       (click)="voirConfirmation.set(false)">
+    <div class="bg-white rounded-t-2xl w-full p-lg"
+         (click)="$event.stopPropagation()">
+
+      <div class="w-10 h-1 bg-anthracite/20 rounded-full mx-auto mb-lg"></div>
+
+      <div class="flex justify-center mb-md">
+        <div class="w-14 h-14 rounded-full bg-vert-clair flex items-center justify-center">
+          <i class="pi pi-wallet text-vert-foret text-2xl"></i>
+        </div>
+      </div>
+
+      <h2 class="font-bold text-lg text-anthracite text-center mb-xs">Confirmer le paiement</h2>
+      <p class="text-sm text-anthracite/60 text-center mb-lg">
+        Vous êtes sur le point d'enregistrer le paiement de
+      </p>
+
+      <div class="bg-gris-fond rounded-xl p-md mb-lg flex flex-col gap-sm text-sm">
+        <div class="flex justify-between">
+          <span class="text-anthracite/60">Montant</span>
+          <span class="font-bold text-anthracite">{{ cotisation()!.session.montant | number:'1.0-0' }} FCFA</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-anthracite/60">Membre</span>
+          <span class="font-bold text-anthracite">{{ cotisation()!.membre.prenom }} {{ cotisation()!.membre.nom }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-anthracite/60">Mode</span>
+          <span class="font-bold text-anthracite flex items-center gap-xs">
+            @if (modePaiement() === 'wave') { <img src="images/wave.png" class="h-4" alt="Wave" /> Wave }
+            @else if (modePaiement() === 'orange_money') { <img src="images/orange_money.png" class="h-4" alt="Orange Money" /> Orange Money }
+            @else { <i class="pi pi-money-bill text-xs"></i> Espèces }
+          </span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-anthracite/60">Session</span>
+          <span class="font-semibold text-anthracite text-right">{{ cotisation()!.session.libelle }}</span>
+        </div>
+      </div>
+
+      <div class="flex gap-sm">
+        <button (click)="voirConfirmation.set(false)"
+          class="flex-1 border border-anthracite/20 text-anthracite font-semibold rounded-xl py-md">
+          Annuler
+        </button>
+        <button (click)="confirmerPaiement()"
+          [disabled]="service.isLoading()"
+          class="flex-1 bg-vert-foret text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-50">
+          @if (service.isLoading()) { <i class="pi pi-spin pi-spinner"></i> }
+          Confirmer
+        </button>
+      </div>
+
+    </div>
+  </div>
+}

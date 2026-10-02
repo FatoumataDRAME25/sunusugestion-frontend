@@ -1,12 +1,15 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { InitialesPipe } from '../../../../../../shared/pipes/initiales-pipe';
 import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
 import { CotisationService } from '../../../../../../core/services/cotisation.service';
+import { AuthService } from '../../../../../../core/services/auth.service';
 import { Cotisation } from '../../../../../../core/models/cotisation.model';
 import { DialogModule } from 'primeng/dialog';
+
+import { Navbar } from '../../../../../../shared/ui/navbar/navbar';
 
 @Component({
   selector: 'app-liste-cotisations',
@@ -17,13 +20,25 @@ import { DialogModule } from 'primeng/dialog';
     InitialesPipe,
     BottomNav,
     DialogModule,
-    DecimalPipe
+    DecimalPipe,
+    Navbar
   ],
   templateUrl: './liste-cotisation.html'
 })
 export class ListeCotisations implements OnInit {
 
   protected service = inject(CotisationService);
+  protected authService = inject(AuthService);
+  private router = inject(Router);
+
+  // true si l'utilisateur connecté est trésorier
+  estTresorier = computed(() => this.authService.currentUser()?.role === 'tresorier');
+
+  // true si une cotisation appartient à l'utilisateur connecté OU si c'est le trésorier
+  peutPayer(cotisation: Cotisation): boolean {
+    const userId = this.authService.currentUser()?.id;
+    return cotisation.membre.id === userId || this.estTresorier();
+  }
 
   filtreStatut = signal<string | null>(null);
   termeRecherche = signal('');
@@ -82,8 +97,8 @@ export class ListeCotisations implements OnInit {
   // -------------------------
 
   ouvrirConfirmationPaiement(cotisation: Cotisation): void {
-    this.cotisationAPayer.set(cotisation);
-    this.voirConfirmation.set(true);
+    // Naviguer vers la page de paiement
+    this.router.navigate(['/mon-espace/cotisations/payer', cotisation.id]);
   }
 
   annulerPaiement(): void {

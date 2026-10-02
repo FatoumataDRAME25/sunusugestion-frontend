@@ -77,17 +77,16 @@ export class CotisationService {
 
 
   // Payer une cotisation
-
+  // Retourne any car le backend peut retourner soit une Cotisation (especes)
+  // soit une réponse PayDunya { statut, token, urlPaiement } (wave/orange_money)
   payerCotisation(
     cotisationId: number,
-    modePaiement: 'especes'
-  ): Observable<Cotisation> {
+    modePaiement: 'especes' | 'wave' | 'orange_money'
+  ): Observable<any> {
 
-    return this.http.post<Cotisation>(
+    return this.http.post<any>(
       `${this.BASE_URL}cotisations/${cotisationId}/payer/`,
-      {
-        modePaiement
-      }
+      { modePaiement }
     );
   }
 

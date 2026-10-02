@@ -6,6 +6,7 @@ import {
   AjouterMembreRequest,
   Membre,
   MembreExcel,
+  MembreImporte,
   ReponseAnalyseExcel,
   ReponseImport,
   ReponseMembres
@@ -43,6 +44,9 @@ filtreStatut = signal<'actif' | 'inactif' | 'en_attente' | null>(null);
 
   // Nombre de membres importés via Excel (pour le modal succès)
   nombreMembresImportes = signal<number>(0);
+
+  // Membres importés avec leurs tokens d'invitation (pour l'envoi WhatsApp)
+  membresImportesAvecToken = signal<MembreImporte[]>([]);
 
     // --- Ajout manuel ---
   ajouterMembre(donnees: AjouterMembreRequest): Observable<any> {
@@ -126,13 +130,13 @@ filtreStatut = signal<'actif' | 'inactif' | 'en_attente' | null>(null);
   ).pipe(
     tap((reponse) => {
       console.log('Réponse import complète:', reponse);
-      // Le backend peut retourner membresImportes ou membres_importes ou un simple count
       const nb =
         reponse.membresImportes?.length ??
         (reponse as any).membres_importes?.length ??
         (reponse as any).count ??
         membresValides.length;
       this.nombreMembresImportes.set(nb);
+      this.membresImportesAvecToken.set(reponse.membresImportes ?? []);
       this.isLoading.set(false);
     }),
     catchError((err) => {

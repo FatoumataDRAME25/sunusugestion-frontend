@@ -1,11 +1,9 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { AuthService } from './auth.service';
-import { StatsGie, ActiviteRecente } from '../models/espace-gie.model';
-
+import { StatsGie } from '../models/espace-gie.model';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { catchError, Observable, tap, throwError } from 'rxjs';
-import { ACTIVITES_RECENTES_MOCK, STATS_MOCK } from '../data/espace-gie.mock';
 import { InfosGie, ModifierGieRequest } from '../models/gie.model';
 import { ReponseMembres } from '../models/membre.model';
 
@@ -26,15 +24,13 @@ export class EspaceGieService {
   // en dur pour l'instant, à remplacer par un vrai appel HTTP plus tard.
   nomGie = signal('GIE And Defar');
 
-   stats = signal<StatsGie>({
+  stats = signal<StatsGie>({
     nombreMembres: 0,
-    cotisationsMois: 0,       // mock — endpoint pas encore disponible
-    montantEnAttente: 0,      // mock
-    pretsEnCours: 0,          // mock
-    demandesApprobationPrets: 0 // mock
+    cotisationsMois: 0,
+    montantEnAttente: 0,
+    pretsEnCours: 0,
+    demandesApprobationPrets: 0
   });
-
-  activitesRecentes = signal<ActiviteRecente[]>(ACTIVITES_RECENTES_MOCK);
 
   prenomUtilisateur(): string {
     return this.authService.currentUser()?.prenom ?? '';
@@ -48,7 +44,7 @@ export class EspaceGieService {
           ...stats,
           nombreMembres: reponse.total  // seul champ dynamique pour l'instant
         }));
-        
+
       }),
       catchError((err) => throwError(() => err))
     );

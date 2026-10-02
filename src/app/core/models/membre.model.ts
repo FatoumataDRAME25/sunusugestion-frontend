@@ -54,10 +54,18 @@ export interface ReponseAnalyseExcel {
 }
 
 
-// ← pour afficher dans le modal de succès
+// Un membre retourné après import avec son token d'invitation
+export interface MembreImporte {
+  prenom: string;
+  nom: string;
+  telephone: string;
+  tokenInvitation: string;
+}
 
 export interface ReponseImport {
   message: string;
-  membresImportes: any[];
+  totalImportes: number;
+  totalEchoues: number;
+  membresImportes: MembreImporte[];
   erreurs: any[];
 }
