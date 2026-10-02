@@ -60,8 +60,16 @@ export class PlanifierActivite implements OnInit {
     const errs: Record<string, string> = {};
     if (!this.titre().trim()) errs['titre'] = 'Le titre est obligatoire';
     if (!this.typeActivite()) errs['type'] = 'Le type est obligatoire';
-    if (!this.dateActivite()) errs['date'] = 'La date et l\'heure sont obligatoires';
-    else if (!this.heureActivite()) errs['date'] = 'La date et l\'heure sont obligatoires';
+    if (!this.dateActivite()) errs['date'] = "La date et l'heure sont obligatoires";
+    else if (!this.heureActivite()) errs['date'] = "La date et l'heure sont obligatoires";
+    else {
+      const aujourd_hui = new Date();
+      aujourd_hui.setHours(0, 0, 0, 0);
+      const dateChoisie = new Date(this.dateActivite());
+      if (dateChoisie < aujourd_hui) {
+        errs['date'] = "La date de l'activité ne peut pas être dans le passé.";
+      }
+    }
     if (!this.lieu().trim()) errs['lieu'] = 'Le lieu est obligatoire';
     this.erreurs.set(errs);
     return Object.keys(errs).length === 0;

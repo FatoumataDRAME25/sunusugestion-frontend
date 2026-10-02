@@ -11,7 +11,6 @@ import { EtapeOtp } from './features/inscription/pages/etape-otp/etape-otp';
 import { EtapeSucces } from './features/inscription/pages/etape-succes/etape-succes';
 import { MobileLayout } from './layout/mobile-layout/mobile-layout';
 import { AccueilEspace } from './features/espace-gie/pages/accueil-espace/accueil-espace';
-import { AccueilTresorier } from './features/espace-gie/pages/accueil-tresorier/accueil-tresorier';
 import { Historique } from './features/espace-gie/pages/operations/pages/historiques/historique';
 import { ProfilMembre } from './features/espace-gie/pages/profil-membre/profil-membre';
 import { ListeMembre } from './features/espace-gie/pages/membres/pages/liste-membre/liste-membre';
@@ -51,7 +50,7 @@ export const routes: Routes = [
   { path: 'inscription/compte', component: EtapeCompte },
   { path: 'inscription/otp', component: EtapeOtp },
   { path: 'inscription/succes', component: EtapeSucces },
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: '', redirectTo: 'sunugestion-vitrine', pathMatch: 'full' },
 
   // Les routes pour l'admin
   {
@@ -75,7 +74,6 @@ export const routes: Routes = [
   children: [
 
     { path: '', component: AccueilEspace },
-    { path: 'tableau-bord-tresorier', component: AccueilTresorier },
     { path: 'informations-gie', component: InformationsGie },
     { path: 'historiques', component: Historique },
     {

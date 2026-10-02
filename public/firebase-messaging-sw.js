@@ -57,7 +57,7 @@ function construireUrl(data) {
         : `${APP_URL}/mon-espace/prets`;
 
     case 'cotisations':
-      // Pas de route détail cotisation par ID simple — on ouvre la liste
+      
       return `${APP_URL}/mon-espace/cotisations`;
 
     case 'membres':

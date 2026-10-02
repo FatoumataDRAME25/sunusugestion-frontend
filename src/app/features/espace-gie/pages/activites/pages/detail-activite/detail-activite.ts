@@ -40,6 +40,18 @@ export class DetailActivite implements OnInit {
 
   activite = this.service.activiteSelectionnee;
 
+  // Vrai si aujourd'hui est le jour de l'activité (démarrage autorisé)
+  estJourJ = computed(() => {
+    const activite = this.service.activiteSelectionnee();
+    if (!activite) return false;
+    const aujourd_hui = new Date();
+    const dateActivite = new Date(activite.dateActivite);
+    return (
+      dateActivite.getFullYear() === aujourd_hui.getFullYear() &&
+      dateActivite.getMonth()    === aujourd_hui.getMonth()    &&
+      dateActivite.getDate()     === aujourd_hui.getDate()
+    );
+  });
   estPlanifiee = computed(() => this.service.activiteSelectionnee()?.statut === 'planifiee');
   estEnCours   = computed(() => this.service.activiteSelectionnee()?.statut === 'en_cours');
   estTerminee  = computed(() => this.service.activiteSelectionnee()?.statut === 'terminee');

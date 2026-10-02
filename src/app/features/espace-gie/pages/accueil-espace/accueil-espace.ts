@@ -41,9 +41,17 @@ export class AccueilEspace implements OnInit {
   // Vrai si le président est connecté
   estPresident = computed(() => this.authService.currentUser()?.role === 'president');
 
+  // Vrai si le trésorier est connecté
+  estTresorier = computed(() => this.authService.currentUser()?.role === 'tresorier');
+
   // Nombre de demandes en attente (pour le badge président)
   demandesEnAttente = computed(() =>
     this.pretService.prets().filter(p => p.statut === 'en_attente').length
+  );
+
+  // Nombre de prêts approuvés à décaisser (pour le trésorier)
+  pretsApprouves = computed(() =>
+    this.pretService.prets().filter(p => p.statut === 'approuve').length
   );
 
   toggleDropdown(): void {

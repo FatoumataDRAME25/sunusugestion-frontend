@@ -136,10 +136,16 @@
 
       @if (estPlanifiee() && estPresidentOuSecretaire()) {
         <div class="flex flex-col gap-sm mb-lg">
-          <button (click)="modalDemarrerVisible.set(true)"
-            class="w-full bg-bleu-nuit text-blanc-lait font-bold rounded-xl py-md flex items-center justify-center gap-sm uppercase tracking-wide">
-            <i class="pi pi-play"></i> Démarrer l'activité
-          </button>
+          @if (estJourJ()) {
+            <button (click)="modalDemarrerVisible.set(true)"
+              class="w-full bg-bleu-nuit text-blanc-lait font-bold rounded-xl py-md flex items-center justify-center gap-sm uppercase tracking-wide">
+              <i class="pi pi-play"></i> Démarrer l'activité
+            </button>
+          } @else {
+            <div class="w-full bg-anthracite/10 text-anthracite/50 font-bold rounded-xl py-md flex items-center justify-center gap-sm uppercase tracking-wide text-sm">
+              <i class="pi pi-clock"></i> Démarrage possible le jour J uniquement
+            </div>
+          }
           <button (click)="naviguerModifier()"
             class="w-full bg-white border border-anthracite/20 text-anthracite font-bold rounded-xl py-md flex items-center justify-center gap-sm uppercase tracking-wide">
             <i class="pi pi-pencil"></i> Modifier

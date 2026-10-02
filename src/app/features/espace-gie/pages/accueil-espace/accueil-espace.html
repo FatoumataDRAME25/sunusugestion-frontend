@@ -63,7 +63,7 @@
 
     </div>
 
-    <!-- À traiter — visible président uniquement -->
+    <!-- À traiter — président : demandes d'approbation / trésorier : prêts à décaisser -->
     @if (estPresident()) {
       <h2 class="font-sans font-semibold text-lg text-anthracite mb-md">À traiter</h2>
       <button
@@ -79,6 +79,27 @@
         @if (demandesEnAttente() > 0) {
           <span class="bg-rouge-clair text-rouge-alerte text-xs font-semibold w-6 h-6 rounded-full flex items-center justify-center">
             {{ demandesEnAttente() }}
+          </span>
+        }
+        <i class="pi pi-chevron-right text-anthracite/30"></i>
+      </button>
+    }
+
+    @if (estTresorier()) {
+      <h2 class="font-sans font-semibold text-lg text-anthracite mb-md">À décaisser</h2>
+      <button
+        routerLink="/mon-espace/prets"
+        class="w-full bg-white rounded-lg p-lg flex items-center gap-md mb-xl text-left"
+      >
+        <div class="w-10 h-10 rounded-md bg-vert-clair flex items-center justify-center">
+          <i class="pi pi-wallet text-vert-foret"></i>
+        </div>
+        <div class="flex-1">
+          <p class="text-sm font-medium text-anthracite">Prêts approuvés à décaisser</p>
+        </div>
+        @if (pretsApprouves() > 0) {
+          <span class="bg-vert-clair text-vert-foret text-xs font-semibold w-6 h-6 rounded-full flex items-center justify-center">
+            {{ pretsApprouves() }}
           </span>
         }
         <i class="pi pi-chevron-right text-anthracite/30"></i>

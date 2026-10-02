@@ -2,27 +2,27 @@
 <div class="min-h-screen flex bg-blanc-lait">
 
   <!-- Panneau gauche : visible uniquement à partir du breakpoint md (desktop) -->
-  <div class="hidden md:flex md:w-1/2 bg-bleu-nuit text-blanc-lait flex-col justify-between p-2xl">
-    <div>
-      <div class="flex items-center gap-sm mb-xl">
+  <div class="hidden md:flex md:w-1/2 min-h-screen bg-bleu-nuit text-blanc-lait flex-col justify-between ">
+    <!-- <div> -->
+      <!-- <div class="flex items-center gap-sm mb-xl">
         <div class="bg-blanc-lait rounded-md p-sm">
           <i class="pi pi-verified text-bleu-nuit text-xl"></i>
         </div>
         <span class="font-sans font-semibold text-xl">SunuGestion</span>
       </div>
 
-      <h1 class="font-sans font-semibold text-2xl mb-md">Gérez votre GIE simplement</h1>
-      <p class="text-sm opacity-80 mb-xl">
+      <h1 class="font-sans font-semibold text-2xl mb-md">Gérez votre organisation simplement</h1> -->
+      <!-- <p class="text-sm opacity-80 mb-xl">
         Une plateforme pensée pour simplifier la gestion, le suivi des membres et les activités de votre GIE.
-      </p>
+      </p> -->
 
       <img
-        src="images/login-illustration.png"
+        src="images/sunugestion.png"
         alt="Réunion GIE"
-        class="rounded-lg mb-xl  object-cover"
+        class=" min-h-screen  object-cover overflow-hidden"
       />
 
-      <ul class="flex flex-col gap-sm mb-3">
+      <!-- <ul class="flex flex-col gap-sm mb-3">
         <li class="flex items-center gap-sm text-sm">
           <i class="pi pi-check-circle text-vert-foret"></i> Gestion des membres
         </li>
@@ -32,49 +32,99 @@
         <li class="flex items-center gap-sm text-sm">
           <i class="pi pi-check-circle text-vert-foret"></i> Gestion simple et centralisée
         </li>
-      </ul>
-    </div>
+      </ul> -->
+    <!-- </div> -->
 
-    <p class="text-xs opacity-60 border-t border-white/10 pt-md text-center">
+    <!-- <p class="text-xs opacity-60 border-t border-white/10 pt-md text-center">
       © 2026 SunuGestion. Tous droits réservés.
-    </p>
+    </p> -->
   </div>
 
-  <!-- Panneau droit : le formulaire, toujours visible -->
-  <div class="flex-1 flex items-center justify-center p-lg">
-    <div class="w-full max-w-3xl md:bg-white md:shadow-lg md:rounded-xl md:p-2xl ">
 
-      <h2 class="font-sans font-semibold text-2xl text-anthracite mb-x">
-        Bienvenue sur SunuGestion
+<!-- Panneau droit : le formulaire, toujours visible -->
+<div class="flex-1 flex items-center justify-center bg-blanc-lait p-6 md:p-20">
+
+  <div
+    class="w-full max-w-[576px] bg-white rounded-[32px] border border-[#E2E5EA] shadow-[0_8px_10px_-6px_rgba(0,0,0,0.10),0_20px_25px_-5px_rgba(0,0,0,0.10)] p-8 md:p-16"
+  >
+
+    <!-- En-tête -->
+    <div class="flex flex-col gap-2 mb-10">
+
+      <h2
+        class="font-sans font-bold text-[36px] leading-[45px] text-anthracite"
+      >
+        Bienvenue sur<br />
+        SunuGestion
       </h2>
-      <p class="text-sm text-anthracite/70 mb-xl">Connectez-vous à votre espace</p>
 
-      @if (authService.errorMessage()) {
-        <p-message severity="error" [text]="authService.errorMessage()!" styleClass="mb-lg w-full"/>
-      }
+      <p
+        class="font-sans text-[18px] leading-7 text-[#4A5568]"
+      >
+        Connectez-vous à votre espace
+      </p>
 
-      <form (ngSubmit)="seConnecter()">
+    </div>
 
-        <label class="block text-sm font-medium text-anthracite mb-sm">
+    @if (authService.errorMessage()) {
+      <p-message
+        severity="error"
+        [text]="authService.errorMessage()!"
+        styleClass="mb-8 w-full"
+      />
+    }
+
+    <form
+      (ngSubmit)="seConnecter()"
+      class="flex flex-col gap-8"
+    >
+
+      <!-- Identifiant -->
+      <div class="flex flex-col gap-3">
+
+        <label
+          class="font-sans text-sm leading-5 font-semibold text-anthracite"
+        >
           Identifiant ou numéro de téléphone
         </label>
-        <p-iconfield class="block mb-lg">
-          <p-inputicon styleClass="pi pi-user" />
+
+        <p-iconfield class="w-full">
+          <p-inputicon
+            styleClass="pi pi-user text-[#4A5568]"
+          />
+
           <input
             type="text"
             pInputText
             [(ngModel)]="telephone"
             name="telephone"
             placeholder="Exemple : 77 XXX XX XX"
-            class="w-full"
+            class="w-full !h-16 !bg-[#F7F8FA] !border !border-[#E2E5EA] !rounded-xl !text-[18px] !text-anthracite"
             required
           />
         </p-iconfield>
 
-        <div class="flex justify-between items-center mb-sm">
-          <label class="text-sm font-medium text-anthracite">Mot de passe</label>
-          <a class="text-sm text-bleu-nuit cursor-pointer">Mot de passe oublié ?</a>
+      </div>
+
+      <!-- Mot de passe -->
+      <div class="flex flex-col gap-3">
+
+        <div class="flex justify-between items-center">
+
+          <label
+            class="font-sans text-sm leading-5 font-semibold text-anthracite"
+          >
+            Mot de passe
+          </label>
+
+          <a
+            class="font-sans text-sm leading-5 font-semibold text-bleu-nuit cursor-pointer"
+          >
+            Mot de passe oublié ?
+          </a>
+
         </div>
+
         <p-password
           [(ngModel)]="codePin"
           name="codePin"
@@ -82,18 +132,25 @@
           [toggleMask]="true"
           [feedback]="false"
           styleClass="w-full"
-          inputStyleClass="w-full"
+          inputStyleClass="!h-16 !w-full !bg-[#F7F8FA] !border !border-[#E2E5EA] !rounded-xl !text-[18px]"
         />
 
-        <p-button
-          type="submit"
-          label="Se connecter"
-          icon="pi pi-sign-in"
-          iconPos="right"
-          styleClass="w-full mt-5"
-          [loading]="authService.isLoading()"
-        />
-      </form>
-    </div>
+      </div>
+
+      <!-- Bouton -->
+      <p-button
+        type="submit"
+        label="Se connecter"
+        icon="pi pi-sign-in"
+        iconPos="right"
+        styleClass="!w-full !h-16 !bg-bleu-nuit !border-bleu-nuit !rounded-xl !text-[18px] !font-bold"
+        [loading]="authService.isLoading()"
+      />
+
+    </form>
+
   </div>
+</div>
+
+
 </div>

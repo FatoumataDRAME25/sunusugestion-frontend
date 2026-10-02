@@ -19,6 +19,7 @@ export class DemandePret implements OnInit {
   montant = signal('');
   pretCree = signal<any>(null);
   succesVisible = signal(false);
+  erreurMontant = signal<string | null>(null);
 
   ngOnInit(): void {
     this.service.errorMessage.set(null);
@@ -27,7 +28,18 @@ export class DemandePret implements OnInit {
 
   envoyer(): void {
     const val = String(this.montant()).trim();
-    if (!val) return;
+    if (!val) {
+      this.erreurMontant.set('Le montant est obligatoire.');
+      return;
+    }
+
+    const montantNum = Number(val);
+    if (isNaN(montantNum) || montantNum <= 0) {
+      this.erreurMontant.set('Le montant doit être supérieur à 0.');
+      return;
+    }
+
+    this.erreurMontant.set(null);
 
     this.service.demanderPret({ montant: val }).subscribe({
       next: (pret) => {

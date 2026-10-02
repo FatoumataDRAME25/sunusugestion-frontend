@@ -46,8 +46,6 @@ export class Login {
 
         if (role === 'administrateur') {
           this.router.navigate(['/dashboard']);
-        } else if (role === 'tresorier') {
-          this.router.navigate(['/mon-espace/tableau-bord-tresorier']);
         } else {
           this.router.navigate(['/mon-espace']);
         }
