@@ -50,7 +50,7 @@ export class ImporterMembre implements OnInit {
   readonly rolesDisponibles = ['president', 'tresorier', 'secretaire', 'membre'];
 
   // URL de base pour les liens d'activation (même valeur que ajouter-membre.ts)
-  private readonly urlNgrok = 'https://stitch-freebie-dreamless.ngrok-free.dev';
+  private readonly urlNgrok = 'https://reviving-gurgle-pauper.ngrok-free.dev';
 
   ngOnInit(): void {
     this.service.reinitialiserExcel();

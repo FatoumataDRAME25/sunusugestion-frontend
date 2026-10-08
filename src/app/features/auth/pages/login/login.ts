@@ -8,7 +8,7 @@ import { MessageModule } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
 import { AuthService } from '../../../../core/services/auth.service';
 import { FirebaseService } from '../../../../core/services/firebase.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   imports: [
@@ -19,6 +19,7 @@ import { Router } from '@angular/router';
     InputIconModule,
     InputTextModule,
     MessageModule,
+    RouterLink,
   ],
   selector: 'app-login',
   styleUrl: './login.css',
@@ -28,6 +29,7 @@ export class Login {
 
   telephone = signal('');
   codePin = signal('');
+  pinVisible = false;
 
   protected authService = inject(AuthService);
   private firebaseService = inject(FirebaseService);

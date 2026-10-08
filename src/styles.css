@@ -41,3 +41,7 @@
   --spacing-2xl: 32px;
 }
 
+
+/* Cache la scrollbar pour les carousels */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }

@@ -1,7 +1,8 @@
-// features/inscription/pages/etape-compte/etape-compte.ts
+
 import { Component, signal, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { FormsModule, NgForm } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
@@ -11,7 +12,14 @@ import { InscriptionService } from '../../services/inscription.service';
 
 @Component({
   selector: 'app-etape-compte',
-  imports: [FormsModule, ButtonModule, InputTextModule, PasswordModule, CheckboxModule],
+  imports: [
+    FormsModule,
+    RouterLink,
+    ButtonModule,
+    InputTextModule,
+    PasswordModule,
+    CheckboxModule
+  ],
   templateUrl: './etape-compte.html'
 })
 export class EtapeCompte {
@@ -26,34 +34,83 @@ export class EtapeCompte {
   confirmationPin = signal('');
   accepteConditions = signal(false);
 
-  erreurConfirmation = signal<string | null>(null);
   submitted = signal(false);
 
-  continuer(): void {
+  repetitionInterdite(value: string): boolean {
+    return /([a-zà-ÿ])\1\1/i.test(value);
+  }
+
+  emailValide(): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+      this.email().trim()
+    );
+  }
+
+  pinIdentique(): boolean {
+    return this.pin() === this.confirmationPin();
+  }
+
+  formulaireValide(): boolean {
+    const prenomValide =
+      this.prenom().trim().length >= 2 &&
+      !/^\s+$/.test(this.prenom()) &&
+      !this.repetitionInterdite(this.prenom());
+
+    const nomValide =
+      this.nom().trim().length >= 2 &&
+      !/^\s+$/.test(this.nom()) &&
+      !this.repetitionInterdite(this.nom());
+
+    const telephoneValide =
+      /^(70|75|76|77|78)[0-9]{7}$/.test(
+        this.telephone().trim()
+      );
+
+    const emailValide =
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+        this.email().trim()
+      );
+
+    const pinValide =
+      /^[0-9]{4}$/.test(this.pin());
+
+    const confirmationValide =
+      /^[0-9]{4}$/.test(this.confirmationPin()) &&
+      this.pin() === this.confirmationPin();
+
+    return (
+      prenomValide &&
+      nomValide &&
+      telephoneValide &&
+      emailValide &&
+      pinValide &&
+      confirmationValide &&
+      this.accepteConditions()
+    );
+  }
+
+  continuer(form: NgForm): void {
     this.submitted.set(true);
 
-    // Validation email obligatoire
-    if (!this.email().trim()) {
+    if (!this.formulaireValide()) {
+      form.control.markAllAsTouched();
       return;
     }
-
-    if (this.pin() !== this.confirmationPin()) {
-      this.erreurConfirmation.set('Les codes ne correspondent pas');
-      return;
-    }
-    this.erreurConfirmation.set(null);
 
     this.service
       .inscrireCompte({
-        nom: this.nom(),
-        prenom: this.prenom(),
-        telephone: this.telephone(),
-        email: this.email(),
+        nom: this.nom().trim(),
+        prenom: this.prenom().trim(),
+        telephone: this.telephone().trim(),
+        email: this.email().trim(),
         pin: this.pin(),
         confirmationPin: this.confirmationPin()
       })
       .subscribe({
-        next: () => this.router.navigate(['/inscription/otp'])
+        next: () => {
+          this.router.navigate(['/inscription/otp']);
+        }
       });
   }
 }
+

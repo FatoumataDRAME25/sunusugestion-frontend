@@ -32,10 +32,14 @@ import { ListeActivites } from './features/espace-gie/pages/activites/pages/list
 import { PlanifierActivite } from './features/espace-gie/pages/activites/pages/planifier-activite/planifier-activite';
 import { DetailActivite } from './features/espace-gie/pages/activites/pages/detail-activite/detail-activite';
 import { PresencesActivite } from './features/espace-gie/pages/activites/pages/presences-activite/presences-activite';
-import { authGuard } from './core/guards/auth.guard';
+import { DashboardPresident } from './features/espace-gie/pages/dashboard-president/dashboard-president';
 import { roleGuard } from './core/guards/role.guard';
 import { adminGuard } from './core/guards/admin.guard';
+import { authGuard } from './core/guards/auth.guard';
 import { RetourPaiement } from './features/espace-gie/pages/paiement/retour-paiement';
+import { LandingPage } from './features/landing-page/landing-page';
+import { Landing } from './features/landing/landing';
+
 
 
 
@@ -45,6 +49,8 @@ import { RetourPaiement } from './features/espace-gie/pages/paiement/retour-paie
 export const routes: Routes = [
 
   { path: 'sunugestion-vitrine', component: Accueil },
+  {path: 'landing-page', component: LandingPage},
+  {path: 'landing', component: Landing},
   { path: 'login', component: Login },
   { path: 'inscription/gie', component: EtapeGie },
   { path: 'inscription/compte', component: EtapeCompte },
@@ -73,8 +79,7 @@ export const routes: Routes = [
   canActivate: [authGuard],
   children: [
 
-    { path: '', component: AccueilEspace },
-    { path: 'informations-gie', component: InformationsGie },
+    { path: '', component: AccueilEspace },    { path: 'informations-gie', component: InformationsGie },
     { path: 'historiques', component: Historique },
     {
       path: 'historiques/nouvelle-operation',
@@ -137,4 +142,5 @@ export const routes: Routes = [
   ]
 },
 { path: 'paiement/retour', component: RetourPaiement },
+{ path: 'mon-espace/dashboard-president', component: DashboardPresident, canActivate: [authGuard] },
 ];

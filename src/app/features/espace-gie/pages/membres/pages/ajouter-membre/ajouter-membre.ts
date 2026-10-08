@@ -34,7 +34,7 @@ export class AjouterMembre {
   modalSuccesVisible = signal(false);
 
   // 🚀 METTEZ À JOUR VOTRE ADRESSE NGROK ICI LORSQU'ELLE CHANGE
-  private urlNgrok = 'https://stitch-freebie-dreamless.ngrok-free.dev';
+  private urlNgrok = 'https://reviving-gurgle-pauper.ngrok-free.dev';
 
   rolesDisponibles: { label: string; value: RoleMembre }[] = [
     { label: 'Trésorier', value: 'tresorier' },
