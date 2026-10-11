@@ -116,7 +116,11 @@ export class AjouterMembre {
   }
   voirLesMembres(): void {
     this.modalSuccesVisible.set(false);
-    this.router.navigate(['/mon-espace/membres']);
+    // Recharger la liste pour inclure le nouveau membre
+    this.service.chargerMembres().subscribe({
+      next: () => this.router.navigate(['/mon-espace/membres']),
+      error: () => this.router.navigate(['/mon-espace/membres'])
+    });
   }
 
   ajouterUnAutre(): void {

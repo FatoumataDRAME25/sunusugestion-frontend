@@ -1,97 +1,796 @@
-<app-navbar />
+<div class="relative flex bg-[#F7F8FA] min-h-screen">
+  <app-gie-sidebar></app-gie-sidebar>
 
-<div class="min-h-screen bg-gris-fond pb-24">
+  <div class="flex-1 ml-0 lg:ml-[264px] min-w-0 flex flex-col">
+    <app-navbar titre="Activités"></app-navbar>
 
-  <!-- En-tête -->
-  <div class="p-lg pt-md">
-    <div class="flex items-center gap-md mb-lg">
-      <a routerLink="/mon-espace" class="text-anthracite/60">
-        <i class="pi pi-chevron-left text-lg"></i>
-      </a>
-      <h1 class="font-bold text-2xl text-anthracite">Activités</h1>
-    </div>
-
-    <!-- Bouton planifier — président ou secrétaire uniquement -->
-    @if (estPresidentOuSecretaire()) {
-      <a routerLink="/mon-espace/activites/planifier"
-        class="w-full bg-bleu-nuit text-blanc-lait font-bold rounded-xl py-md flex items-center justify-center gap-sm mb-lg uppercase tracking-wide">
-        <i class="pi pi-plus"></i>
-        Planifier une activité
-      </a>
-    }
-
-    <!-- Filtres -->
-    <div class="flex gap-sm overflow-x-auto pb-xs">
-      @for (f of filtres; track f.label) {
-        <button (click)="filtreStatut.set(f.value)"
-          [class]="filtreStatut() === f.value
-            ? 'px-md py-xs rounded-full bg-bleu-nuit text-blanc-lait font-semibold text-sm whitespace-nowrap flex items-center gap-xs'
-            : 'px-md py-xs rounded-full bg-white text-anthracite/60 text-sm border border-anthracite/10 whitespace-nowrap'">
-          @if (filtreStatut() === f.value && f.value === null) {
-            
-          }
-          {{ f.label }}
-        </button>
-      }
-    </div>
-  </div>
-
-  <!-- Liste -->
-  <div class="px-lg flex flex-col gap-md">
-
-    @if (service.isLoading()) {
-      <div class="flex justify-center py-2xl">
-        <i class="pi pi-spin pi-spinner text-2xl text-bleu-nuit"></i>
-      </div>
-    }
-
-    @if (!service.isLoading() && activitesFiltrees().length === 0) {
-      <div class="flex flex-col items-center py-2xl text-center">
-        <i class="pi pi-calendar text-4xl text-anthracite/30 mb-md"></i>
-        <p class="font-semibold text-anthracite/60">Aucune activité trouvée</p>
-      </div>
-    }
-
-    @for (activite of activitesFiltrees(); track activite.id) {
-      <a [routerLink]="['/mon-espace/activites', activite.id]"
-        class="bg-white rounded-xl shadow-sm overflow-hidden block"
-        [class]="bordureGauche(activite.statut)">
-
-        <div class="p-md">
-          <!-- Type + Statut -->
-          <div class="flex items-center justify-between mb-sm">
-            <span class="text-xs font-bold text-anthracite/50 uppercase tracking-wide">
-              {{ labelType(activite.typeActivite) }}
-            </span>
-            <span [class]="'text-xs font-semibold px-sm py-xs rounded-full ' + badgeStatut(activite.statut)">
-              {{ labelStatut(activite.statut) }}
-            </span>
+    <main class="pt-20 pb-24 lg:pt-24 lg:pb-8">
+      <!-- ════════════════════════════════
+           VERSION MOBILE
+      ════════════════════════════════ -->
+      <div class="lg:hidden min-h-screen bg-gris-fond pb-24">
+        <div class="p-lg pt-md">
+          <div class="flex items-center gap-md mb-lg">
+            <a routerLink="/mon-espace" class="text-anthracite/60">
+              <i class="pi pi-chevron-left text-lg"></i>
+            </a>
+            <h1 class="font-bold text-2xl text-anthracite">Activités</h1>
           </div>
 
-          <!-- Titre -->
-          <p class="font-bold text-anthracite mb-sm leading-snug">{{ activite.titre }}</p>
+          @if (estPresidentOuSecretaire()) {
+            <a
+              routerLink="/mon-espace/activites/planifier"
+              class="w-full bg-bleu-nuit text-blanc-lait font-bold rounded-xl py-md flex items-center justify-center gap-sm mb-lg uppercase tracking-wide"
+            >
+              <i class="pi pi-plus"></i>
+              Planifier une activité
+            </a>
+          }
 
-          <!-- Infos -->
-          <div class="flex flex-col gap-xs text-xs text-anthracite/60">
-            <div class="flex items-center gap-xs">
-              <i class="pi pi-calendar text-xs"></i>
-              <span>{{ activite.dateActivite | date:'dd/MM/yyyy' }}</span>
-            </div>
-            <div class="flex items-center gap-xs">
-              <i class="pi pi-clock text-xs"></i>
-              <span>{{ activite.dateActivite | date:'HH:mm' }}</span>
-            </div>
-            <div class="flex items-center gap-xs">
-              <i class="pi pi-map-marker text-xs"></i>
-              <span>{{ activite.lieu }}</span>
-            </div>
+          <div class="flex gap-sm overflow-x-auto pb-xs">
+            @for (f of filtres; track f.label) {
+              <button
+                (click)="filtreStatut.set(f.value)"
+                [class]="
+                  filtreStatut() === f.value
+                    ? 'px-md py-xs rounded-full bg-bleu-nuit text-blanc-lait font-semibold text-sm whitespace-nowrap'
+                    : 'px-md py-xs rounded-full bg-white text-anthracite/60 text-sm border border-anthracite/10 whitespace-nowrap'
+                "
+              >
+                {{ f.label }}
+              </button>
+            }
           </div>
         </div>
 
-      </a>
-    }
+        <div class="px-lg flex flex-col gap-md">
+          @if (service.isLoading()) {
+            <div class="flex justify-center py-2xl">
+              <i class="pi pi-spin pi-spinner text-2xl text-bleu-nuit"></i>
+            </div>
+          }
 
+          @if (!service.isLoading() && activitesFiltrees().length === 0) {
+            <div class="flex flex-col items-center py-2xl text-center">
+              <i class="pi pi-calendar text-4xl text-anthracite/30 mb-md"></i>
+              <p class="font-semibold text-anthracite/60">Aucune activité trouvée</p>
+            </div>
+          }
+
+          @for (activite of activitesFiltrees(); track activite.id) {
+            <a
+              [routerLink]="['/mon-espace/activites', activite.id]"
+              class="bg-white rounded-xl shadow-sm overflow-hidden block"
+              [class]="bordureGauche(activite.statut)"
+            >
+              <div class="p-md">
+                <div class="flex items-center justify-between mb-sm">
+                  <span class="text-xs font-bold text-anthracite/50 uppercase tracking-wide">
+                    {{ labelType(activite.typeActivite) }}
+                  </span>
+
+                  <span
+                    [class]="
+                      'text-xs font-semibold px-sm py-xs rounded-full ' +
+                      badgeStatut(activite.statut)
+                    "
+                  >
+                    {{ labelStatut(activite.statut) }}
+                  </span>
+                </div>
+
+                <p class="font-bold text-anthracite mb-sm leading-snug">
+                  {{ activite.titre }}
+                </p>
+
+                <div class="flex flex-col gap-xs text-xs text-anthracite/60">
+                  <div class="flex items-center gap-xs">
+                    <i class="pi pi-calendar text-xs"></i>
+                    <span>{{ activite.dateActivite | date: 'dd/MM/yyyy' }}</span>
+                  </div>
+
+                  <div class="flex items-center gap-xs">
+                    <i class="pi pi-clock text-xs"></i>
+                    <span>{{ activite.dateActivite | date: 'HH:mm' }}</span>
+                  </div>
+
+                  <div class="flex items-center gap-xs">
+                    <i class="pi pi-map-marker text-xs"></i>
+                    <span>{{ activite.lieu }}</span>
+                  </div>
+                </div>
+              </div>
+            </a>
+          }
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════
+           VERSION DESKTOP
+      ════════════════════════════════ -->
+      <div class="hidden lg:block p-10">
+        <!-- En-tête -->
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <h3 class="text-[#1E3A5F] text-xl font-bold leading-8">Planifiez et suivez les activités de votre organisation</h3>
+            <!-- <p class="text-[#1A1D23]/50 text-sm mt-1">Planifiez et suivez les activités du GIE.</p> -->
+          </div>
+
+          @if (estPresidentOuSecretaire()) {
+            <button
+              type="button"
+              (click)="ouvrirModalPlanifier()"
+              class="flex items-center gap-2 bg-[#1E3A5F] text-white font-semibold rounded-xl px-5 py-[10px] text-sm"
+            >
+              <i class="pi pi-plus"></i>
+              Planifier une activité
+            </button>
+          }
+        </div>
+
+        <!-- Tableau -->
+        <div
+          class="bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col overflow-hidden"
+        >
+          <!-- Barre recherche + filtres -->
+          <div class="flex items-center gap-4 px-8 py-5 border-b border-[#1E3A5F]/5">
+            <div
+              class="flex items-center gap-2 bg-[#1E3A5F]/5 rounded-full px-4 py-4 min-w-0 flex-1"
+            >
+              <i class="pi pi-search text-[#1E3A5F]/40 text-sm flex-shrink-0"></i>
+
+              <input
+                type="text"
+                [ngModel]="termeRecherche()"
+                (ngModelChange)="termeRecherche.set($event)"
+                placeholder="Rechercher une activité..."
+                class="bg-transparent outline-none text-sm text-[#1E3A5F] placeholder:text-[#1E3A5F]/40 min-w-0 w-full"
+              />
+            </div>
+
+            <div class="flex items-center gap-2 flex-shrink-0">
+              @for (f of filtres; track f.label) {
+                <button
+                  (click)="filtreStatut.set(f.value)"
+                  class="px-4 py-4 rounded-full text-xs font-bold transition-all whitespace-nowrap"
+                  [class]="
+                    filtreStatut() === f.value
+                      ? 'bg-[#1E3A5F] text-white'
+                      : 'bg-[#1E3A5F]/5 text-[#1E3A5F]/60 hover:bg-[#1E3A5F]/10'
+                  "
+                >
+                  {{ f.label }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- En-tête colonnes : première colonne réduite -->
+          <div
+            class="grid grid-cols-[240px_100px_110px_90px_1fr] gap-50 px-8 py-4 border-b border-[#1E3A5F]/5" >
+            <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">
+              Titre
+            </span>
+
+            <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">
+              Type
+            </span>
+
+            <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">
+              Date
+            </span>
+
+            <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">
+              Statut
+            </span>
+
+            <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">
+              Action
+            </span>
+          </div>
+
+          <!-- Contenu du tableau -->
+          @if (service.isLoading()) {
+            <div class="flex justify-center py-16">
+              <i class="pi pi-spin pi-spinner text-2xl text-[#1E3A5F]/40"></i>
+            </div>
+          } @else if (activitesFiltrees().length === 0) {
+            <div class="flex flex-col items-center justify-center py-16 text-center">
+              <i class="pi pi-calendar text-3xl text-[#1E3A5F]/20 mb-3"></i>
+              <p class="text-[#1A1D23]/40 font-semibold">Aucune activité trouvée</p>
+            </div>
+          } @else {
+            @for (activite of activitesFiltrees(); track activite.id) {
+              <!-- Ligne : même grille que l'en-tête -->
+              <div
+                class="grid grid-cols-[240px_100px_110px_90px_1fr] gap-50 px-8 py-[18px] items-center border-t border-[#1E3A5F]/5">
+
+                <div class="min-w-0 overflow-hidden pr-4">
+                  <p class="text-[#1E3A5F] text-sm font-semibold truncate">
+                    {{ activite.titre }}
+                  </p>
+
+                  <p class="text-[#1A1D23]/40 text-xs truncate flex items-center gap-1">
+                    <i class="pi pi-map-marker text-[10px] flex-shrink-0"></i>
+                    <span class="truncate">{{ activite.lieu }}</span>
+                  </p>
+                </div>
+
+                <!-- Type -->
+                <span class="text-[#1A1D23]/60 text-sm truncate pr-2">
+                  {{ labelType(activite.typeActivite) }}
+                </span>
+
+                <!-- Date -->
+                <div class="min-w-0">
+                  <p class="text-[#1A1D23]/60 text-sm">
+                    {{ activite.dateActivite | date: 'dd/MM/yyyy' }}
+                  </p>
+                  <p class="text-[#1A1D23]/40 text-xs">
+                    {{ activite.dateActivite | date: 'HH:mm' }}
+                  </p>
+                </div>
+
+                <!-- Statut -->
+                <span
+                  class="w-fit inline-flex items-center px-2 py-[3px] rounded-full text-[10px] font-bold whitespace-nowrap"
+                  [class]="badgeClass(activite.statut)"
+                >
+                  {{ labelStatut(activite.statut) }}
+                </span>
+
+                <!-- Actions -->
+                <div class="flex items-center gap-3">
+                  <button
+                    type="button"
+                    (click)="ouvrirDetail(activite)"
+                    class="text-[#1E3A5F] text-xs font-bold cursor-pointer whitespace-nowrap hover:text-[#1E3A5F]/60"
+                  >
+                    Détail
+                  </button>
+
+                  @if (activite.statut === 'en_cours' || activite.statut === 'terminee') {
+                    <button
+                      type="button"
+                      (click)="ouvrirPresences(activite)"
+                      class="text-[#2E7D5B] text-xs font-bold cursor-pointer whitespace-nowrap hover:text-[#2E7D5B]/60"
+                    >
+                      Présences
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          }
+        </div>
+      </div>
+    </main>
+
+    <app-bottom-nav></app-bottom-nav>
   </div>
 </div>
 
-<app-bottom-nav />
+<!-- ════════════════════════════════
+     MODAL : Planifier une activité
+════════════════════════════════ -->
+<p-dialog
+  [(visible)]="modalPlanifierVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  [style]="{ width: '560px' }"
+  [contentStyle]="{ overflow: 'visible', padding: '24px' }"
+  header="Planifier une activité"
+>
+  <div class="flex flex-col gap-5">
+    @if (erreurPlanifier()) {
+      <div class="bg-red-50 text-red-600 text-sm rounded-xl p-3 flex items-center gap-2">
+        <i class="pi pi-exclamation-circle shrink-0"></i>
+        {{ erreurPlanifier() }}
+      </div>
+    }
+
+    @if (service.errorMessage()) {
+      <div class="bg-red-50 text-red-600 text-sm rounded-xl p-3 flex items-center gap-2">
+        <i class="pi pi-exclamation-circle shrink-0"></i>
+        {{ service.errorMessage() }}
+      </div>
+    }
+
+    <div class="flex flex-col gap-1.5">
+      <label class="text-sm font-medium text-[#1E3A5F]"> Titre de l'activité </label>
+      <input
+        pInputText
+        [ngModel]="titrePlanifier()"
+        (ngModelChange)="titrePlanifier.set($event)"
+        placeholder="Ex. Réunion mensuelle de janvier"
+        class="w-full"
+      />
+    </div>
+
+    <div class="flex flex-col gap-1.5">
+      <label class="text-sm font-medium text-[#1E3A5F]">Lieu</label>
+      <input
+        pInputText
+        [ngModel]="lieupPlanifier()"
+        (ngModelChange)="lieupPlanifier.set($event)"
+        placeholder="Ex. Salle communautaire"
+        class="w-full"
+      />
+    </div>
+
+    <div class="flex flex-col gap-1.5">
+      <label class="text-sm font-medium text-[#1E3A5F]">Date et heure</label>
+      <input
+        type="datetime-local"
+        [ngModel]="datePlanifier()"
+        (ngModelChange)="datePlanifier.set($event)"
+        class="w-full border border-[#1E3A5F]/20 rounded-xl px-4 py-2.5 text-[#1E3A5F] bg-white"
+      />
+    </div>
+
+    <div class="flex flex-col gap-1.5">
+      <label class="text-sm font-medium text-[#1E3A5F]">Type d'activité</label>
+      <select
+        [ngModel]="typePlanifier()"
+        (ngModelChange)="typePlanifier.set($event)"
+        class="w-full border border-[#1E3A5F]/20 rounded-xl px-4 py-2.5 text-[#1E3A5F] bg-white"
+      >
+        @for (t of typesActivite; track t.value) {
+          <option [value]="t.value">{{ t.label }}</option>
+        }
+      </select>
+    </div>
+
+    <button
+      type="button"
+      (click)="envoyerPlanifier()"
+      [disabled]="service.isLoading()"
+      class="w-full bg-[#1E3A5F] text-white font-semibold rounded-xl py-3.5 flex items-center justify-center gap-2 disabled:opacity-50"
+    >
+      @if (service.isLoading()) {
+        <i class="pi pi-spin pi-spinner"></i>
+      }
+      Planifier l'activité
+    </button>
+  </div>
+</p-dialog>
+
+<!-- ════════════════════════════════
+     MODAL : Détail activité
+════════════════════════════════ -->
+<p-dialog
+  [(visible)]="modalDetailVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  [style]="{ width: '600px' }"
+  [contentStyle]="{ padding: '24px' }"
+  header="Détail de l'activité"
+>
+  @if (activiteDetail(); as a) {
+    <div class="flex flex-col gap-5">
+      <!-- Carte principale -->
+      <div class="bg-[#F7F8FA] rounded-2xl p-5">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-bold text-[#1E3A5F]/50 uppercase tracking-wide">
+            {{ labelType(a.typeActivite) }}
+          </span>
+
+          <span
+            class="inline-flex items-center px-2 py-[3px] rounded-full text-[10px] font-bold"
+            [class]="badgeClass(a.statut)"
+          >
+            {{ labelStatut(a.statut) }}
+          </span>
+        </div>
+
+        <h3 class="font-bold text-[#1E3A5F] text-lg mb-4">{{ a.titre }}</h3>
+
+        <div class="grid grid-cols-2 gap-3 text-sm">
+          <div class="flex items-center gap-2">
+            <i class="pi pi-calendar text-[#1E3A5F]/40 text-xs"></i>
+            <span class="text-[#1E3A5F]/70">{{ a.dateActivite | date: 'dd/MM/yyyy' }}</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <i class="pi pi-clock text-[#1E3A5F]/40 text-xs"></i>
+            <span class="text-[#1E3A5F]/70">{{ a.dateActivite | date: 'HH:mm' }}</span>
+          </div>
+
+          <div class="flex items-center gap-2 col-span-2">
+            <i class="pi pi-map-marker text-[#1E3A5F]/40 text-xs"></i>
+            <span class="text-[#1E3A5F]/70">{{ a.lieu }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ordre du jour -->
+      @if (a.ordreDuJour) {
+        <div>
+          <p class="text-xs font-bold text-[#1E3A5F]/50 uppercase tracking-wide mb-2">
+            Ordre du jour
+          </p>
+          <p
+            class="text-sm text-[#1A1D23]/70 leading-relaxed whitespace-pre-line bg-[#F7F8FA] rounded-xl p-4"
+          >
+            {{ a.ordreDuJour }}
+          </p>
+        </div>
+      }
+
+      <!-- Compte rendu -->
+      @if (a.compteRendu) {
+        <div>
+          <p class="text-xs font-bold text-[#1E3A5F]/50 uppercase tracking-wide mb-2">
+            Compte rendu
+          </p>
+          <p
+            class="text-sm text-[#1A1D23]/70 leading-relaxed whitespace-pre-line bg-[#F7F8FA] rounded-xl p-4"
+          >
+            {{ a.compteRendu }}
+          </p>
+        </div>
+      }
+
+      <!-- Actions selon statut -->
+      @if (estPresidentOuSecretaire()) {
+        @if (a.statut === 'planifiee') {
+          <div class="flex flex-col gap-3 pt-2 border-t border-[#1E3A5F]/5">
+            @if (estJourJ()) {
+              <button
+                type="button"
+                (click)="modalDemarrerVisible.set(true)"
+                class="w-full bg-[#1E3A5F] text-white font-semibold rounded-xl py-3 flex items-center justify-center gap-2"
+              >
+                <i class="pi pi-play"></i>
+                Démarrer l'activité
+              </button>
+            } @else {
+              <div
+                class="w-full bg-[#1A1D23]/10 text-[#1A1D23]/50 font-semibold rounded-xl py-3 flex items-center justify-center gap-2 text-sm"
+              >
+                <i class="pi pi-clock"></i>
+                Démarrage possible le jour J uniquement
+              </div>
+            }
+
+            <button
+              type="button"
+              (click)="modalAnnulerVisible.set(true)"
+              class="w-full border border-[#C1654A]/30 text-[#C1654A] font-semibold rounded-xl py-3 text-sm"
+            >
+              Annuler l'activité
+            </button>
+          </div>
+        }
+
+        @if (a.statut === 'en_cours') {
+          <div class="flex flex-col gap-3 pt-2 border-t border-[#1E3A5F]/5">
+            <button
+              type="button"
+              (click)="modalDetailVisible.set(false); ouvrirPresences(a)"
+              class="w-full bg-[#1E3A5F] text-white font-semibold rounded-xl py-3 flex items-center justify-center gap-2"
+            >
+              <i class="pi pi-users"></i>
+              Gérer les présences
+            </button>
+
+            <button
+              type="button"
+              (click)="modalTerminerVisible.set(true)"
+              class="w-full border border-[#1E3A5F]/20 text-[#1E3A5F] font-semibold rounded-xl py-3 flex items-center justify-center gap-2"
+            >
+              <i class="pi pi-check"></i>
+              Terminer l'activité
+            </button>
+          </div>
+        }
+      }
+
+      @if (a.statut === 'en_cours' || a.statut === 'terminee') {
+        <button
+          type="button"
+          (click)="modalDetailVisible.set(false); ouvrirPresences(a)"
+          class="w-full border border-[#1E3A5F]/20 text-[#1E3A5F] font-semibold rounded-xl py-3 flex items-center justify-center gap-2 text-sm"
+        >
+          <i class="pi pi-users text-xs"></i>
+          Voir les présences
+        </button>
+      }
+    </div>
+  }
+</p-dialog>
+
+<!-- ════════════════════════════════
+     MODAL : Démarrer activité
+════════════════════════════════ -->
+<p-dialog
+  [(visible)]="modalDemarrerVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  [style]="{ width: '480px' }"
+  [contentStyle]="{ padding: '24px' }"
+  header="Démarrer l'activité"
+>
+  <div class="flex flex-col gap-5">
+    <div class="flex flex-col gap-1.5">
+      <label class="text-sm font-medium text-[#1E3A5F]">
+        Ordre du jour
+        <span class="text-[#1A1D23]/40 font-normal">(optionnel)</span>
+      </label>
+
+      <textarea
+        rows="4"
+        [ngModel]="ordreDuJour()"
+        (ngModelChange)="ordreDuJour.set($event)"
+        placeholder="Présentation des résultats et échanges..."
+        class="w-full border border-[#1E3A5F]/20 rounded-xl px-4 py-3 text-[#1E3A5F] outline-none bg-white resize-none"
+      ></textarea>
+    </div>
+
+    <button
+      type="button"
+      (click)="confirmerDemarrer()"
+      [disabled]="service.isLoading()"
+      class="w-full bg-[#1E3A5F] text-white font-semibold rounded-xl py-3.5 flex items-center justify-center gap-2 disabled:opacity-50"
+    >
+      @if (service.isLoading()) {
+        <i class="pi pi-spin pi-spinner"></i>
+      } @else {
+        <i class="pi pi-play"></i>
+      }
+      Démarrer
+    </button>
+  </div>
+</p-dialog>
+
+<!-- ════════════════════════════════
+     MODAL : Terminer activité
+════════════════════════════════ -->
+<p-dialog
+  [(visible)]="modalTerminerVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  [style]="{ width: '480px' }"
+  [contentStyle]="{ padding: '24px' }"
+  header="Terminer l'activité"
+>
+  <div class="flex flex-col gap-5">
+    <div class="flex flex-col gap-1.5">
+      <label class="text-sm font-medium text-[#1E3A5F]">
+        Compte rendu <span class="text-red-500">*</span>
+      </label>
+
+      <textarea
+        rows="5"
+        [ngModel]="compteRendu()"
+        (ngModelChange)="compteRendu.set($event); erreurCompteRendu.set(false)"
+        placeholder="Les décisions prises lors de la réunion..."
+        [class]="
+          erreurCompteRendu()
+            ? 'w-full border border-red-400 rounded-xl px-4 py-3 text-[#1E3A5F] outline-none bg-white resize-none'
+            : 'w-full border border-[#1E3A5F]/20 rounded-xl px-4 py-3 text-[#1E3A5F] outline-none bg-white resize-none'
+        "
+      ></textarea>
+
+      @if (erreurCompteRendu()) {
+        <span class="text-xs text-red-500 flex items-center gap-1">
+          <i class="pi pi-exclamation-triangle text-xs"></i>
+          Le compte rendu est obligatoire
+        </span>
+      }
+    </div>
+
+    <button
+      type="button"
+      (click)="confirmerTerminer()"
+      [disabled]="service.isLoading()"
+      class="w-full bg-[#2E7D5B] text-white font-semibold rounded-xl py-3.5 flex items-center justify-center gap-2 disabled:opacity-50"
+    >
+      @if (service.isLoading()) {
+        <i class="pi pi-spin pi-spinner"></i>
+      } @else {
+        <i class="pi pi-check"></i>
+      }
+      Terminer l'activité
+    </button>
+  </div>
+</p-dialog>
+
+<!-- ════════════════════════════════
+     MODAL : Annuler activité
+════════════════════════════════ -->
+<p-dialog
+  [(visible)]="modalAnnulerVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  [style]="{ width: '440px' }"
+  [contentStyle]="{ padding: '24px' }"
+  header="Annuler l'activité ?"
+>
+  <div class="flex flex-col gap-5">
+    <div class="flex justify-center">
+      <div class="w-14 h-14 rounded-full bg-[#C1654A]/10 flex items-center justify-center">
+        <i class="pi pi-exclamation-triangle text-[#C1654A] text-2xl"></i>
+      </div>
+    </div>
+
+    <p class="text-sm text-[#1A1D23]/60 text-center">
+      Cette action est irréversible. L'activité sera marquée comme annulée.
+    </p>
+
+    <div class="flex gap-3">
+      <button
+        type="button"
+        (click)="modalAnnulerVisible.set(false)"
+        class="flex-1 border border-[#1E3A5F]/20 text-[#1E3A5F] font-semibold rounded-xl py-3"
+      >
+        Garder
+      </button>
+
+      <button
+        type="button"
+        (click)="confirmerAnnuler()"
+        [disabled]="service.isLoading()"
+        class="flex-1 bg-[#C1654A] text-white font-semibold rounded-xl py-3 flex items-center justify-center gap-2 disabled:opacity-50"
+      >
+        @if (service.isLoading()) {
+          <i class="pi pi-spin pi-spinner"></i>
+        }
+        Confirmer
+      </button>
+    </div>
+  </div>
+</p-dialog>
+
+<!-- ════════════════════════════════
+     MODAL : Présences
+════════════════════════════════ -->
+<p-dialog
+  [(visible)]="modalPresencesVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  [style]="{ width: '600px' }"
+  [contentStyle]="{ padding: '24px' }"
+  header="Présences"
+>
+  <div class="flex flex-col gap-5">
+    @if (succesPresences()) {
+      <!-- Succès -->
+      <div class="flex flex-col items-center text-center gap-4 py-4">
+        <div class="w-16 h-16 rounded-full bg-[#2E7D5B]/10 flex items-center justify-center">
+          <i class="pi pi-check text-[#2E7D5B] text-2xl"></i>
+        </div>
+
+        <div>
+          <p class="font-bold text-[#1E3A5F] text-lg">Présences enregistrées</p>
+          <p class="text-sm text-[#1A1D23]/50 mt-1">
+            {{ nbPresents() }} présents · {{ nbAbsents() }} absents · {{ nbTotal() }} membres
+          </p>
+        </div>
+
+        <button
+          type="button"
+          (click)="modalPresencesVisible.set(false)"
+          class="w-full bg-[#1E3A5F] text-white font-semibold rounded-xl py-3"
+        >
+          Fermer
+        </button>
+      </div>
+    } @else {
+      <!-- Statistiques -->
+      <div class="grid grid-cols-3 gap-3">
+        <div class="bg-[#F7F8FA] rounded-2xl p-4 text-center">
+          <p class="font-bold text-xl text-[#1E3A5F]">{{ nbTotal() }}</p>
+          <p class="text-[10px] text-[#1A1D23]/40 uppercase font-bold mt-1">Total</p>
+        </div>
+
+        <div class="bg-[#2E7D5B]/10 rounded-2xl p-4 text-center">
+          <p class="font-bold text-xl text-[#2E7D5B]">{{ nbPresents() }}</p>
+          <p class="text-[10px] text-[#2E7D5B]/60 uppercase font-bold mt-1">Présents</p>
+        </div>
+
+        <div class="bg-[#C1654A]/10 rounded-2xl p-4 text-center">
+          <p class="font-bold text-xl text-[#C1654A]">{{ nbAbsents() }}</p>
+          <p class="text-[10px] text-[#C1654A]/60 uppercase font-bold mt-1">Absents</p>
+        </div>
+      </div>
+
+      <!-- Liste membres -->
+      @if (service.isLoading()) {
+        <div class="flex justify-center py-8">
+          <i class="pi pi-spin pi-spinner text-2xl text-[#1E3A5F]/40"></i>
+        </div>
+      } @else {
+        <div class="flex flex-col gap-2 max-h-80 overflow-y-auto">
+          @for (membre of membresPresences(); track membre.id) {
+            <div class="flex items-center gap-3 bg-[#F7F8FA] rounded-xl p-3">
+              <div
+                class="w-9 h-9 rounded-full bg-[#1E3A5F]/10 flex items-center justify-center flex-shrink-0"
+              >
+                <span class="text-[#1E3A5F] text-xs font-bold">
+                  {{ membre.prenom + ' ' + membre.nom | initiales }}
+                </span>
+              </div>
+
+              <div class="flex-1 min-w-0">
+                <p class="text-[#1E3A5F] text-sm font-medium truncate">
+                  {{ membre.prenom }} {{ membre.nom }}
+                </p>
+              </div>
+
+              @if (!presencesDejaEnregistrees() && estPresidentOuSecretaire()) {
+                <div class="flex gap-2 flex-shrink-0">
+                  <button
+                    (click)="setStatut(membre, 'present')"
+                    class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                    [class]="
+                      membre.statut === 'present'
+                        ? 'bg-[#2E7D5B] text-white'
+                        : 'border border-[#1E3A5F]/20 text-[#1E3A5F]/60 hover:bg-[#2E7D5B]/10'
+                    "
+                  >
+                    Présent
+                  </button>
+
+                  <button
+                    (click)="setStatut(membre, 'absent')"
+                    class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                    [class]="
+                      membre.statut === 'absent'
+                        ? 'bg-[#C1654A] text-white'
+                        : 'border border-[#1E3A5F]/20 text-[#1E3A5F]/60 hover:bg-[#C1654A]/10'
+                    "
+                  >
+                    Absent
+                  </button>
+                </div>
+              } @else {
+                @if (membre.statut === 'present') {
+                  <span
+                    class="text-xs font-bold text-[#2E7D5B] bg-[#2E7D5B]/10 px-2 py-1 rounded-lg flex-shrink-0"
+                  >
+                    Présent
+                  </span>
+                } @else if (membre.statut === 'absent') {
+                  <span
+                    class="text-xs font-bold text-[#C1654A] bg-[#C1654A]/10 px-2 py-1 rounded-lg flex-shrink-0"
+                  >
+                    Absent
+                  </span>
+                } @else {
+                  <span class="text-xs text-[#1A1D23]/30 flex-shrink-0">—</span>
+                }
+              }
+            </div>
+          }
+        </div>
+
+        @if (!presencesDejaEnregistrees() && estPresidentOuSecretaire()) {
+          <button
+            type="button"
+            (click)="enregistrerPresences()"
+            [disabled]="service.isLoading()"
+            class="w-full bg-[#1E3A5F] text-white font-semibold rounded-xl py-3.5 flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            @if (service.isLoading()) {
+              <i class="pi pi-spin pi-spinner"></i>
+            }
+            Enregistrer les présences
+          </button>
+        }
+      }
+    }
+  </div>
+</p-dialog>

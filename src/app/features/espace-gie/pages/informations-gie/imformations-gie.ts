@@ -6,9 +6,11 @@ import { BottomNav } from '../../../../shared/ui/bottom-nav/bottom-nav';
 import { InputTextModule } from 'primeng/inputtext';
 import { DatePipe, NgClass } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { Navbar } from '../../../../shared/ui/navbar/navbar';
+import { GieSidebar } from '../../../../shared/ui/gie-sidebar/gie-sidebar';
 
 @Component({
-  imports: [BottomNav, ReactiveFormsModule, RouterLink, DatePipe, InputTextModule, NgClass],
+  imports: [BottomNav, ReactiveFormsModule, RouterLink, DatePipe, InputTextModule, NgClass, Navbar, GieSidebar],
   selector: 'app-imformations-gie',
   styleUrl: './imformations-gie.css',
   templateUrl: './imformations-gie.html',

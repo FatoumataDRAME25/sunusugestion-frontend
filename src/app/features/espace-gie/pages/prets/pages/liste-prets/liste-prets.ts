@@ -1,22 +1,27 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { DecimalPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
 import { PretService } from '../../../../../../core/services/pret.service';
 import { AuthService } from '../../../../../../core/services/auth.service';
 import { Navbar } from '../../../../../../shared/ui/navbar/navbar';
 import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
+import { GieSidebar } from '../../../../../../shared/ui/gie-sidebar/gie-sidebar';
+import { InitialesPipe } from '../../../../../../shared/pipes/initiales-pipe';
 import { Pret, StatutPret } from '../../../../../../core/models/pret.model';
 
 @Component({
   selector: 'app-liste-prets',
   templateUrl: './liste-prets.html',
-  imports: [RouterLink, DecimalPipe, DatePipe, FormsModule, Navbar, BottomNav],
+  imports: [RouterLink, DecimalPipe, DatePipe, FormsModule, DialogModule, InputTextModule, Navbar, BottomNav, GieSidebar, InitialesPipe],
 })
 export class ListePrets implements OnInit {
 
   protected service = inject(PretService);
   protected authService = inject(AuthService);
+  private router = inject(Router);
 
   termeRecherche = signal('');
   filtreStatut = signal<StatutPret | null>(null);
@@ -39,14 +44,78 @@ export class ListePrets implements OnInit {
 
   estPresident = computed(() => this.authService.currentUser()?.role === 'president');
   estTresorier = computed(() => this.authService.currentUser()?.role === 'tresorier');
-  // Tous les membres du GIE peuvent faire une demande de prêt
   peutDemanderPret = computed(() => {
     const r = this.authService.currentUser()?.role;
     return r === 'membre' || r === 'secretaire' || r === 'president' || r === 'tresorier';
   });
 
+  // ── Modal Détail desktop ──
+  modalDetailVisible = signal(false);
+  pretDetail = signal<Pret | null>(null);
+
+  ouvrirDetail(pret: Pret): void {
+    this.pretDetail.set(pret);
+    this.modalDetailVisible.set(true);
+  }
+
+  // ── Modal Demande de prêt desktop ──
+  modalDemandeVisible = signal(false);
+  montantDemande = signal('');
+  erreurMontantDemande = signal<string | null>(null);
+  succesDemandeVisible = signal(false);
+
+  ouvrirModalDemande(): void {
+    this.montantDemande.set('');
+    this.erreurMontantDemande.set(null);
+    this.succesDemandeVisible.set(false);
+    this.service.errorMessage.set(null);
+    this.modalDemandeVisible.set(true);
+  }
+
+  envoyerDemande(): void {
+    const val = String(this.montantDemande()).trim();
+    if (!val) {
+      this.erreurMontantDemande.set('Le montant est obligatoire.');
+      return;
+    }
+    const montantNum = Number(val);
+    if (isNaN(montantNum) || montantNum <= 0) {
+      this.erreurMontantDemande.set('Le montant doit être supérieur à 0.');
+      return;
+    }
+    this.erreurMontantDemande.set(null);
+    this.service.demanderPret({ montant: val }).subscribe({
+      next: () => {
+        this.succesDemandeVisible.set(true);
+        this.ngOnInit();
+      }
+    });
+  }
+
+  fermerModalDemande(): void {
+    this.modalDemandeVisible.set(false);
+    this.succesDemandeVisible.set(false);
+  }
+
+  naviguerDemande(): void {
+    this.router.navigate(['/mon-espace/prets/demande']);
+  }
+
   ngOnInit(): void {
     this.service.chargerPrets().subscribe();
+    this.service.chargerRegle().subscribe();
+  }
+
+  badgeClass(statut: StatutPret): string {
+    const map: Record<StatutPret, string> = {
+      en_attente: 'bg-[#EA580C]/10 text-[#EA580C]',
+      approuve:   'bg-[#1E3A5F]/10 text-[#1E3A5F]',
+      en_cours:   'bg-[#2E7D5B]/10 text-[#2E7D5B]',
+      rembourse:  'bg-[#1A1D23]/10 text-[#1A1D23]/60',
+      refuse:     'bg-[#C1654A]/10 text-[#C1654A]',
+      en_retard:  'bg-[#C1654A]/10 text-[#C1654A]',
+    };
+    return map[statut] ?? 'bg-[#1A1D23]/10 text-[#1A1D23]/60';
   }
 
   badgeStatut(statut: StatutPret): string {
@@ -63,12 +132,12 @@ export class ListePrets implements OnInit {
 
   labelStatut(statut: StatutPret): string {
     const map: Record<StatutPret, string> = {
-      en_attente: 'EN ATTENTE',
-      approuve:   'APPROUVÉ',
-      en_cours:   'EN COURS',
-      rembourse:  'REMBOURSÉ',
-      refuse:     'REFUSÉ',
-      en_retard:  'EN RETARD',
+      en_attente: 'En attente',
+      approuve:   'Approuvé',
+      en_cours:   'En cours',
+      rembourse:  'Remboursé',
+      refuse:     'Refusé',
+      en_retard:  'En retard',
     };
     return map[statut] ?? statut;
   }

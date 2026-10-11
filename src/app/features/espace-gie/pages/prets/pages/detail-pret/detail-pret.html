@@ -1,471 +1,632 @@
-<app-navbar />
+<div class="relative flex bg-[#F7F8FA] min-h-screen">
+  <app-gie-sidebar></app-gie-sidebar>
+  <div class="flex-1 ml-0 lg:ml-[264px] min-w-0 flex flex-col">
+    <app-navbar titre="Détail du prêt"></app-navbar>
 
-@if (service.isLoading() && !pret()) {
-  <div class="min-h-screen flex items-center justify-center">
-    <i class="pi pi-spin pi-spinner text-3xl text-bleu-nuit"></i>
-  </div>
-}
+    <main class="pb-24 lg:pb-8 lg:pt-20">
 
-@if (pret(); as p) {
-
-  <!-- ===== SUCCÈS ===== -->
-  @if (succesAction()) {
-    <div class="min-h-screen bg-gris-fond flex flex-col items-center justify-center px-lg text-center gap-xl">
-      <div class="w-20 h-20 rounded-full bg-vert-foret flex items-center justify-center">
-        <i class="pi pi-check text-blanc-lait text-3xl"></i>
-      </div>
-      <div>
-        @if (succesAction() === 'approuve') {
-          <h2 class="font-bold text-xl text-anthracite mb-sm">Prêt approuvé</h2>
-          <p class="text-sm text-anthracite/60">Le prêt est en attente de décaissement par le trésorier.</p>
-        }
-        @if (succesAction() === 'decaisse') {
-          <h2 class="font-bold text-xl text-anthracite mb-sm">Décaissement effectué</h2>
-          <p class="text-sm text-anthracite/60">Les fonds ont été remis au bénéficiaire. Le remboursement a débuté.</p>
-        }
-        @if (succesAction() === 'decaisse_en_attente') {
-          <h2 class="font-bold text-xl text-anthracite mb-sm">Décaissement en cours de traitement</h2>
-          <p class="text-sm text-anthracite/60">Le décaissement est en attente de confirmation par le prestataire de paiement.</p>
-        }
-        @if (succesAction() === 'rembourse') {
-          <h2 class="font-bold text-xl text-anthracite mb-sm">Remboursement enregistré</h2>
-          <p class="text-sm text-anthracite/60">Le prêt a été entièrement remboursé.</p>
-        }
-      </div>
-      <button (click)="retourListe()"
-        class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md">
-        Retour aux prêts
-      </button>
-    </div>
-  }
-
-  <!-- ===== CONTENU PRINCIPAL ===== -->
-  @if (!succesAction()) {
-    <div class="min-h-screen bg-gris-fond pb-28">
-      <div class="p-lg">
-
-        <a routerLink="/mon-espace/prets" class="text-anthracite/60 mb-md block">
-          <i class="pi pi-chevron-left text-lg"></i>
-        </a>
-        <h1 class="font-bold text-xl text-anthracite mb-md">Detail du prêt</h1>
-
-        @if (service.errorMessage()) {
-          <div class="bg-rouge-clair text-rouge-alerte text-sm rounded-xl p-md mb-md">
-            {{ service.errorMessage() }}
-          </div>
-        }
-
-        <!-- ── CARTE MEMBRE ── -->
-        <div class="bg-white rounded-xl p-lg shadow-sm mb-md">
-          <div class="flex items-center gap-md mb-md">
-            <div class="w-12 h-12 rounded-full bg-bleu-clair flex items-center justify-center font-bold text-bleu-nuit">
-              {{ initiales(p.membre.prenom, p.membre.nom) }}
-            </div>
-            <div class="flex-1">
-              <p class="font-bold text-anthracite">{{ p.membre.prenom }} {{ p.membre.nom }}</p>
-              <p class="text-xs text-anthracite/50">Demandé le {{ p.dateDemande | date:'dd/MM/yyyy' }}</p>
-            </div>
-            <span [ngClass]="{
-              'bg-or-clair text-or-senegal': p.statut === 'en_attente',
-              'bg-bleu-clair text-bleu-nuit': p.statut === 'approuve',
-              'bg-vert-clair text-vert-foret': p.statut === 'en_cours',
-              'bg-anthracite/10 text-anthracite': p.statut === 'rembourse',
-              'bg-rouge-clair text-rouge-alerte': p.statut === 'refuse' || p.statut === 'en_retard'
-            }" class="text-xs font-bold px-sm py-xs rounded-full uppercase">
-              {{ p.statut === 'en_attente' ? 'EN ATTENTE'
-               : p.statut === 'approuve' ? 'APPROUVÉ'
-               : p.statut === 'en_cours' ? 'EN COURS'
-               : p.statut === 'rembourse' ? 'REMBOURSÉ'
-               : p.statut === 'refuse' ? 'REFUSÉ'
-               : 'EN RETARD' }}
-            </span>
-          </div>
-
-          <div class="grid grid-cols-2 gap-md text-sm">
-
-            @if (p.statut === 'en_attente') {
-              <div>
-                <p class="text-xs text-anthracite/50 uppercase">Montant sollicité</p>
-                <p class="font-bold text-lg text-anthracite">{{ +p.montant | number:'1.0-0' }}<span class="text-xs font-normal ml-xs">FCFA</span></p>
-              </div>
-            }
-
-            @if (p.statut === 'approuve') {
-              <div>
-                <p class="text-xs text-anthracite/50 uppercase">Montant</p>
-                <p class="font-bold text-lg text-anthracite">{{ +p.montant | number:'1.0-0' }}<span class="text-xs font-normal ml-xs">FCFA</span></p>
-              </div>
-              <div>
-                <p class="text-xs text-anthracite/50 uppercase">Durée retenue</p>
-                <p class="font-bold text-anthracite">{{ p.dureeMois }} mois</p>
-              </div>
-              <div>
-                <p class="text-xs text-anthracite/50 uppercase">Approbation</p>
-                <p class="font-semibold text-anthracite">{{ p.dateApprobation | date:'dd/MM/yyyy' }}</p>
-              </div>
-            }
-
-            @if (p.statut === 'en_cours') {
-              <div>
-                <p class="text-xs text-anthracite/50 uppercase">Montant total</p>
-                <p class="font-bold text-lg text-anthracite">{{ +p.montant | number:'1.0-0' }}<span class="text-xs font-normal ml-xs">FCFA</span></p>
-              </div>
-              <div>
-                <p class="text-xs text-anthracite/50 uppercase">Mode paiement</p>
-                <p class="font-semibold text-anthracite flex items-center gap-xs">
-                  @if (p.modePaiement === 'wave') { <img src="images/wave.png" class="h-4" alt="Wave" /> }
-                  @else if (p.modePaiement === 'orange_money') { <img src="images/orange_money.png" class="h-4" alt="Orange Money" /> }
-                  @else { <i class="pi pi-money-bill text-xs"></i> }
-                  {{ p.modePaiement === 'especes' ? 'Espèces' : p.modePaiement === 'wave' ? 'Wave' : 'Orange Money' }}
-                </p>
-              </div>
-              <div>
-                <p class="text-xs text-anthracite/50 uppercase">Approuvé le</p>
-                <p class="font-semibold text-anthracite">{{ p.dateApprobation | date:'dd/MM/yyyy' }}</p>
-              </div>
-              <div>
-                <p class="text-xs text-anthracite/50 uppercase">Échéance</p>
-                <p class="font-bold text-rouge-alerte">{{ p.dateEcheance | date:'dd/MM/yyyy' }}</p>
-              </div>
-            }
-
-            @if (p.statut === 'rembourse') {
-              <div>
-                <p class="text-xs text-anthracite/50 uppercase">Montant payé</p>
-                <p class="font-bold text-lg text-anthracite">{{ +p.montant | number:'1.0-0' }}<span class="text-xs font-normal ml-xs">FCFA</span></p>
-              </div>
-              <div>
-                <p class="text-xs text-anthracite/50 uppercase">Mode paiement</p>
-                <p class="font-semibold text-anthracite flex items-center gap-xs">
-                  @if (p.modePaiement === 'wave') { <img src="images/wave.png" class="h-4" alt="Wave" /> }
-                  @else if (p.modePaiement === 'orange_money') { <img src="images/orange_money.png" class="h-4" alt="Orange Money" /> }
-                  @else { <i class="pi pi-money-bill text-xs"></i> }
-                  {{ p.modePaiement === 'especes' ? 'Espèces' : p.modePaiement === 'wave' ? 'Wave' : 'Orange Money' }}
-                </p>
-              </div>
-              <div>
-                <p class="text-xs text-anthracite/50 uppercase">Approuvé le</p>
-                <p class="font-semibold text-anthracite">{{ p.dateApprobation | date:'dd/MM/yyyy' }}</p>
-              </div>
-              <div>
-                <p class="text-xs text-anthracite/50 uppercase">Date paiement</p>
-                <p class="font-semibold text-anthracite">{{ p.dateRemboursement | date:'dd/MM/yyyy' }}</p>
-              </div>
-            }
-
-          </div>
+      @if (service.isLoading() && !pret()) {
+        <div class="flex items-center justify-center py-24">
+          <i class="pi pi-spin pi-spinner text-3xl text-[#1E3A5F]/40"></i>
         </div>
+      }
 
-        <!-- ── SUIVI / HISTORIQUE ── -->
-        <div class="bg-white rounded-xl p-lg shadow-sm mb-md">
+      @if (pret(); as p) {
 
-          @if (p.statut === 'en_attente') {
-            <p class="text-xs font-semibold text-anthracite/50 uppercase mb-md">Suivi de la demande</p>
-          } @else {
-            <div class="flex items-center gap-sm mb-md">
-              <i class="pi pi-list text-anthracite/50 text-sm"></i>
-              <p class="text-xs font-semibold text-anthracite/50 uppercase">Historique du prêt</p>
-            </div>
-          }
-
-          <div class="flex flex-col gap-xs">
-
-            <!-- Étape 1 : Demande -->
-            <div class="flex gap-md">
-              <div class="flex flex-col items-center">
-                <div class="w-6 h-6 rounded-full bg-vert-foret flex items-center justify-center shrink-0">
-                  <i class="pi pi-check text-blanc-lait text-xs"></i>
-                </div>
-                <div class="w-px flex-1 bg-vert-foret/40 my-xs"></div>
-              </div>
-              <div class="pb-md">
-                <p class="font-semibold text-anthracite text-sm">Demande de prêt</p>
-                <p class="text-xs text-anthracite/50">
-                  {{ p.statut === 'en_attente' ? 'Complété • ' : 'Effectué le ' }}{{ p.dateDemande | date:'dd MMM yyyy' }}
-                </p>
-              </div>
-            </div>
-
-            <!-- Étape 2 : Approbation -->
-            <div class="flex gap-md">
-              <div class="flex flex-col items-center">
-                @if (p.statut === 'en_attente') {
-                  <div class="w-6 h-6 rounded-full border-2 border-bleu-nuit flex items-center justify-center shrink-0">
-                    <div class="w-2 h-2 rounded-full bg-bleu-nuit"></div>
-                  </div>
-                } @else {
-                  <div class="w-6 h-6 rounded-full bg-vert-foret flex items-center justify-center shrink-0">
-                    <i class="pi pi-check text-blanc-lait text-xs"></i>
-                  </div>
-                }
-                <div class="w-px flex-1 my-xs"
-                  [class]="p.statut === 'en_attente' ? 'bg-anthracite/20' : 'bg-vert-foret/40'"></div>
-              </div>
-              <div class="pb-md">
-                <p class="font-semibold text-sm" [class]="p.statut === 'en_attente' ? 'text-bleu-nuit' : 'text-anthracite'">
-                  Approbation (Président)
-                </p>
-                @if (p.statut === 'en_attente') {
-                  <p class="text-xs text-anthracite/50">Étape actuelle</p>
-                } @else {
-                  <p class="text-xs text-anthracite/50">Effectué le {{ p.dateApprobation | date:'dd MMM yyyy' }}</p>
-                }
-              </div>
-            </div>
-
-            <!-- Étape 3 : Décaissement -->
-            <div class="flex gap-md">
-              <div class="flex flex-col items-center">
-                @if (p.statut === 'approuve') {
-                  <div class="w-6 h-6 rounded-full border-2 border-bleu-nuit flex items-center justify-center shrink-0">
-                    <div class="w-2 h-2 rounded-full bg-bleu-nuit"></div>
-                  </div>
-                } @else if (p.statut === 'en_cours' || p.statut === 'rembourse') {
-                  <div class="w-6 h-6 rounded-full bg-vert-foret flex items-center justify-center shrink-0">
-                    <i class="pi pi-check text-blanc-lait text-xs"></i>
-                  </div>
-                } @else {
-                  <div class="w-6 h-6 rounded-full border-2 border-anthracite/20 shrink-0"></div>
-                }
-                <div class="w-px flex-1 my-xs"
-                  [class]="(p.statut === 'en_cours' || p.statut === 'rembourse') ? 'bg-vert-foret/40' : 'bg-anthracite/20'"></div>
-              </div>
-              <div class="pb-md">
-                <p class="font-semibold text-sm"
-                  [class]="p.statut === 'approuve' ? 'text-bleu-nuit'
-                           : (p.statut === 'en_cours' || p.statut === 'rembourse') ? 'text-anthracite'
-                           : 'text-anthracite/40'">
-                  @if (p.modePaiement && p.statut !== 'en_attente' && p.statut !== 'approuve') {
-                    Décaissement ({{ p.modePaiement === 'wave' ? 'Wave' : p.modePaiement === 'orange_money' ? 'Orange Money' : 'Espèces' }})
-                  } @else {
-                    Décaissement des fonds
-                  }
-                </p>
-                @if (p.statut === 'approuve') {
-                  <p class="text-xs text-bleu-nuit font-semibold">Étape actuelle — À traiter</p>
-                } @else if (p.statut === 'en_cours' || p.statut === 'rembourse') {
-                  <p class="text-xs text-anthracite/50">Fonds envoyés</p>
-                } @else {
-                  <p class="text-xs text-anthracite/30">À venir</p>
-                }
-              </div>
-            </div>
-
-            <!-- Étape 4 : Remboursement -->
-            <div class="flex gap-md">
-              <div class="flex flex-col items-center">
-                @if (p.statut === 'rembourse') {
-                  <div class="w-6 h-6 rounded-full bg-vert-foret flex items-center justify-center shrink-0">
-                    <i class="pi pi-check text-blanc-lait text-xs"></i>
-                  </div>
-                } @else if (p.statut === 'en_cours') {
-                  <div class="w-6 h-6 rounded-full border-2 border-bleu-nuit flex items-center justify-center shrink-0">
-                    <div class="w-2 h-2 rounded-full bg-bleu-nuit"></div>
-                  </div>
-                } @else {
-                  <div class="w-6 h-6 rounded-full border-2 border-anthracite/20 shrink-0"></div>
-                }
-              </div>
-              <div>
-                <p class="font-semibold text-sm"
-                  [class]="p.statut === 'rembourse' ? 'text-anthracite'
-                           : p.statut === 'en_cours' ? 'text-bleu-nuit'
-                           : 'text-anthracite/40'">
-                  @if (p.statut === 'rembourse') { Remboursement } @else { Phase de remboursement }
-                </p>
-                @if (p.statut === 'rembourse') {
-                  <p class="text-xs text-anthracite/50">Le {{ p.dateRemboursement | date:'dd/MM/yyyy' }}</p>
-                } @else if (p.statut === 'en_cours') {
-                  <p class="text-xs text-anthracite/50">Échéance : {{ p.dateEcheance | date:'dd/MM/yyyy' }}</p>
-                } @else {
-                  <p class="text-xs text-anthracite/30">À venir</p>
-                }
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- ── ACTION PRÉSIDENT : approuver (en_attente) ── -->
-        @if (p.statut === 'en_attente' && estPresident()) {
-          <div class="bg-white rounded-xl p-lg shadow-sm mb-md">
-            <h3 class="font-semibold text-anthracite mb-md">Conditions d'approbation</h3>
-            <label class="text-xs font-semibold text-anthracite/60 uppercase mb-sm block">Durée du prêt (mois)</label>
-            <div class="flex items-center border border-anthracite/20 rounded-xl overflow-hidden mb-sm">
-              <select [ngModel]="dureeApprouver()" (ngModelChange)="dureeApprouver.set($event)"
-                class="flex-1 px-md py-md bg-white text-anthracite outline-none">
-                @for (n of [1,2,3,4,5,6,7,8,9,10,11,12]; track n) {
-                  <option [value]="n">{{ n }} mois</option>
-                }
-              </select>
-            </div>
-            @if (regle()) {
-              <p class="text-xs text-bleu-nuit mb-md">
-                <i class="pi pi-info-circle mr-xs"></i>
-                Durée maximale autorisée : {{ regle()!.dureeMaxMois }} mois
-              </p>
-            }
-          </div>
-
-          <div class="flex gap-sm pb-lg">
-            <button class="flex-1 border border-rouge-alerte text-rouge-alerte font-semibold rounded-xl py-md flex items-center justify-center gap-xs">
-              <i class="pi pi-times text-sm"></i> Refuser
-            </button>
-            <button (click)="confirmerApprobation()"
-              [disabled]="service.isLoading()"
-              class="flex-1 bg-vert-foret text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-xs disabled:opacity-50">
-              @if (service.isLoading()) { <i class="pi pi-spin pi-spinner text-sm"></i> }
-              @else { <i class="pi pi-check text-sm"></i> }
-              Approuver
-            </button>
-          </div>
-        }
-
-        <!-- ── ACTION TRÉSORIER : décaissement (approuve) ── -->
-        @if (p.statut === 'approuve' && estTresorier()) {
-          <div class="bg-vert-clair/40 rounded-xl p-md flex items-center gap-md mb-md">
-            <div class="w-8 h-8 rounded-full bg-vert-foret flex items-center justify-center shrink-0">
-              <i class="pi pi-check text-blanc-lait text-sm"></i>
+        <!-- ══ SUCCÈS ══ -->
+        @if (succesAction()) {
+          <div class="flex flex-col items-center justify-center py-24 px-8 text-center gap-6">
+            <div class="w-20 h-20 rounded-full bg-[#2E7D5B] flex items-center justify-center">
+              <i class="pi pi-check text-white text-3xl"></i>
             </div>
             <div>
-              <p class="font-semibold text-vert-foret text-sm">Prêt approuvé</p>
-              <p class="text-xs text-anthracite/60">En attente de décaissement par le trésorier</p>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-xl p-lg shadow-sm mb-md">
-            <h3 class="font-semibold text-anthracite mb-md">Action du Trésorier</h3>
-            <p class="text-xs font-semibold text-anthracite/60 uppercase mb-sm">Mode de paiement</p>
-            <div class="flex gap-sm mb-lg">
-              @for (mode of modesPaiement; track mode.value) {
-                <button (click)="modePaiementSelectionne.set(mode.value)"
-                  [class]="modePaiementSelectionne() === mode.value
-                    ? 'flex-1 border-2 border-vert-foret bg-vert-clair/30 rounded-xl py-md flex flex-col items-center gap-xs'
-                    : 'flex-1 border border-anthracite/20 bg-white rounded-xl py-md flex flex-col items-center gap-xs'">
-                  @if (mode.logo) {
-                    <img [src]="mode.logo" [alt]="mode.label" class="h-5 object-contain" />
-                  } @else {
-                    <i [class]="mode.icone + ' text-lg text-anthracite'"></i>
-                  }
-                  <span class="text-xs font-semibold text-anthracite">{{ mode.label }}</span>
-                </button>
+              @if (succesAction() === 'approuve') {
+                <h2 class="font-bold text-xl text-[#1E3A5F] mb-2">Prêt approuvé</h2>
+                <p class="text-sm text-[#1A1D23]/50">Le prêt est en attente de décaissement par le trésorier.</p>
+              }
+              @if (succesAction() === 'decaisse') {
+                <h2 class="font-bold text-xl text-[#1E3A5F] mb-2">Décaissement effectué</h2>
+                <p class="text-sm text-[#1A1D23]/50">Les fonds ont été remis au bénéficiaire.</p>
+              }
+              @if (succesAction() === 'decaisse_en_attente') {
+                <h2 class="font-bold text-xl text-[#1E3A5F] mb-2">Décaissement en cours</h2>
+                <p class="text-sm text-[#1A1D23]/50">En attente de confirmation par le prestataire.</p>
+              }
+              @if (succesAction() === 'rembourse') {
+                <h2 class="font-bold text-xl text-[#1E3A5F] mb-2">Remboursement enregistré</h2>
+                <p class="text-sm text-[#1A1D23]/50">Le prêt a été entièrement remboursé.</p>
               }
             </div>
-            <button (click)="effectuerDecaissement()"
-              [disabled]="service.isLoading()"
-              class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-50 mb-md">
-              @if (service.isLoading()) { <i class="pi pi-spin pi-spinner"></i> }
-              @else { <i class="pi pi-send"></i> }
-              Effectuer le décaissement
-            </button>
-            <div class="flex items-start gap-sm bg-gris-fond rounded-xl p-sm">
-              <i class="pi pi-shield text-anthracite/40 text-sm shrink-0 mt-xs"></i>
-              <p class="text-xs text-anthracite/50">
-                Note de sécurité : En cliquant sur décaisser, vous confirmez avoir remis les fonds au membre.
-                Cette action est irréversible et génèrera une notification de début de prêt.
-              </p>
-            </div>
-          </div>
-        }
-
-        <!-- ── ACTION MEMBRE / TRÉSORIER : remboursement (en_cours) ── -->
-        @if (p.statut === 'en_cours') {
-          <div class="bg-white rounded-xl p-lg shadow-sm mb-md">
-            <h3 class="font-semibold text-anthracite mb-md">
-              @if (estTresorier() && !estMonPret()) {
-                Enregistrer le remboursement
-              } @else {
-                Rembourser mon prêt
-              }
-            </h3>
-            <p class="text-xs font-semibold text-anthracite/60 uppercase mb-sm">Mode de paiement</p>
-            <div class="flex gap-sm mb-lg">
-              @for (mode of modesPaiementRemboursement(); track mode.value) {
-                <button (click)="modePaiementSelectionne.set(mode.value)"
-                  [class]="modePaiementSelectionne() === mode.value
-                    ? 'flex-1 border-2 border-vert-foret bg-vert-clair/30 rounded-xl py-md flex flex-col items-center gap-xs'
-                    : 'flex-1 border border-anthracite/20 bg-white rounded-xl py-md flex flex-col items-center gap-xs'">
-                  @if (mode.logo) {
-                    <img [src]="mode.logo" [alt]="mode.label" class="h-5 object-contain" />
-                  } @else {
-                    <i [class]="mode.icone + ' text-lg text-anthracite'"></i>
-                  }
-                  <span class="text-xs font-semibold text-anthracite">{{ mode.label }}</span>
-                </button>
-              }
-            </div>
-            <button (click)="modalRembourserVisible.set(true)"
-              [disabled]="service.isLoading()"
-              class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-50">
-              <i class="pi pi-check-circle"></i>
-              Enregistrer le remboursement
+            <button (click)="retourListe()"
+              class="bg-[#1E3A5F] text-white font-semibold rounded-xl px-8 py-3">
+              Retour aux prêts
             </button>
           </div>
         }
 
-      </div>
-    </div>
+        @if (!succesAction()) {
 
-    <app-bottom-nav />
-  }
-}
+          <!-- ════════════════════════════════
+               VERSION MOBILE
+          ════════════════════════════════ -->
+          <div class="lg:hidden min-h-screen bg-gris-fond pb-28">
+            <div class="p-lg">
 
-<!-- ── MODAL CONFIRMATION REMBOURSEMENT ── -->
-@if (modalRembourserVisible() && pret()) {
-  <div class="fixed inset-0 z-50 flex items-end bg-anthracite/50"
-       (click)="modalRembourserVisible.set(false)">
-    <div class="bg-white rounded-t-2xl w-full max-h-[80vh] overflow-y-auto p-lg"
-         (click)="$event.stopPropagation()">
+              <a routerLink="/mon-espace/prets" class="text-anthracite/60 mb-md block">
+                <i class="pi pi-chevron-left text-lg"></i>
+              </a>
+              <h1 class="font-bold text-xl text-anthracite mb-md">Détail du prêt</h1>
 
-      <div class="w-10 h-1 bg-anthracite/20 rounded-full mx-auto mb-lg"></div>
+              @if (service.errorMessage()) {
+                <div class="bg-rouge-clair text-rouge-alerte text-sm rounded-xl p-md mb-md">
+                  {{ service.errorMessage() }}
+                </div>
+              }
 
-      <div class="flex justify-center mb-md">
-        <div class="w-14 h-14 rounded-full bg-bleu-clair flex items-center justify-center">
-          <i class="pi pi-check-circle text-bleu-nuit text-2xl"></i>
-        </div>
-      </div>
+              <!-- Carte membre -->
+              <div class="bg-white rounded-xl p-lg shadow-sm mb-md">
+                <div class="flex items-center gap-md mb-md">
+                  <div class="w-12 h-12 rounded-full bg-bleu-clair flex items-center justify-center font-bold text-bleu-nuit">
+                    {{ initiales(p.membre.prenom, p.membre.nom) }}
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-bold text-anthracite">{{ p.membre.prenom }} {{ p.membre.nom }}</p>
+                    <p class="text-xs text-anthracite/50">Demandé le {{ p.dateDemande | date:'dd/MM/yyyy' }}</p>
+                  </div>
+                  <span [ngClass]="{
+                    'bg-or-clair text-or-senegal': p.statut === 'en_attente',
+                    'bg-bleu-clair text-bleu-nuit': p.statut === 'approuve',
+                    'bg-vert-clair text-vert-foret': p.statut === 'en_cours',
+                    'bg-anthracite/10 text-anthracite': p.statut === 'rembourse',
+                    'bg-rouge-clair text-rouge-alerte': p.statut === 'refuse' || p.statut === 'en_retard'
+                  }" class="text-xs font-bold px-sm py-xs rounded-full uppercase">
+                    {{ p.statut === 'en_attente' ? 'EN ATTENTE'
+                     : p.statut === 'approuve' ? 'APPROUVÉ'
+                     : p.statut === 'en_cours' ? 'EN COURS'
+                     : p.statut === 'rembourse' ? 'REMBOURSÉ'
+                     : p.statut === 'refuse' ? 'REFUSÉ' : 'EN RETARD' }}
+                  </span>
+                </div>
 
-      <h2 class="font-bold text-lg text-anthracite text-center mb-xs">Confirmer le remboursement</h2>
-      <p class="text-sm text-anthracite/60 text-center mb-lg">Veuillez valider les détails du paiement</p>
+                <div class="grid grid-cols-2 gap-md text-sm">
+                  <div>
+                    <p class="text-xs text-anthracite/50 uppercase">Montant</p>
+                    <p class="font-bold text-lg text-anthracite">{{ +p.montant | number:'1.0-0' }}<span class="text-xs font-normal ml-xs">FCFA</span></p>
+                  </div>
+                  @if (p.dureeMois) {
+                    <div>
+                      <p class="text-xs text-anthracite/50 uppercase">Durée</p>
+                      <p class="font-bold text-anthracite">{{ p.dureeMois }} mois</p>
+                    </div>
+                  }
+                  @if (p.dateApprobation) {
+                    <div>
+                      <p class="text-xs text-anthracite/50 uppercase">Approbation</p>
+                      <p class="font-semibold text-anthracite">{{ p.dateApprobation | date:'dd/MM/yyyy' }}</p>
+                    </div>
+                  }
+                  @if (p.dateEcheance) {
+                    <div>
+                      <p class="text-xs text-anthracite/50 uppercase">Échéance</p>
+                      <p class="font-bold text-rouge-alerte">{{ p.dateEcheance | date:'dd/MM/yyyy' }}</p>
+                    </div>
+                  }
+                  @if (p.dateRemboursement) {
+                    <div>
+                      <p class="text-xs text-anthracite/50 uppercase">Remboursé le</p>
+                      <p class="font-semibold text-anthracite">{{ p.dateRemboursement | date:'dd/MM/yyyy' }}</p>
+                    </div>
+                  }
+                  @if (p.modePaiement) {
+                    <div>
+                      <p class="text-xs text-anthracite/50 uppercase">Mode paiement</p>
+                      <p class="font-semibold text-anthracite flex items-center gap-xs">
+                        @if (p.modePaiement === 'wave') { <img src="images/wave.png" class="h-4" alt="Wave" /> }
+                        @else if (p.modePaiement === 'orange_money') { <img src="images/orange_money.png" class="h-4" alt="Orange Money" /> }
+                        @else { <i class="pi pi-money-bill text-xs"></i> }
+                        {{ p.modePaiement === 'especes' ? 'Espèces' : p.modePaiement === 'wave' ? 'Wave' : 'Orange Money' }}
+                      </p>
+                    </div>
+                  }
+                </div>
+              </div>
 
-      <!-- Résumé -->
-      <div class="bg-gris-fond rounded-xl p-md mb-lg flex flex-col gap-sm text-sm">
-        <div class="flex justify-between">
-          <span class="text-anthracite/60">Membre</span>
-          <span class="font-bold text-anthracite">{{ pret()!.membre.prenom }} {{ pret()!.membre.nom }}</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-anthracite/60">Montant</span>
-          <span class="font-bold text-anthracite">{{ +pret()!.montant | number:'1.0-0' }} FCFA</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-anthracite/60">Mode de paiement</span>
-          <span class="font-bold text-anthracite flex items-center gap-xs">
-            @if (modePaiementSelectionne() === 'wave') {
-              <img src="images/wave.png" class="h-4" alt="Wave" /> Wave
-            } @else if (modePaiementSelectionne() === 'orange_money') {
-              <img src="images/orange_money.png" class="h-4" alt="Orange Money" /> Orange Money
-            } @else {
-              <i class="pi pi-money-bill text-xs"></i> Espèces
-            }
-          </span>
-        </div>
-      </div>
+              <!-- Historique -->
+              <div class="bg-white rounded-xl p-lg shadow-sm mb-md">
+                <div class="flex items-center gap-sm mb-md">
+                  <i class="pi pi-list text-anthracite/50 text-sm"></i>
+                  <p class="text-xs font-semibold text-anthracite/50 uppercase">Historique du prêt</p>
+                </div>
+                <div class="flex flex-col gap-xs">
+                  <!-- Étape 1 : Demande -->
+                  <div class="flex gap-md">
+                    <div class="flex flex-col items-center">
+                      <div class="w-6 h-6 rounded-full bg-vert-foret flex items-center justify-center shrink-0">
+                        <i class="pi pi-check text-blanc-lait text-xs"></i>
+                      </div>
+                      <div class="w-px flex-1 bg-vert-foret/40 my-xs"></div>
+                    </div>
+                    <div class="pb-md">
+                      <p class="font-semibold text-anthracite text-sm">Demande de prêt</p>
+                      <p class="text-xs text-anthracite/50">{{ p.dateDemande | date:'dd MMM yyyy' }}</p>
+                    </div>
+                  </div>
+                  <!-- Étape 2 : Approbation -->
+                  <div class="flex gap-md">
+                    <div class="flex flex-col items-center">
+                      @if (p.statut === 'en_attente') {
+                        <div class="w-6 h-6 rounded-full border-2 border-bleu-nuit flex items-center justify-center shrink-0">
+                          <div class="w-2 h-2 rounded-full bg-bleu-nuit"></div>
+                        </div>
+                      } @else {
+                        <div class="w-6 h-6 rounded-full bg-vert-foret flex items-center justify-center shrink-0">
+                          <i class="pi pi-check text-blanc-lait text-xs"></i>
+                        </div>
+                      }
+                      <div class="w-px flex-1 my-xs" [class]="p.statut === 'en_attente' ? 'bg-anthracite/20' : 'bg-vert-foret/40'"></div>
+                    </div>
+                    <div class="pb-md">
+                      <p class="font-semibold text-sm" [class]="p.statut === 'en_attente' ? 'text-bleu-nuit' : 'text-anthracite'">Approbation (Président)</p>
+                      @if (p.statut === 'en_attente') {
+                        <p class="text-xs text-anthracite/50">Étape actuelle</p>
+                      } @else {
+                        <p class="text-xs text-anthracite/50">{{ p.dateApprobation | date:'dd MMM yyyy' }}</p>
+                      }
+                    </div>
+                  </div>
+                  <!-- Étape 3 : Décaissement -->
+                  <div class="flex gap-md">
+                    <div class="flex flex-col items-center">
+                      @if (p.statut === 'approuve') {
+                        <div class="w-6 h-6 rounded-full border-2 border-bleu-nuit flex items-center justify-center shrink-0">
+                          <div class="w-2 h-2 rounded-full bg-bleu-nuit"></div>
+                        </div>
+                      } @else if (p.statut === 'en_cours' || p.statut === 'rembourse') {
+                        <div class="w-6 h-6 rounded-full bg-vert-foret flex items-center justify-center shrink-0">
+                          <i class="pi pi-check text-blanc-lait text-xs"></i>
+                        </div>
+                      } @else {
+                        <div class="w-6 h-6 rounded-full border-2 border-anthracite/20 shrink-0"></div>
+                      }
+                      <div class="w-px flex-1 my-xs" [class]="(p.statut === 'en_cours' || p.statut === 'rembourse') ? 'bg-vert-foret/40' : 'bg-anthracite/20'"></div>
+                    </div>
+                    <div class="pb-md">
+                      <p class="font-semibold text-sm" [class]="p.statut === 'approuve' ? 'text-bleu-nuit' : (p.statut === 'en_cours' || p.statut === 'rembourse') ? 'text-anthracite' : 'text-anthracite/40'">Décaissement des fonds</p>
+                      @if (p.statut === 'approuve') {
+                        <p class="text-xs text-bleu-nuit font-semibold">Étape actuelle</p>
+                      } @else if (p.statut === 'en_cours' || p.statut === 'rembourse') {
+                        <p class="text-xs text-anthracite/50">Fonds envoyés</p>
+                      } @else {
+                        <p class="text-xs text-anthracite/30">À venir</p>
+                      }
+                    </div>
+                  </div>
+                  <!-- Étape 4 : Remboursement -->
+                  <div class="flex gap-md">
+                    <div class="flex flex-col items-center">
+                      @if (p.statut === 'rembourse') {
+                        <div class="w-6 h-6 rounded-full bg-vert-foret flex items-center justify-center shrink-0">
+                          <i class="pi pi-check text-blanc-lait text-xs"></i>
+                        </div>
+                      } @else if (p.statut === 'en_cours') {
+                        <div class="w-6 h-6 rounded-full border-2 border-bleu-nuit flex items-center justify-center shrink-0">
+                          <div class="w-2 h-2 rounded-full bg-bleu-nuit"></div>
+                        </div>
+                      } @else {
+                        <div class="w-6 h-6 rounded-full border-2 border-anthracite/20 shrink-0"></div>
+                      }
+                    </div>
+                    <div>
+                      <p class="font-semibold text-sm" [class]="p.statut === 'rembourse' ? 'text-anthracite' : p.statut === 'en_cours' ? 'text-bleu-nuit' : 'text-anthracite/40'">
+                        {{ p.statut === 'rembourse' ? 'Remboursement' : 'Phase de remboursement' }}
+                      </p>
+                      @if (p.statut === 'rembourse') {
+                        <p class="text-xs text-anthracite/50">{{ p.dateRemboursement | date:'dd/MM/yyyy' }}</p>
+                      } @else if (p.statut === 'en_cours') {
+                        <p class="text-xs text-anthracite/50">Échéance : {{ p.dateEcheance | date:'dd/MM/yyyy' }}</p>
+                      } @else {
+                        <p class="text-xs text-anthracite/30">À venir</p>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-      <div class="flex flex-col gap-sm">
-        <button (click)="enregistrerRemboursement(); modalRembourserVisible.set(false)"
-          [disabled]="service.isLoading()"
-          class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-50">
-          @if (service.isLoading()) { <i class="pi pi-spin pi-spinner"></i> }
-          @else { <i class="pi pi-check"></i> }
-          Confirmer le remboursement
-        </button>
-        <button (click)="modalRembourserVisible.set(false)"
-          class="w-full text-anthracite font-semibold py-sm">
-          Annuler
-        </button>
-      </div>
+              <!-- Action président : approuver -->
+              @if (p.statut === 'en_attente' && estPresident()) {
+                <div class="bg-white rounded-xl p-lg shadow-sm mb-md">
+                  <h3 class="font-semibold text-anthracite mb-md">Conditions d'approbation</h3>
+                  <label class="text-xs font-semibold text-anthracite/60 uppercase mb-sm block">Durée du prêt (mois)</label>
+                  <div class="flex items-center border border-anthracite/20 rounded-xl overflow-hidden mb-sm">
+                    <select [ngModel]="dureeApprouver()" (ngModelChange)="dureeApprouver.set($event)"
+                      class="flex-1 px-md py-md bg-white text-anthracite outline-none">
+                      @for (n of [1,2,3,4,5,6,7,8,9,10,11,12]; track n) {
+                        <option [value]="n">{{ n }} mois</option>
+                      }
+                    </select>
+                  </div>
+                  @if (regle()) {
+                    <p class="text-xs text-bleu-nuit mb-md"><i class="pi pi-info-circle mr-xs"></i>Durée max : {{ regle()!.dureeMaxMois }} mois</p>
+                  }
+                </div>
+                <div class="flex gap-sm pb-lg">
+                  <button class="flex-1 border border-rouge-alerte text-rouge-alerte font-semibold rounded-xl py-md flex items-center justify-center gap-xs">
+                    <i class="pi pi-times text-sm"></i> Refuser
+                  </button>
+                  <button (click)="confirmerApprobation()" [disabled]="service.isLoading()"
+                    class="flex-1 bg-vert-foret text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-xs disabled:opacity-50">
+                    @if (service.isLoading()) { <i class="pi pi-spin pi-spinner text-sm"></i> }
+                    @else { <i class="pi pi-check text-sm"></i> }
+                    Approuver
+                  </button>
+                </div>
+              }
 
-    </div>
+              <!-- Action trésorier : décaisser -->
+              @if (p.statut === 'approuve' && estTresorier()) {
+                <div class="bg-white rounded-xl p-lg shadow-sm mb-md">
+                  <h3 class="font-semibold text-anthracite mb-md">Décaissement</h3>
+                  <p class="text-xs font-semibold text-anthracite/60 uppercase mb-sm">Mode de paiement</p>
+                  <div class="flex gap-sm mb-lg">
+                    @for (mode of modesPaiement; track mode.value) {
+                      <button (click)="modePaiementSelectionne.set(mode.value)"
+                        [class]="modePaiementSelectionne() === mode.value
+                          ? 'flex-1 border-2 border-vert-foret bg-vert-clair/30 rounded-xl py-md flex flex-col items-center gap-xs'
+                          : 'flex-1 border border-anthracite/20 bg-white rounded-xl py-md flex flex-col items-center gap-xs'">
+                        @if (mode.logo) { <img [src]="mode.logo" [alt]="mode.label" class="h-5 object-contain" /> }
+                        @else { <i [class]="mode.icone + ' text-lg text-anthracite'"></i> }
+                        <span class="text-xs font-semibold text-anthracite">{{ mode.label }}</span>
+                      </button>
+                    }
+                  </div>
+                  <button (click)="effectuerDecaissement()" [disabled]="service.isLoading()"
+                    class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-50">
+                    @if (service.isLoading()) { <i class="pi pi-spin pi-spinner"></i> }
+                    @else { <i class="pi pi-send"></i> }
+                    Effectuer le décaissement
+                  </button>
+                </div>
+              }
+
+              <!-- Action membre : rembourser -->
+              @if (p.statut === 'en_cours') {
+                <div class="bg-white rounded-xl p-lg shadow-sm mb-md">
+                  <h3 class="font-semibold text-anthracite mb-md">Remboursement</h3>
+                  <p class="text-xs font-semibold text-anthracite/60 uppercase mb-sm">Mode de paiement</p>
+                  <div class="flex flex-col gap-sm mb-lg">
+                    @for (mode of modesPaiementRemboursement(); track mode.value) {
+                      <button (click)="modePaiementSelectionne.set(mode.value)"
+                        [class]="modePaiementSelectionne() === mode.value
+                          ? 'flex items-center gap-md p-md rounded-xl border-2 border-bleu-nuit bg-bleu-clair/10'
+                          : 'flex items-center gap-md p-md rounded-xl border border-anthracite/20 bg-white'">
+                        <div class="w-10 h-10 rounded-xl bg-gris-fond flex items-center justify-center shrink-0">
+                          @if (mode.logo) { <img [src]="mode.logo" [alt]="mode.label" class="h-6 object-contain" /> }
+                          @else { <i [class]="mode.icone + ' text-anthracite text-lg'"></i> }
+                        </div>
+                        <div class="flex-1 text-left">
+                          <p class="font-semibold text-anthracite text-sm">{{ mode.label }}</p>
+                          <p class="text-xs text-anthracite/50">{{ mode.sousTitre }}</p>
+                        </div>
+                      </button>
+                    }
+                  </div>
+                  <button (click)="enregistrerRemboursement()" [disabled]="service.isLoading()"
+                    class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-50">
+                    @if (service.isLoading()) { <i class="pi pi-spin pi-spinner"></i> }
+                    Enregistrer le remboursement
+                  </button>
+                </div>
+              }
+
+            </div>
+          </div>
+
+          <!-- ════════════════════════════════
+               VERSION DESKTOP
+          ════════════════════════════════ -->
+          <div class="hidden lg:block p-10">
+            <div class="max-w-3xl mx-auto">
+
+              <div class="flex items-center gap-3 mb-6">
+                <button (click)="retourListe()" class="text-[#1E3A5F]/50 hover:text-[#1E3A5F]">
+                  <i class="pi pi-arrow-left text-sm"></i>
+                </button>
+                <h1 class="text-[#1E3A5F] text-2xl font-bold">Détail du prêt</h1>
+              </div>
+
+              @if (service.errorMessage()) {
+                <div class="bg-red-50 text-red-600 text-sm rounded-xl p-4 mb-5 flex items-center gap-2">
+                  <i class="pi pi-exclamation-circle shrink-0"></i>
+                  {{ service.errorMessage() }}
+                </div>
+              }
+
+              <div class="grid grid-cols-[1fr_360px] gap-6">
+
+                <!-- Colonne gauche : infos + historique -->
+                <div class="flex flex-col gap-5">
+
+                  <!-- Carte membre -->
+                  <div class="bg-white/60 rounded-2xl p-6 outline outline-1 outline-white/50">
+                    <div class="flex items-center gap-4 mb-5">
+                      <div class="w-12 h-12 rounded-full bg-[#1E3A5F]/10 flex items-center justify-center font-bold text-[#1E3A5F]">
+                        {{ initiales(p.membre.prenom, p.membre.nom) }}
+                      </div>
+                      <div class="flex-1">
+                        <p class="font-bold text-[#1E3A5F]">{{ p.membre.prenom }} {{ p.membre.nom }}</p>
+                        <p class="text-xs text-[#1E3A5F]/50">Demandé le {{ p.dateDemande | date:'dd/MM/yyyy' }}</p>
+                      </div>
+                      <span [ngClass]="{
+                        'bg-[#EA580C]/10 text-[#EA580C]': p.statut === 'en_attente',
+                        'bg-[#1E3A5F]/10 text-[#1E3A5F]': p.statut === 'approuve',
+                        'bg-[#2E7D5B]/10 text-[#2E7D5B]': p.statut === 'en_cours',
+                        'bg-[#1A1D23]/10 text-[#1A1D23]/60': p.statut === 'rembourse',
+                        'bg-[#C1654A]/10 text-[#C1654A]': p.statut === 'refuse' || p.statut === 'en_retard'
+                      }" class="text-xs font-bold px-3 py-1 rounded-full uppercase">
+                        {{ p.statut === 'en_attente' ? 'En attente'
+                         : p.statut === 'approuve' ? 'Approuvé'
+                         : p.statut === 'en_cours' ? 'En cours'
+                         : p.statut === 'rembourse' ? 'Remboursé'
+                         : p.statut === 'refuse' ? 'Refusé' : 'En retard' }}
+                      </span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p class="text-[#1E3A5F]/50 text-xs uppercase mb-1">Montant</p>
+                        <p class="font-bold text-xl text-[#1E3A5F]">{{ +p.montant | number:'1.0-0' }} <span class="text-sm font-normal">FCFA</span></p>
+                      </div>
+                      @if (p.dureeMois) {
+                        <div>
+                          <p class="text-[#1E3A5F]/50 text-xs uppercase mb-1">Durée retenue</p>
+                          <p class="font-bold text-[#1E3A5F]">{{ p.dureeMois }} mois</p>
+                        </div>
+                      }
+                      @if (p.dateApprobation) {
+                        <div>
+                          <p class="text-[#1E3A5F]/50 text-xs uppercase mb-1">Approuvé le</p>
+                          <p class="font-semibold text-[#1E3A5F]">{{ p.dateApprobation | date:'dd/MM/yyyy' }}</p>
+                        </div>
+                      }
+                      @if (p.dateEcheance) {
+                        <div>
+                          <p class="text-[#1E3A5F]/50 text-xs uppercase mb-1">Échéance</p>
+                          <p class="font-bold text-[#C1654A]">{{ p.dateEcheance | date:'dd/MM/yyyy' }}</p>
+                        </div>
+                      }
+                      @if (p.modePaiement) {
+                        <div>
+                          <p class="text-[#1E3A5F]/50 text-xs uppercase mb-1">Mode paiement</p>
+                          <p class="font-semibold text-[#1E3A5F] flex items-center gap-1">
+                            @if (p.modePaiement === 'wave') { <img src="images/wave.png" class="h-4" alt="Wave" /> }
+                            @else if (p.modePaiement === 'orange_money') { <img src="images/orange_money.png" class="h-4" alt="OM" /> }
+                            @else { <i class="pi pi-money-bill text-xs"></i> }
+                            {{ p.modePaiement === 'especes' ? 'Espèces' : p.modePaiement === 'wave' ? 'Wave' : 'Orange Money' }}
+                          </p>
+                        </div>
+                      }
+                      @if (p.dateRemboursement) {
+                        <div>
+                          <p class="text-[#1E3A5F]/50 text-xs uppercase mb-1">Remboursé le</p>
+                          <p class="font-semibold text-[#2E7D5B]">{{ p.dateRemboursement | date:'dd/MM/yyyy' }}</p>
+                        </div>
+                      }
+                    </div>
+                  </div>
+
+                  <!-- Historique / timeline -->
+                  <div class="bg-white/60 rounded-2xl p-6 outline outline-1 outline-white/50">
+                    <p class="text-xs font-bold text-[#1A1D23]/30 uppercase tracking-[1px] mb-5">Historique du prêt</p>
+                    <div class="flex flex-col gap-0">
+
+                      <!-- Demande -->
+                      <div class="flex gap-4">
+                        <div class="flex flex-col items-center">
+                          <div class="w-6 h-6 rounded-full bg-[#2E7D5B] flex items-center justify-center shrink-0">
+                            <i class="pi pi-check text-white text-[10px]"></i>
+                          </div>
+                          <div class="w-px flex-1 bg-[#2E7D5B]/30 my-1"></div>
+                        </div>
+                        <div class="pb-4">
+                          <p class="font-semibold text-[#1E3A5F] text-sm">Demande de prêt</p>
+                          <p class="text-xs text-[#1A1D23]/40">{{ p.dateDemande | date:'dd MMM yyyy' }}</p>
+                        </div>
+                      </div>
+
+                      <!-- Approbation -->
+                      <div class="flex gap-4">
+                        <div class="flex flex-col items-center">
+                          @if (p.statut === 'en_attente') {
+                            <div class="w-6 h-6 rounded-full border-2 border-[#1E3A5F] flex items-center justify-center shrink-0">
+                              <div class="w-2 h-2 rounded-full bg-[#1E3A5F]"></div>
+                            </div>
+                          } @else {
+                            <div class="w-6 h-6 rounded-full bg-[#2E7D5B] flex items-center justify-center shrink-0">
+                              <i class="pi pi-check text-white text-[10px]"></i>
+                            </div>
+                          }
+                          <div class="w-px flex-1 my-1" [class]="p.statut === 'en_attente' ? 'bg-[#1A1D23]/10' : 'bg-[#2E7D5B]/30'"></div>
+                        </div>
+                        <div class="pb-4">
+                          <p class="font-semibold text-sm" [class]="p.statut === 'en_attente' ? 'text-[#1E3A5F]' : 'text-[#1E3A5F]'">Approbation (Président)</p>
+                          <p class="text-xs" [class]="p.statut === 'en_attente' ? 'text-[#1E3A5F] font-semibold' : 'text-[#1A1D23]/40'">
+                            {{ p.statut === 'en_attente' ? 'Étape actuelle' : (p.dateApprobation | date:'dd MMM yyyy') }}
+                          </p>
+                        </div>
+                      </div>
+
+                      <!-- Décaissement -->
+                      <div class="flex gap-4">
+                        <div class="flex flex-col items-center">
+                          @if (p.statut === 'approuve') {
+                            <div class="w-6 h-6 rounded-full border-2 border-[#1E3A5F] flex items-center justify-center shrink-0">
+                              <div class="w-2 h-2 rounded-full bg-[#1E3A5F]"></div>
+                            </div>
+                          } @else if (p.statut === 'en_cours' || p.statut === 'rembourse') {
+                            <div class="w-6 h-6 rounded-full bg-[#2E7D5B] flex items-center justify-center shrink-0">
+                              <i class="pi pi-check text-white text-[10px]"></i>
+                            </div>
+                          } @else {
+                            <div class="w-6 h-6 rounded-full border-2 border-[#1A1D23]/20 shrink-0"></div>
+                          }
+                          <div class="w-px flex-1 my-1" [class]="(p.statut === 'en_cours' || p.statut === 'rembourse') ? 'bg-[#2E7D5B]/30' : 'bg-[#1A1D23]/10'"></div>
+                        </div>
+                        <div class="pb-4">
+                          <p class="font-semibold text-sm" [class]="p.statut === 'approuve' ? 'text-[#1E3A5F]' : (p.statut === 'en_cours' || p.statut === 'rembourse') ? 'text-[#1E3A5F]' : 'text-[#1A1D23]/30'">Décaissement des fonds</p>
+                          <p class="text-xs" [class]="p.statut === 'approuve' ? 'text-[#1E3A5F] font-semibold' : 'text-[#1A1D23]/40'">
+                            {{ p.statut === 'approuve' ? 'Étape actuelle' : (p.statut === 'en_cours' || p.statut === 'rembourse') ? 'Fonds envoyés' : 'À venir' }}
+                          </p>
+                        </div>
+                      </div>
+
+                      <!-- Remboursement -->
+                      <div class="flex gap-4">
+                        <div class="flex flex-col items-center">
+                          @if (p.statut === 'rembourse') {
+                            <div class="w-6 h-6 rounded-full bg-[#2E7D5B] flex items-center justify-center shrink-0">
+                              <i class="pi pi-check text-white text-[10px]"></i>
+                            </div>
+                          } @else if (p.statut === 'en_cours') {
+                            <div class="w-6 h-6 rounded-full border-2 border-[#1E3A5F] flex items-center justify-center shrink-0">
+                              <div class="w-2 h-2 rounded-full bg-[#1E3A5F]"></div>
+                            </div>
+                          } @else {
+                            <div class="w-6 h-6 rounded-full border-2 border-[#1A1D23]/20 shrink-0"></div>
+                          }
+                        </div>
+                        <div>
+                          <p class="font-semibold text-sm" [class]="p.statut === 'rembourse' ? 'text-[#1E3A5F]' : p.statut === 'en_cours' ? 'text-[#1E3A5F]' : 'text-[#1A1D23]/30'">
+                            {{ p.statut === 'rembourse' ? 'Remboursement' : 'Phase de remboursement' }}
+                          </p>
+                          <p class="text-xs text-[#1A1D23]/40">
+                            {{ p.statut === 'rembourse' ? (p.dateRemboursement | date:'dd/MM/yyyy') : p.statut === 'en_cours' ? 'Échéance : ' + (p.dateEcheance | date:'dd/MM/yyyy') : 'À venir' }}
+                          </p>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- Colonne droite : actions -->
+                <div class="flex flex-col gap-5">
+
+                  <!-- Président : approuver -->
+                  @if (p.statut === 'en_attente' && estPresident()) {
+                    <div class="bg-white/60 rounded-2xl p-6 outline outline-1 outline-white/50">
+                      <p class="font-bold text-[#1E3A5F] mb-4">Approuver la demande</p>
+                      <div class="flex flex-col gap-4">
+                        <div>
+                          <label class="text-xs font-semibold text-[#1E3A5F]/50 uppercase mb-2 block">Durée du prêt (mois)</label>
+                          <div class="flex items-center border border-[#1E3A5F]/20 rounded-xl overflow-hidden">
+                            <input type="number" min="1"
+                              [ngModel]="dureeApprouver()" (ngModelChange)="dureeApprouver.set(+$event)"
+                              class="flex-1 px-4 py-2.5 text-[#1E3A5F] outline-none bg-white" />
+                            <span class="px-4 py-2.5 text-sm text-[#1E3A5F]/50 border-l border-[#1E3A5F]/20">mois</span>
+                          </div>
+                          @if (regle()) {
+                            <p class="text-xs text-[#1E3A5F]/50 mt-1"><i class="pi pi-info-circle mr-1"></i>Max : {{ regle()!.dureeMaxMois }} mois</p>
+                          }
+                        </div>
+                        <button (click)="confirmerApprobation()" [disabled]="service.isLoading()"
+                          class="w-full bg-[#2E7D5B] text-white font-semibold rounded-xl py-3 flex items-center justify-center gap-2 disabled:opacity-50">
+                          @if (service.isLoading()) { <i class="pi pi-spin pi-spinner"></i> }
+                          @else { <i class="pi pi-check"></i> }
+                          Approuver
+                        </button>
+                        <button class="w-full border border-[#C1654A] text-[#C1654A] font-semibold rounded-xl py-3">
+                          Refuser
+                        </button>
+                      </div>
+                    </div>
+                  }
+
+                  <!-- Trésorier : décaisser -->
+                  @if (p.statut === 'approuve' && estTresorier()) {
+                    <div class="bg-white/60 rounded-2xl p-6 outline outline-1 outline-white/50">
+                      <p class="font-bold text-[#1E3A5F] mb-4">Décaissement</p>
+                      <p class="text-xs font-semibold text-[#1E3A5F]/50 uppercase mb-3">Mode de paiement</p>
+                      <div class="flex flex-col gap-3 mb-4">
+                        @for (mode of modesPaiement; track mode.value) {
+                          <button (click)="modePaiementSelectionne.set(mode.value)"
+                            class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all"
+                            [class]="modePaiementSelectionne() === mode.value ? 'border-[#1E3A5F] bg-[#1E3A5F]/5' : 'border-[#1E3A5F]/10 bg-white'">
+                            <div class="w-9 h-9 rounded-xl bg-[#F7F8FA] flex items-center justify-center shrink-0">
+                              @if (mode.logo) { <img [src]="mode.logo" [alt]="mode.label" class="h-6 object-contain" /> }
+                              @else { <i [class]="mode.icone + ' text-[#2E7D5B] text-lg'"></i> }
+                            </div>
+                            <div class="flex-1 text-left">
+                              <p class="font-semibold text-[#1E3A5F] text-sm">{{ mode.label }}</p>
+                              <p class="text-xs text-[#1E3A5F]/40">{{ mode.sousTitre }}</p>
+                            </div>
+                            <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0"
+                                 [class]="modePaiementSelectionne() === mode.value ? 'bg-[#1E3A5F] border-[#1E3A5F]' : 'border-[#1E3A5F]/30'">
+                              @if (modePaiementSelectionne() === mode.value) { <i class="pi pi-check text-white text-[8px]"></i> }
+                            </div>
+                          </button>
+                        }
+                      </div>
+                      <button (click)="effectuerDecaissement()" [disabled]="service.isLoading()"
+                        class="w-full bg-[#1E3A5F] text-white font-semibold rounded-xl py-3 flex items-center justify-center gap-2 disabled:opacity-50">
+                        @if (service.isLoading()) { <i class="pi pi-spin pi-spinner"></i> }
+                        @else { <i class="pi pi-send"></i> }
+                        Effectuer le décaissement
+                      </button>
+                    </div>
+                  }
+
+                  <!-- Membre : rembourser -->
+                  @if (p.statut === 'en_cours') {
+                    <div class="bg-white/60 rounded-2xl p-6 outline outline-1 outline-white/50">
+                      <p class="font-bold text-[#1E3A5F] mb-4">Remboursement</p>
+                      <p class="text-xs font-semibold text-[#1E3A5F]/50 uppercase mb-3">Mode de paiement</p>
+                      <div class="flex flex-col gap-3 mb-4">
+                        @for (mode of modesPaiementRemboursement(); track mode.value) {
+                          <button (click)="modePaiementSelectionne.set(mode.value)"
+                            class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all"
+                            [class]="modePaiementSelectionne() === mode.value ? 'border-[#1E3A5F] bg-[#1E3A5F]/5' : 'border-[#1E3A5F]/10 bg-white'">
+                            <div class="w-9 h-9 rounded-xl bg-[#F7F8FA] flex items-center justify-center shrink-0">
+                              @if (mode.logo) { <img [src]="mode.logo" [alt]="mode.label" class="h-6 object-contain" /> }
+                              @else { <i [class]="mode.icone + ' text-[#2E7D5B] text-lg'"></i> }
+                            </div>
+                            <div class="flex-1 text-left">
+                              <p class="font-semibold text-[#1E3A5F] text-sm">{{ mode.label }}</p>
+                              <p class="text-xs text-[#1E3A5F]/40">{{ mode.sousTitre }}</p>
+                            </div>
+                            <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0"
+                                 [class]="modePaiementSelectionne() === mode.value ? 'bg-[#1E3A5F] border-[#1E3A5F]' : 'border-[#1E3A5F]/30'">
+                              @if (modePaiementSelectionne() === mode.value) { <i class="pi pi-check text-white text-[8px]"></i> }
+                            </div>
+                          </button>
+                        }
+                      </div>
+                      <button (click)="enregistrerRemboursement()" [disabled]="service.isLoading()"
+                        class="w-full bg-[#2E7D5B] text-white font-semibold rounded-xl py-3 flex items-center justify-center gap-2 disabled:opacity-50">
+                        @if (service.isLoading()) { <i class="pi pi-spin pi-spinner"></i> }
+                        Enregistrer le remboursement
+                      </button>
+                    </div>
+                  }
+
+                  <!-- Prêt neutre (rembourse/refuse) : rien à faire -->
+                  @if (p.statut === 'rembourse' || p.statut === 'refuse') {
+                    <div class="bg-white/60 rounded-2xl p-6 outline outline-1 outline-white/50 text-center">
+                      <i class="pi pi-check-circle text-[#2E7D5B] text-3xl mb-3 block"></i>
+                      <p class="font-semibold text-[#1E3A5F]">{{ p.statut === 'rembourse' ? 'Prêt remboursé' : 'Prêt refusé' }}</p>
+                      <p class="text-xs text-[#1A1D23]/40 mt-1">Aucune action requise</p>
+                    </div>
+                  }
+
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        }
+      }
+
+    </main>
+    <app-bottom-nav></app-bottom-nav>
   </div>
-}
+</div>

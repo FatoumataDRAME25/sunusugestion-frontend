@@ -2,110 +2,274 @@
 <div class="min-h-screen flex bg-blanc-lait">
 
   <!-- ═══════════════════════════════════════════════════
-       PANNEAU GAUCHE — desktop uniquement (md+)
+       PANNEAU GAUCHE — DESKTOP
   ════════════════════════════════════════════════════ -->
-  <div class="hidden md:flex md:w-1/2 min-h-screen" style="flex: 1 1 0; height: 100vh; position: relative; flex-direction: column; justify-content: center; align-items: flex-start;">
+  <div
+    class="hidden md:flex md:w-1/2 min-h-screen"
+    style="flex: 1 1 0; height: 100vh; position: relative; flex-direction: column; justify-content: center; align-items: flex-start;"
+  >
+    <img
+      src="images/sunugestion.png"
+      alt="Réunion de membres d'un groupement"
+      style="align-self: stretch; flex: 1 1 0; position: relative; object-fit: cover; object-position: top;"
+    />
 
-    <img style="align-self: stretch; flex: 1 1 0; position: relative; object-fit: cover; object-position: top;" src="images/sunugestion.png" alt="Réunion GIE" />
-
-    <!-- Overlay dégradé bas -->
-    <div style="width: 100%; height: 100%; left: 0; top: 0; position: absolute; background: linear-gradient(0deg, rgba(0,0,0,0.60) 0%, rgba(0,0,0,0) 100%);"></div>
+    <!-- Overlay dégradé -->
+    <div
+      style="width: 100%; height: 100%; left: 0; top: 0; position: absolute; background: linear-gradient(0deg, rgba(0,0,0,0.60) 0%, rgba(0,0,0,0) 100%);"
+    ></div>
 
     <!-- Texte en bas à gauche -->
     <div style="max-width: 448px; left: 64px; bottom: 80px; position: absolute;">
-      <img src="images/logo-sunugestion-fond-bleu.png" alt="Logo SunuGestion"
-        style="width: 220px; margin-bottom: 24px;" />
-      <div style="color: white; font-size: 36px; font-family: Inter, sans-serif; font-weight: 700; line-height: 45px; margin-bottom: 16px;">
-        La plateforme qui unit les<br/>groupements.
-      </div>
-      <div style="color: rgba(255,255,255,0.80); font-size: 18px; font-family: Inter, sans-serif; font-weight: 400; line-height: 28px;">
-        Gérez vos cotisations et projets avec une<br/>transparence totale pour tous vos membres.
-      </div>
-    </div>
 
+      <img
+        src="images/logo-sunugestion-fond-bleu.png"
+        alt="Logo SunuGestion"
+        style="width: 220px; margin-bottom: 24px;"
+      />
+
+      <div
+        style="color: white; font-size: 36px; font-family: Inter, sans-serif; font-weight: 700; line-height: 45px; margin-bottom: 16px;"
+      >
+        La plateforme qui unit les<br />
+        groupements.
+      </div>
+
+      <div
+        style="color: rgba(255,255,255,0.80); font-size: 18px; font-family: Inter, sans-serif; font-weight: 400; line-height: 28px;"
+      >
+        Gérez vos cotisations et projets avec une<br />
+        transparence totale pour tous vos membres.
+      </div>
+
+    </div>
   </div>
 
+
   <!-- ═══════════════════════════════════════════════════
-       PANNEAU DROIT — desktop (md+)
+       PANNEAU DROIT — DESKTOP
   ════════════════════════════════════════════════════ -->
-  <div class="hidden md:flex flex-1 items-center justify-center" style="padding: 80px; position: relative; background: #F7F8FA;">
+  <div
+    class="hidden md:flex flex-1 items-center justify-center"
+    style="padding: 80px; position: relative; background: #F7F8FA;"
+  >
 
-    <!-- Cercles décoratifs floutés -->
-    <div style="width: 256px; height: 256px; position: absolute; right: 80px; top: 80px; background: rgba(46,125,91,0.05); border-radius: 9999px; filter: blur(50px);"></div>
-    <div style="width: 256px; height: 256px; position: absolute; left: 80px; bottom: 80px; background: rgba(30,58,95,0.05); border-radius: 9999px; filter: blur(50px);"></div>
+    <!-- Cercles décoratifs -->
+    <div
+      style="width: 256px; height: 256px; position: absolute; right: 80px; top: 80px; background: rgba(46,125,91,0.05); border-radius: 9999px; filter: blur(50px);"
+    ></div>
 
-    <!-- Carte glassmorphism -->
-    <div style="width: 512px; max-width: 512px; padding: 49px; background: rgba(255,255,255,0.60); border-radius: 24px; outline: 1px rgba(255,255,255,0.80) solid; outline-offset: -1px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; flex-direction: column; align-items: center; gap: 40px;">
+    <div
+      style="width: 256px; height: 256px; position: absolute; left: 80px; bottom: 80px; background: rgba(30,58,95,0.05); border-radius: 9999px; filter: blur(50px);"
+    ></div>
+
+
+    <!-- Carte de connexion -->
+    <div
+      style="width: 512px; max-width: 512px; padding: 49px; background: rgba(255,255,255,0.60); border-radius: 24px; outline: 1px rgba(255,255,255,0.80) solid; outline-offset: -1px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; flex-direction: column; align-items: center; gap: 40px;"
+    >
 
       <!-- Logo -->
-      <img src="images/logo-sunu-gestion.png" alt="Logo SunuGestion" style="width: 168px; height: auto;" />
+      <img
+        src="images/logo-sunu-gestion.png"
+        alt="Logo SunuGestion"
+        style="width: 168px; height: auto;"
+      />
 
-      <!-- Champs -->
+
+      <!-- Formulaire -->
       <div style="align-self: stretch; display: flex; flex-direction: column; gap: 24px;">
 
-        @if (authService.errorMessage()) {
-          <div style="background: rgba(220,38,38,0.1); color: #dc2626; font-size: 14px; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; gap: 8px;">
-            <i class="pi pi-exclamation-circle"></i>
-            {{ authService.errorMessage() }}
-          </div>
-        }
-
-        <form (ngSubmit)="seConnecter()" style="display: flex; flex-direction: column; gap: 24px;">
+        <form
+          (ngSubmit)="seConnecter()"
+          style="display: flex; flex-direction: column; gap: 24px;"
+        >
 
           <!-- Téléphone -->
           <div style="display: flex; flex-direction: column; gap: 8px;">
-            <label style="color: rgba(30,58,95,0.80); font-size: 14px; font-family: Inter, sans-serif; font-weight: 600; line-height: 20px;">Téléphone ou e-mail</label>
+
+            <label
+              for="telephone-desktop"
+              style="color: rgba(30,58,95,0.80); font-size: 14px; font-family: Inter, sans-serif; font-weight: 600; line-height: 20px;"
+            >
+              Téléphone
+            </label>
+
             <div style="position: relative; display: flex; align-items: center;">
-              <div style="flex: 1; padding: 18px 16px 18px 48px; background: rgba(255,255,255,0.40); border-radius: 16px; outline: 1px rgba(30,58,95,0.10) solid; outline-offset: -1px; display: flex; align-items: center;">
-                <input type="text" [(ngModel)]="telephone" name="telephone" placeholder="nom@exemple.com ou +221..."
-                  style="flex: 1; background: transparent; border: none; outline: none; color: rgba(30,58,95,1); font-size: 16px; font-family: Inter, sans-serif;" required />
+
+              <div
+                style="flex: 1; padding: 18px 16px 18px 48px; background: rgba(255,255,255,0.40); border-radius: 16px; outline: 1px rgba(30,58,95,0.10) solid; outline-offset: -1px; display: flex; align-items: center;"
+              >
+                <input
+                  id="telephone-desktop"
+                  type="tel"
+                  [(ngModel)]="telephone"
+                  name="telephone"
+                  placeholder="778900000"
+                  autocomplete="username"
+                  required
+                  style="width: 100%; min-width: 0; background: transparent; border: none; outline: none; color: rgba(30,58,95,1); font-size: 16px; font-family: Inter, sans-serif;"
+                />
               </div>
-              <i class="pi pi-user" style="position: absolute; left: 16px; color: rgba(30,58,95,0.40); font-size: 14px;"></i>
+
+              <i
+                class="pi pi-user"
+                aria-hidden="true"
+                style="position: absolute; left: 16px; color: rgba(30,58,95,0.40); font-size: 14px;"
+              ></i>
+
             </div>
           </div>
+
 
           <!-- Code PIN -->
           <div style="display: flex; flex-direction: column; gap: 8px;">
+
             <div style="display: flex; justify-content: space-between; align-items: center;">
-              <label style="color: rgba(30,58,95,0.80); font-size: 14px; font-family: Inter, sans-serif; font-weight: 600; line-height: 20px;">Code PIN</label>
-              <span style="color: #2E7D5B; font-size: 14px; font-family: Inter, sans-serif; font-weight: 500; cursor: pointer;">code PIN oublié ?</span>
+
+              <label
+                for="pin-desktop"
+                style="color: rgba(30,58,95,0.80); font-size: 14px; font-family: Inter, sans-serif; font-weight: 600; line-height: 20px;"
+              >
+                Code PIN
+              </label>
+
+              <span
+                style="color: #2E7D5B; font-size: 14px; font-family: Inter, sans-serif; font-weight: 500;"
+              >
+                Code PIN oublié ?
+              </span>
+
             </div>
+
             <div style="position: relative; display: flex; align-items: center;">
-              <div style="flex: 1; padding: 18px 48px; background: rgba(255,255,255,0.40); border-radius: 16px; outline: 1px rgba(30,58,95,0.10) solid; outline-offset: -1px; display: flex; align-items: center;">
-                <input [type]="pinVisible ? 'text' : 'password'" [(ngModel)]="codePin" name="codePin" placeholder="••••••••"
-                  style="flex: 1; background: transparent; border: none; outline: none; color: rgba(30,58,95,1); font-size: 16px; font-family: Inter, sans-serif;" required />
+
+              <div
+                style="flex: 1; padding: 18px 48px; background: rgba(255,255,255,0.40); border-radius: 16px; outline: 1px rgba(30,58,95,0.10) solid; outline-offset: -1px; display: flex; align-items: center;"
+              >
+                <input
+                  id="pin-desktop"
+                  [type]="pinVisible ? 'text' : 'password'"
+                  [(ngModel)]="codePin"
+                  name="codePin"
+                  placeholder="••••"
+                  maxlength="4"
+                  minlength="4"
+                  pattern="[0-9]{4}"
+                  inputmode="numeric"
+                  autocomplete="current-password"
+                  required
+                  style="width: 100%; min-width: 0; background: transparent; border: none; outline: none; color: rgba(30,58,95,1); font-size: 16px; font-family: Inter, sans-serif;"
+                />
               </div>
-              <i class="pi pi-lock" style="position: absolute; left: 16px; color: rgba(30,58,95,0.40); font-size: 14px;"></i>
-              <button type="button" (click)="pinVisible = !pinVisible"
-                style="position: absolute; right: 16px; background: none; border: none; cursor: pointer; color: rgba(30,58,95,0.40);">
-                <i [class]="pinVisible ? 'pi pi-eye-slash' : 'pi pi-eye'" style="font-size: 16px;"></i>
+
+              <i
+                class="pi pi-lock"
+                aria-hidden="true"
+                style="position: absolute; left: 16px; color: rgba(30,58,95,0.40); font-size: 14px;"
+              ></i>
+
+              <button
+                type="button"
+                (click)="pinVisible = !pinVisible"
+                [attr.aria-label]="pinVisible ? 'Masquer le code PIN' : 'Afficher le code PIN'"
+                style="position: absolute; right: 16px; background: none; border: none; cursor: pointer; color: rgba(30,58,95,0.60);"
+              >
+                <i
+                  [class]="pinVisible ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                  aria-hidden="true"
+                  style="font-size: 16px;"
+                ></i>
               </button>
+
             </div>
           </div>
+
+
+          <!-- MESSAGE D'ERREUR : SOUS LE PIN -->
+          @if (authService.errorMessage(); as message) {
+            <div
+              role="alert"
+              aria-live="assertive"
+              style="background: rgba(220,38,38,0.08); color: #B91C1C; font-size: 14px; font-family: Inter, sans-serif; border: 1px solid rgba(220,38,38,0.18); border-radius: 12px; padding: 12px 14px; display: flex; align-items: flex-start; gap: 10px; line-height: 20px; overflow-wrap: anywhere;"
+            >
+              <i
+                class="pi pi-exclamation-circle"
+                aria-hidden="true"
+                style="font-size: 16px; margin-top: 2px; flex-shrink: 0;"
+              ></i>
+
+              @if (secondesRestantes() !== null) {
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                  <span>
+                    Compte verrouillé pendant 15 minutes après 5 tentatives incorrectes.
+                  </span>
+
+                  <span>
+                    Vous pourrez réessayer dans
+                    <strong>{{ formatTempsRestant(secondesRestantes() ?? 0) }}</strong>.
+                  </span>
+                </div>
+              } @else {
+                <span>{{ message }}</span>
+              }
+            </div>
+          }
+
 
           <!-- Rester connecté -->
           <div style="display: flex; align-items: center; gap: 12px; padding: 0 4px;">
-            <div style="width: 20px; height: 20px; background: white; border-radius: 2.5px; border: 1px solid #767676; flex-shrink: 0;"></div>
-            <span style="color: rgba(26,29,35,0.60); font-size: 14px; font-family: Inter, sans-serif; font-weight: 500; line-height: 20px;">Rester connecté</span>
+
+            <div
+              style="width: 20px; height: 20px; background: white; border-radius: 2.5px; border: 1px solid #767676; flex-shrink: 0;"
+            ></div>
+
+            <span
+              style="color: rgba(26,29,35,0.60); font-size: 14px; font-family: Inter, sans-serif; font-weight: 500; line-height: 20px;"
+            >
+              Rester connecté
+            </span>
+
           </div>
 
-          <!-- Bouton Se connecter -->
-          <button type="submit" [disabled]="authService.isLoading()"
+
+          <!-- Bouton de connexion -->
+          <button
+            type="submit"
+            [disabled]="authService.isLoading()"
+            [style.opacity]="authService.isLoading() ? '0.6' : '1'"
             style="align-self: stretch; padding: 16px; background: #1E3A5F; border-radius: 16px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;"
-            [style.opacity]="authService.isLoading() ? '0.6' : '1'">
+          >
+
             @if (authService.isLoading()) {
-              <i class="pi pi-spin pi-spinner" style="color: white; font-size: 16px;"></i>
+              <i
+                class="pi pi-spin pi-spinner"
+                aria-hidden="true"
+                style="color: white; font-size: 16px;"
+              ></i>
             }
-            <span style="color: white; font-size: 18px; font-family: Inter, sans-serif; font-weight: 700; line-height: 28px;">Se connecter</span>
+
+            <span
+              style="color: white; font-size: 18px; font-family: Inter, sans-serif; font-weight: 700; line-height: 28px;"
+            >
+              Se connecter
+            </span>
+
           </button>
 
         </form>
 
       </div>
 
+
       <!-- Créer mon organisation -->
-      <div style="align-self: stretch; padding-top: 32px; border-top: 1px solid rgba(30,58,95,0.05); display: flex; flex-direction: column; align-items: center;">
-        <a routerLink="/inscription/gie" style="color: rgba(26,29,35,0.60); font-size: 16px; font-family: Inter, sans-serif; font-weight: 400; line-height: 24px; cursor: pointer; text-decoration: none;">
+      <div
+        style="align-self: stretch; padding-top: 32px; border-top: 1px solid rgba(30,58,95,0.05); display: flex; flex-direction: column; align-items: center;"
+      >
+        <a
+          routerLink="/inscription/gie"
+          style="color: rgba(26,29,35,0.60); font-size: 16px; font-family: Inter, sans-serif; font-weight: 400; line-height: 24px; cursor: pointer; text-decoration: none;"
+        >
           Créer mon organisation
         </a>
       </div>
@@ -113,89 +277,211 @@
     </div>
   </div>
 
+
+
   <!-- ═══════════════════════════════════════════════════
-       VERSION MOBILE — plein écran
+       VERSION MOBILE
   ════════════════════════════════════════════════════ -->
-  <div class="flex md:hidden flex-col w-full min-h-screen" style="background: #F7F8FA;">
+  <div
+    class="flex md:hidden flex-col w-full min-h-screen"
+    style="background: #F7F8FA;"
+  >
 
-    <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex;">
+    <div style="align-self: stretch; display: flex; flex-direction: column;">
 
-      <!-- Image + overlay -->
-      <div style="align-self: stretch; height: 400px; position: relative; overflow: hidden; flex-direction: column; justify-content: center; align-items: flex-start; display: flex;">
-        <img style="align-self: stretch; flex: 1 1 0; position: relative; object-fit: cover; object-position: top;" src="images/sunugestion.png" alt="Réunion GIE" />
-        <div style="width: 100%; height: 400px; left: 0; top: 0; position: absolute; background: linear-gradient(180deg, rgba(0,0,0,0.40) 0%, rgba(0,0,0,0) 100%);"></div>
+      <!-- Image -->
+      <div
+        style="align-self: stretch; height: 400px; position: relative; overflow: hidden; display: flex; flex-direction: column;"
+      >
+        <img
+          src="images/sunugestion.png"
+          alt="Réunion de membres d'un groupement"
+          style="width: 100%; height: 100%; position: absolute; inset: 0; object-fit: cover; object-position: top;"
+        />
+
+        <div
+          style="width: 100%; height: 100%; left: 0; top: 0; position: absolute; background: linear-gradient(180deg, rgba(0,0,0,0.40) 0%, rgba(0,0,0,0) 100%);"
+        ></div>
       </div>
 
-      <!-- Carte glassmorphism -->
-      <div style="align-self: stretch; height: 377px; position: relative;">
-        <div style="width: 100%; padding-top: 32px; padding-bottom: 48px; padding-left: 32px; padding-right: 32px; left: 0; top: -96px; position: absolute; background: rgba(255,255,255,0.75); border-top-left-radius: 24px; border-top-right-radius: 24px; outline: 1px rgba(255,255,255,0.80) solid; outline-offset: -1px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); flex-direction: column; justify-content: space-between; align-items: center; display: inline-flex;">
 
-          <!-- Indicateur -->
-          <div style="width: 100%; flex-direction: column; justify-content: flex-start; align-items: center; display: flex;">
-            <div style="padding-bottom: 32px; flex-direction: column; justify-content: flex-start; align-items: center; display: flex;">
-              <div style="width: 48px; height: 6px; background: rgba(30,58,95,0.10); border-radius: 9999px;"></div>
-            </div>
+      <!-- Carte de connexion mobile -->
+      <div style="align-self: stretch; position: relative; margin-top: -96px; z-index: 1;">
+
+        <div
+          style="width: 100%; box-sizing: border-box; padding: 32px 24px 40px; background: rgba(255,255,255,0.85); border-top-left-radius: 24px; border-top-right-radius: 24px; outline: 1px rgba(255,255,255,0.80) solid; outline-offset: -1px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: flex; flex-direction: column; align-items: stretch; gap: 28px;"
+        >
+
+          <!-- Indicateur décoratif -->
+          <div style="width: 100%; display: flex; justify-content: center;">
+            <div
+              style="width: 48px; height: 6px; background: rgba(30,58,95,0.10); border-radius: 9999px;"
+            ></div>
           </div>
 
-          @if (authService.errorMessage()) {
-            <div style="align-self: stretch; background: rgba(220,38,38,0.1); color: #dc2626; font-size: 14px; border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-              <i class="pi pi-exclamation-circle"></i>
-              {{ authService.errorMessage() }}
-            </div>
-          }
 
-          <form (ngSubmit)="seConnecter()" style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 20px; display: flex;">
+          <!-- Formulaire mobile -->
+          <form
+            (ngSubmit)="seConnecter()"
+            style="width: 100%; display: flex; flex-direction: column; gap: 20px;"
+          >
 
             <!-- Téléphone -->
-            <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-end; gap: 8px; display: flex;">
-              <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex;">
-                <div style="color: rgba(30,58,95,0.70); font-size: 12px; font-family: Inter, sans-serif; font-weight: 700; text-transform: uppercase; line-height: 16px; letter-spacing: 0.60px;">Téléphone</div>
-              </div>
-              <div style="align-self: stretch; position: relative; justify-content: flex-start; align-items: center; display: inline-flex;">
-                <div style="flex: 1 1 0; height: 56px; padding: 17px 16px 17px 48px; background: rgba(255,255,255,0.50); border-radius: 16px; outline: 1px rgba(30,58,95,0.10) solid; outline-offset: -1px; display: flex; align-items: center;">
-                  <input type="tel" [(ngModel)]="telephone" name="telephone" placeholder="778900000"
-                    style="flex: 1; background: transparent; border: none; outline: none; color: rgba(30,58,95,1); font-size: 16px; font-family: Inter, sans-serif;" required />
+            <div style="width: 100%; display: flex; flex-direction: column; gap: 8px;">
+
+              <label
+                for="telephone-mobile"
+                style="color: rgba(30,58,95,0.70); font-size: 12px; font-family: Inter, sans-serif; font-weight: 700; text-transform: uppercase; line-height: 16px; letter-spacing: 0.60px;"
+              >
+                Téléphone
+              </label>
+
+              <div style="width: 100%; position: relative; display: flex; align-items: center;">
+
+                <div
+                  style="width: 100%; box-sizing: border-box; height: 56px; padding: 17px 16px 17px 48px; background: rgba(255,255,255,0.50); border-radius: 16px; outline: 1px rgba(30,58,95,0.10) solid; outline-offset: -1px; display: flex; align-items: center;"
+                >
+                  <input
+                    id="telephone-mobile"
+                    type="tel"
+                    [(ngModel)]="telephone"
+                    name="telephoneMobile"
+                    placeholder="778900000"
+                    autocomplete="username"
+                    required
+                    style="width: 100%; min-width: 0; background: transparent; border: none; outline: none; color: rgba(30,58,95,1); font-size: 16px; font-family: Inter, sans-serif;"
+                  />
                 </div>
-                <i class="pi pi-user" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: rgba(30,58,95,0.40); font-size: 14px;"></i>
+
+                <i
+                  class="pi pi-user"
+                  aria-hidden="true"
+                  style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: rgba(30,58,95,0.40); font-size: 14px;"
+                ></i>
+
               </div>
             </div>
+
 
             <!-- Code PIN -->
-            <div style="align-self: stretch; padding-bottom: 16px; flex-direction: column; justify-content: flex-start; align-items: flex-end; gap: 8px; display: flex;">
-              <div style="align-self: stretch; justify-content: space-between; align-items: center; display: flex;">
-                <div style="color: rgba(30,58,95,0.70); font-size: 12px; font-family: Inter, sans-serif; font-weight: 700; text-transform: uppercase; line-height: 16px; letter-spacing: 0.60px;">Code PIN</div>
-                <div style="color: #2E7D5B; font-size: 12px; font-family: Inter, sans-serif; font-weight: 600; line-height: 16px; cursor: pointer;">Oublié ?</div>
+            <div style="width: 100%; display: flex; flex-direction: column; gap: 8px;">
+
+              <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+
+                <label
+                  for="pin-mobile"
+                  style="color: rgba(30,58,95,0.70); font-size: 12px; font-family: Inter, sans-serif; font-weight: 700; text-transform: uppercase; line-height: 16px; letter-spacing: 0.60px;"
+                >
+                  Code PIN
+                </label>
+
+                <span
+                  style="color: #2E7D5B; font-size: 12px; font-family: Inter, sans-serif; font-weight: 600; line-height: 16px;"
+                >
+                  Oublié ?
+                </span>
+
               </div>
-              <div style="align-self: stretch; position: relative; justify-content: flex-start; align-items: center; display: inline-flex;">
-                <div style="flex: 1 1 0; height: 56px; padding: 17px 48px; background: rgba(255,255,255,0.50); border-radius: 16px; outline: 1px rgba(30,58,95,0.10) solid; outline-offset: -1px; display: flex; align-items: center;">
-                  <input [type]="pinVisible ? 'text' : 'password'" [(ngModel)]="codePin" name="codePin" placeholder="••••"
-                    style="flex: 1; background: transparent; border: none; outline: none; color: rgba(30,58,95,1); font-size: 16px; font-family: Inter, sans-serif;" required />
+
+              <div style="width: 100%; position: relative; display: flex; align-items: center;">
+
+                <div
+                  style="width: 100%; box-sizing: border-box; height: 56px; padding: 17px 48px; background: rgba(255,255,255,0.50); border-radius: 16px; outline: 1px rgba(30,58,95,0.10) solid; outline-offset: -1px; display: flex; align-items: center;"
+                >
+                  <input
+                    id="pin-mobile"
+                    [type]="pinVisible ? 'text' : 'password'"
+                    [(ngModel)]="codePin"
+                    name="codePinMobile"
+                    placeholder="••••"
+                    maxlength="4"
+                    minlength="4"
+                    pattern="[0-9]{4}"
+                    inputmode="numeric"
+                    autocomplete="current-password"
+                    required
+                    style="width: 100%; min-width: 0; background: transparent; border: none; outline: none; color: rgba(30,58,95,1); font-size: 16px; font-family: Inter, sans-serif;"
+                  />
                 </div>
-                <i class="pi pi-lock" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: rgba(30,58,95,0.40); font-size: 14px;"></i>
-                <button type="button" (click)="pinVisible = !pinVisible"
-                  style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: rgba(30,58,95,0.40);">
-                  <i [class]="pinVisible ? 'pi pi-eye-slash' : 'pi pi-eye'" style="font-size: 16px;"></i>
+
+                <i
+                  class="pi pi-lock"
+                  aria-hidden="true"
+                  style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: rgba(30,58,95,0.40); font-size: 14px;"
+                ></i>
+
+                <button
+                  type="button"
+                  (click)="pinVisible = !pinVisible"
+                  [attr.aria-label]="pinVisible ? 'Masquer le code PIN' : 'Afficher le code PIN'"
+                  style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: rgba(30,58,95,0.60);"
+                >
+                  <i
+                    [class]="pinVisible ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                    aria-hidden="true"
+                    style="font-size: 16px;"
+                  ></i>
                 </button>
+
               </div>
             </div>
 
-            <!-- Bouton Se connecter -->
-            <button type="submit" [disabled]="authService.isLoading()"
-              style="align-self: stretch; height: 56px; background: #1E3A5F; border-radius: 16px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; opacity: 1;"
-              [style.opacity]="authService.isLoading() ? '0.6' : '1'">
+
+            <!-- MESSAGE D'ERREUR : SOUS LE PIN -->
+            @if (authService.errorMessage(); as message) {
+              <div
+                role="alert"
+                aria-live="assertive"
+                style="width: 100%; box-sizing: border-box; background: rgba(220,38,38,0.08); color: #B91C1C; font-size: 14px; font-family: Inter, sans-serif; border: 1px solid rgba(220,38,38,0.18); border-radius: 12px; padding: 12px 14px; display: flex; align-items: flex-start; gap: 10px; line-height: 20px; overflow-wrap: anywhere;"
+              >
+                <i
+                  class="pi pi-exclamation-circle"
+                  aria-hidden="true"
+                  style="font-size: 16px; margin-top: 2px; flex-shrink: 0;"
+                ></i>
+
+                <span>{{ message }}</span>
+              </div>
+            }
+
+
+            <!-- Bouton de connexion -->
+            <button
+              type="submit"
+              [disabled]="authService.isLoading()"
+              [style.opacity]="authService.isLoading() ? '0.6' : '1'"
+              style="width: 100%; box-sizing: border-box; height: 56px; background: #1E3A5F; border-radius: 16px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;"
+            >
+
               @if (authService.isLoading()) {
-                <i class="pi pi-spin pi-spinner" style="color: white; font-size: 16px;"></i>
+                <i
+                  class="pi pi-spin pi-spinner"
+                  aria-hidden="true"
+                  style="color: white; font-size: 16px;"
+                ></i>
               }
-              <span style="color: white; font-size: 18px; font-family: Inter, sans-serif; font-weight: 700; line-height: 28px;">Se connecter</span>
+
+              <span
+                style="color: white; font-size: 18px; font-family: Inter, sans-serif; font-weight: 700; line-height: 28px;"
+              >
+                Se connecter
+              </span>
+
             </button>
 
           </form>
 
+
           <!-- Créer mon organisation -->
-          <div style="align-self: stretch; padding-top: 32px; flex-direction: column; align-items: center; display: flex;">
-            <a routerLink="/inscription/gie" style="color: #1E3A5F; font-size: 14px; font-family: Inter, sans-serif; font-weight: 700; line-height: 20px; cursor: pointer; text-decoration: none;">
+          <div style="width: 100%; padding-top: 24px; border-top: 1px solid rgba(30,58,95,0.05); display: flex; flex-direction: column; align-items: center;">
+
+            <a
+              routerLink="/inscription/gie"
+              style="color: #1E3A5F; font-size: 14px; font-family: Inter, sans-serif; font-weight: 700; line-height: 20px; cursor: pointer; text-decoration: none;"
+            >
               Créer mon organisation
             </a>
+
           </div>
 
         </div>

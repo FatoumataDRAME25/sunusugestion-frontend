@@ -1,540 +1,480 @@
-<app-navbar />
+<div class="relative flex bg-[#F7F8FA] min-h-screen">
+  <app-gie-sidebar></app-gie-sidebar>
+  <div class="flex-1 ml-0 lg:ml-[264px] min-w-0 flex flex-col">
+    <app-navbar titre="Cotisations"></app-navbar>
 
-<div class="min-h-screen bg-gris-fond pb-24">
+    <main class="pb-24 lg:pb-8 lg:pt-20">
 
-  <!-- En-tête -->
-  <div class="p-lg">
-    <div class="flex items-center gap-md mb-lg">
-      <a routerLink="/mon-espace" class="text-anthracite/60">
-        <i class="pi pi-chevron-left text-lg"></i>
-      </a>
-      <h1 class="font-bold text-2xl text-anthracite">Cotisations</h1>
-    </div>
+      <!-- ════════════════════════════════
+           VERSION MOBILE
+      ════════════════════════════════ -->
+      <div class="lg:hidden">
+        <div class="min-h-screen bg-gris-fond pb-24">
 
-    <!-- Recherche -->
-    <div class="flex items-center gap-sm bg-white border border-anthracite/10 rounded-xl px-md py-sm shadow-sm mb-md">
-      <i class="pi pi-search text-anthracite/40"></i>
-      <input
-        type="text"
-        [ngModel]="termeRecherche()"
-        (ngModelChange)="termeRecherche.set($event)"
-        placeholder="Rechercher une cotisation..."
-        class="flex-1 bg-transparent outline-none text-sm text-anthracite placeholder:text-anthracite/40"
-      />
-    </div>
+          <div class="p-lg">
+            <div class="flex items-center gap-md mb-lg">
+              <a routerLink="/mon-espace" class="text-anthracite/60">
+                <i class="pi pi-chevron-left text-lg"></i>
+              </a>
+              <h1 class="font-bold text-2xl text-anthracite">Cotisations</h1>
+            </div>
 
-  </div>
-
-
-  <!-- ========================================= -->
-  <!-- CONTENU -->
-  <!-- ========================================= -->
-
-  <div class="px-lg flex flex-col gap-lg">
-
-    <!-- ========================================= -->
-    <!-- FILTRES -->
-    <!-- ========================================= -->
-
-    <div class="flex gap-sm overflow-x-auto pb-xs">
-
-      @for (option of optionsFiltres; track option.label) {
-
-        <button
-          type="button"
-          (click)="filtreStatut.set(option.value)"
-          [class]="filtreStatut() === option.value
-            ? 'px-lg py-sm rounded-full bg-bleu-nuit text-blanc-lait font-semibold text-sm whitespace-nowrap'
-            : 'px-lg py-sm rounded-full bg-white text-anthracite/60 text-sm border border-anthracite/10 whitespace-nowrap'"
-        >
-          {{ option.label }}
-        </button>
-
-      }
-
-    </div>
-
-
-    <!-- ========================================= -->
-    <!-- AUCUNE COTISATION -->
-    <!-- ========================================= -->
-
-    @if (cotisationsFiltrees().length === 0) {
-
-      <div class="flex flex-col items-center py-2xl text-center">
-
-        <i class="pi pi-inbox text-4xl text-anthracite/30 mb-md"></i>
-
-        <p class="font-semibold text-anthracite/60">
-          Aucune cotisation trouvée
-        </p>
-
-      </div>
-
-    }
-
-
-    <!-- ========================================= -->
-    <!-- LISTE DES COTISATIONS -->
-    <!-- ========================================= -->
-
-    @for (cotisation of cotisationsFiltrees(); track cotisation.id) {
-
-      <div
-        class="bg-white rounded-xl p-md shadow-sm cursor-pointer"
-        (click)="ouvrirDetail(cotisation)"
-      >
-
-        <!-- ===================================== -->
-        <!-- INFORMATIONS MEMBRE -->
-        <!-- ===================================== -->
-
-        <div class="flex items-center gap-md mb-md">
-
-          <!-- Avatar -->
-          <div
-            class="w-10 h-10 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-sm text-bleu-nuit shrink-0"
-          >
-            {{
-              (cotisation.membre.prenom + ' ' + cotisation.membre.nom)
-                | initiales
-            }}
+            <div class="flex items-center gap-sm bg-white border border-anthracite/10 rounded-xl px-md py-sm shadow-sm mb-md">
+              <i class="pi pi-search text-anthracite/40"></i>
+              <input type="text"
+                [ngModel]="termeRecherche()"
+                (ngModelChange)="termeRecherche.set($event)"
+                placeholder="Rechercher une cotisation..."
+                class="flex-1 bg-transparent outline-none text-sm text-anthracite placeholder:text-anthracite/40" />
+            </div>
           </div>
 
+          <div class="px-lg flex flex-col gap-lg">
 
-          <!-- Nom -->
-          <div class="flex-1 min-w-0">
-
-            <p class="font-semibold text-anthracite truncate">
-              {{ cotisation.membre.prenom }}
-              {{ cotisation.membre.nom }}
-            </p>
-
-            <p class="text-xs text-anthracite/50">
-              ID: SG-{{ cotisation.id.toString().padStart(4, '0') }}
-            </p>
-
-          </div>
-
-
-          <!-- ================================= -->
-          <!-- BADGE STATUT -->
-          <!-- ================================= -->
-
-          <span
-            [class]="
-              cotisation.statut === 'paye'
-                ? 'text-xs font-semibold px-sm py-xs rounded-full bg-vert-clair text-vert-foret'
-                : cotisation.statut === 'en_retard'
-                  ? 'text-xs font-semibold px-sm py-xs rounded-full bg-rouge-clair text-rouge-alerte'
-                  : 'text-xs font-semibold px-sm py-xs rounded-full bg-or-clair text-or-senegal'
-            "
-          >
-
-            {{
-              cotisation.statut === 'paye'
-                ? 'PAYÉ'
-                : cotisation.statut === 'en_retard'
-                  ? 'EN RETARD'
-                  : 'EN COURS'
-            }}
-
-          </span>
-
-        </div>
-
-
-        <!-- ===================================== -->
-        <!-- SESSION + PAIEMENT -->
-        <!-- ===================================== -->
-
-        <div
-          class="flex justify-between text-xs border-t border-anthracite/10 pt-sm"
-        >
-
-          <!-- Session -->
-          <div class="min-w-0">
-
-            <p class="text-anthracite/50">
-              Session
-            </p>
-
-            <p class="font-semibold text-anthracite truncate">
-              {{ cotisation.session.libelle }}
-            </p>
-
-          </div>
-
-
-          <!-- ================================= -->
-          <!-- PAIEMENT -->
-          <!-- ================================= -->
-
-          <div class="text-right ml-md">
-
-            <!-- COTISATION PAYÉE -->
-            @if (cotisation.statut === 'paye') {
-
-              <p class="text-anthracite/50">
-                Date de paiement
-              </p>
-
-              <p class="font-semibold text-anthracite">
-                {{ cotisation.datePaiement | date:'dd/MM/yyyy à HH:mm' }}
-              </p>
-
-            }
-
-            <!-- COTISATION NON PAYÉE -->
-            @else {
-
-              <p class="text-anthracite/50 mb-xs">
-                Paiement
-              </p>
-
-              @if (peutPayer(cotisation)) {
-                <button
-                  type="button"
-                  (click)="
-                    $event.stopPropagation();
-                    ouvrirConfirmationPaiement(cotisation)
-                  "
-                  class="px-sm py-xs rounded-lg bg-vert-foret text-white text-xs font-semibold"
-                >
-                  Payer
+            <div class="flex gap-sm overflow-x-auto pb-xs">
+              @for (option of optionsFiltres; track option.label) {
+                <button type="button" (click)="filtreStatut.set(option.value)"
+                  [class]="filtreStatut() === option.value
+                    ? 'px-lg py-sm rounded-full bg-bleu-nuit text-blanc-lait font-semibold text-sm whitespace-nowrap'
+                    : 'px-lg py-sm rounded-full bg-white text-anthracite/60 text-sm border border-anthracite/10 whitespace-nowrap'">
+                  {{ option.label }}
                 </button>
-              } @else {
-                <span class="text-xs text-anthracite/40">En attente</span>
               }
+            </div>
 
+            @if (cotisationsFiltrees().length === 0) {
+              <div class="flex flex-col items-center py-2xl text-center">
+                <i class="pi pi-inbox text-4xl text-anthracite/30 mb-md"></i>
+                <p class="font-semibold text-anthracite/60">Aucune cotisation trouvée</p>
+              </div>
+            }
+
+            @for (cotisation of cotisationsFiltrees(); track cotisation.id) {
+              <div class="bg-white rounded-xl p-md shadow-sm cursor-pointer" (click)="ouvrirDetail(cotisation)">
+                <div class="flex items-center gap-md mb-md">
+                  <div class="w-10 h-10 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-sm text-bleu-nuit shrink-0">
+                    {{ (cotisation.membre.prenom + ' ' + cotisation.membre.nom) | initiales }}
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="font-semibold text-anthracite truncate">{{ cotisation.membre.prenom }} {{ cotisation.membre.nom }}</p>
+                    <p class="text-xs text-anthracite/50">ID: SG-{{ cotisation.id.toString().padStart(4, '0') }}</p>
+                  </div>
+                  <span [class]="cotisation.statut === 'paye' ? 'text-xs font-semibold px-sm py-xs rounded-full bg-vert-clair text-vert-foret' :
+                                  cotisation.statut === 'en_retard' ? 'text-xs font-semibold px-sm py-xs rounded-full bg-rouge-clair text-rouge-alerte' :
+                                  'text-xs font-semibold px-sm py-xs rounded-full bg-or-clair text-or-senegal'">
+                    {{ cotisation.statut === 'paye' ? 'PAYÉ' : cotisation.statut === 'en_retard' ? 'EN RETARD' : 'EN COURS' }}
+                  </span>
+                </div>
+                <div class="flex justify-between text-xs border-t border-anthracite/10 pt-sm">
+                  <div class="min-w-0">
+                    <p class="text-anthracite/50">Session</p>
+                    <p class="font-semibold text-anthracite truncate">{{ cotisation.session.libelle }}</p>
+                  </div>
+                  <div class="text-right ml-md">
+                    @if (cotisation.statut === 'paye') {
+                      <p class="text-anthracite/50">Date de paiement</p>
+                      <p class="font-semibold text-anthracite">{{ cotisation.datePaiement | date:'dd/MM/yyyy' }}</p>
+                    } @else {
+                      <p class="text-anthracite/50 mb-xs">Paiement</p>
+                      @if (peutPayer(cotisation)) {
+                        <button type="button" (click)="$event.stopPropagation(); ouvrirConfirmationPaiement(cotisation)"
+                          class="px-sm py-xs rounded-lg bg-vert-foret text-white text-xs font-semibold">Payer</button>
+                      } @else {
+                        <span class="text-xs text-anthracite/40">En attente</span>
+                      }
+                    }
+                  </div>
+                </div>
+              </div>
             }
 
           </div>
-
         </div>
 
+        @if (estTresorier()) {
+          <div class="fixed bottom-20 left-0 right-0 px-lg">
+            <button type="button" routerLink="/mon-espace/cotisations/session-cotisation"
+              class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm shadow-lg">
+              <i class="pi pi-plus"></i>
+              Nouvelle session
+            </button>
+          </div>
+        }
       </div>
 
-    }
+      <!-- ════════════════════════════════
+           VERSION DESKTOP
+      ════════════════════════════════ -->
+      <div class="hidden lg:block p-10">
 
+        <!-- En-tête desktop -->
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <h3 class="text-[#1E3A5F] text-xl font-bold leading-8">Gérez les cotisations de la session active.</h3>
+            <!-- <p class="text-[#1A1D23]/50 text-sm mt-1">Gérez les cotisations de la session active.</p> -->
+          </div>
+          @if (estTresorier()) {
+            <button type="button" (click)="ouvrirModalSession()"
+              class="flex items-center gap-2 bg-[#1E3A5F] text-white font-semibold rounded-xl px-5 py-[10px] text-sm">
+              <i class="pi pi-plus"></i>
+              Nouvelle session
+            </button>
+          }
+        </div>
+
+        <!-- Tableau -->
+        <div class="bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col overflow-hidden">
+
+          <!-- Barre recherche + filtres -->
+          <div class="flex items-center gap-4 px-8 py-5 border-b border-[#1E3A5F]/5">
+            <div class="flex items-center gap-2 bg-[#1E3A5F]/5 rounded-full px-4 py-4 min-w-0 flex-1">
+              <i class="pi pi-search text-[#1E3A5F]/40 text-sm flex-shrink-0"></i>
+              <input type="text"
+                [ngModel]="termeRecherche()"
+                (ngModelChange)="termeRecherche.set($event)"
+                placeholder="Rechercher une cotisation..."
+                class="bg-transparent outline-none text-sm text-[#1E3A5F] placeholder:text-[#1E3A5F]/40 min-w-0 w-full" />
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+              @for (option of optionsFiltres; track option.label) {
+                <button type="button" (click)="filtreStatut.set(option.value)"
+                  class="px-4 py-4 rounded-full text-xs font-bold transition-all whitespace-nowrap"
+                  [class]="filtreStatut() === option.value
+                    ? 'bg-[#1E3A5F] text-white'
+                    : 'bg-[#1E3A5F]/5 text-[#1E3A5F]/60 hover:bg-[#1E3A5F]/10'">
+                  {{ option.label }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- En-tête colonnes -->
+          <div class="grid grid-cols-[2fr_1.5fr_1fr_1fr_auto] px-8 py-4 border-b border-[#1E3A5F]/5">
+            <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Membre</span>
+            <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Session</span>
+            <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Montant</span>
+            <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Statut</span>
+            <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Action</span>
+          </div>
+
+          @if (cotisationsFiltrees().length === 0) {
+            <div class="flex flex-col items-center justify-center py-16 text-center">
+              <i class="pi pi-inbox text-3xl text-[#1E3A5F]/20 mb-3"></i>
+              <p class="text-[#1A1D23]/40 font-semibold">Aucune cotisation</p>
+            </div>
+          } @else {
+            @for (cotisation of cotisationsFiltrees(); track cotisation.id) {
+              <div class="grid grid-cols-[2fr_1.5fr_1fr_1fr_auto] px-8 py-[18px] items-center border-t border-[#1E3A5F]/5">
+                <!-- Membre -->
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-full bg-[#1E3A5F]/10 flex items-center justify-center flex-shrink-0">
+                    <span class="text-[#1E3A5F] text-xs font-bold">{{ (cotisation.membre.prenom + ' ' + cotisation.membre.nom) | initiales }}</span>
+                  </div>
+                  <span class="text-[#1E3A5F] text-sm font-medium">{{ cotisation.membre.prenom }} {{ cotisation.membre.nom }}</span>
+                </div>
+                <!-- Session -->
+                <span class="text-[#1A1D23]/60 text-sm truncate pr-4">{{ cotisation.session.libelle }}</span>
+                <!-- Montant -->
+                <span class="text-[#1E3A5F] text-sm font-medium">{{ cotisation.session.montant | number:'1.0-0' }} F</span>
+                <!-- Statut -->
+                <span class="w-fit inline-flex items-center px-2 py-[3px] rounded-full text-[10px] font-bold"
+                      [class]="cotisation.statut === 'paye' ? 'bg-[#2E7D5B]/10 text-[#2E7D5B]' :
+                               cotisation.statut === 'en_retard' ? 'bg-[#C1654A]/10 text-[#C1654A]' :
+                               'bg-[#EA580C]/10 text-[#EA580C]'">
+                  {{ cotisation.statut === 'paye' ? 'Payé' : cotisation.statut === 'en_retard' ? 'En retard' : 'En cours' }}
+                </span>
+                <!-- Action -->
+                @if (cotisation.statut !== 'paye' && peutPayer(cotisation)) {
+                  <button type="button" (click)="ouvrirConfirmationPaiement(cotisation)"
+                    class="text-[#2E7D5B] text-xs font-bold cursor-pointer whitespace-nowrap">
+                    Payer
+                  </button>
+                } @else {
+                  <button type="button" (click)="ouvrirDetail(cotisation)"
+                    class="text-[#1E3A5F]/40 text-xs font-bold cursor-pointer whitespace-nowrap">
+                    Détail
+                  </button>
+                }
+              </div>
+            }
+          }
+
+        </div>
+      </div>
+
+    </main>
+    <app-bottom-nav></app-bottom-nav>
   </div>
-
 </div>
 
-
-
-<!-- ========================================= -->
-<!-- BOUTON NOUVELLE SESSION — trésorier uniquement -->
-<!-- ========================================= -->
-
-@if (estTresorier()) {
-  <div class="fixed bottom-16 left-0 right-0 px-lg">
-
-    <button
-      type="button"
-      routerLink="/mon-espace/cotisations/session-cotisation"
-      class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm shadow-lg"
-    >
-
-      <i class="pi pi-plus"></i>
-
-      Nouvelle session
-
-    </button>
-
-  </div>
-}
-
-
-
-<!-- ========================================= -->
-<!-- BOTTOM NAVIGATION -->
-<!-- ========================================= -->
-
-<app-bottom-nav />
-
-
-
-<!-- ========================================= -->
-<!-- POPUP : CONFIRMATION DU PAIEMENT -->
-<!-- ========================================= -->
-
-<p-dialog
-  header="Confirmer le paiement"
+<!-- Dialog confirmation paiement -->
+<p-dialog header="Confirmer le paiement"
   [visible]="voirConfirmation()"
   (visibleChange)="voirConfirmation.set($event)"
   [modal]="true"
-  [style]="{
-    width: '90%',
-    maxWidth: '450px'
-  }"
->
-
+  [style]="{ width: '90%', maxWidth: '450px' }">
   @if (cotisationAPayer(); as cotisation) {
-
     <div class="flex flex-col gap-lg">
-
-      <!-- =================================== -->
-      <!-- ICÔNE -->
-      <!-- =================================== -->
-
       <div class="flex justify-center">
-
-        <div
-          class="w-14 h-14 rounded-full bg-vert-clair flex items-center justify-center"
-        >
-
+        <div class="w-14 h-14 rounded-full bg-vert-clair flex items-center justify-center">
           <i class="pi pi-wallet text-2xl text-vert-foret"></i>
-
         </div>
-
       </div>
-
-
-      <!-- =================================== -->
-      <!-- MESSAGE -->
-      <!-- =================================== -->
-
       <div class="text-center">
-
-        <p class="text-anthracite/60 text-sm mb-sm">
-          Vous êtes sur le point d'enregistrer le paiement de
-        </p>
-
-
-        <!-- Montant -->
-        <p class="font-bold text-xl text-anthracite">
-
-          {{ cotisation.session.montant | number }}
-          FCFA
-
-        </p>
-
-
-        <!-- Membre -->
-        <p class="font-semibold text-anthracite mt-sm">
-
-          {{ cotisation.membre.prenom }}
-          {{ cotisation.membre.nom }}
-
-        </p>
-
-
-        <!-- Session -->
-        <p class="text-sm text-anthracite/50 mt-xs">
-
-          {{ cotisation.session.libelle }}
-
-        </p>
-
+        <p class="text-anthracite/60 text-sm mb-sm">Vous êtes sur le point d'enregistrer le paiement de</p>
+        <p class="font-bold text-xl text-anthracite">{{ cotisation.session.montant | number }} FCFA</p>
+        <p class="font-semibold text-anthracite mt-sm">{{ cotisation.membre.prenom }} {{ cotisation.membre.nom }}</p>
+        <p class="text-sm text-anthracite/50 mt-xs">{{ cotisation.session.libelle }}</p>
       </div>
-
-
-      <!-- =================================== -->
-      <!-- BOUTONS -->
-      <!-- =================================== -->
-
       <div class="flex gap-sm">
-
-        <!-- Annuler -->
-        <button
-          type="button"
-          (click)="annulerPaiement()"
-          class="flex-1 px-md py-md rounded-xl border border-anthracite/10 text-anthracite font-semibold"
-        >
-          Annuler
-        </button>
-
-
-        <!-- Confirmer -->
-        <button
-          type="button"
-          (click)="confirmerPaiement()"
-          class="flex-1 px-md py-md rounded-xl bg-vert-foret text-white font-semibold"
-        >
-          Confirmer
-        </button>
-
+        <button type="button" (click)="annulerPaiement()"
+          class="flex-1 px-md py-md rounded-xl border border-anthracite/10 text-anthracite font-semibold">Annuler</button>
+        <button type="button" (click)="confirmerPaiement()"
+          class="flex-1 px-md py-md rounded-xl bg-vert-foret text-white font-semibold">Confirmer</button>
       </div>
-
     </div>
-
   }
-
 </p-dialog>
 
-
-
-<!-- ========================================= -->
-<!-- POPUP : DÉTAIL COTISATION -->
-<!-- ========================================= -->
-
-<p-dialog
-  header="Détail de la cotisation"
+<!-- Dialog détail cotisation -->
+<p-dialog header="Détail de la cotisation"
   [visible]="voirDetail()"
   (visibleChange)="voirDetail.set($event)"
   [modal]="true"
-  [style]="{
-    width: '90%',
-    maxWidth: '500px'
-  }"
->
-
+  [style]="{ width: '90%', maxWidth: '500px' }">
   @if (cotisationSelectionnee(); as cotisation) {
-
     <div class="flex flex-col gap-lg">
-
-
-      <!-- =================================== -->
-      <!-- MEMBRE -->
-      <!-- =================================== -->
-
       <div class="flex items-center gap-md">
-
-        <!-- Avatar -->
-        <div
-          class="w-12 h-12 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-bleu-nuit shrink-0"
-        >
-
-          {{
-            (cotisation.membre.prenom + ' ' + cotisation.membre.nom)
-              | initiales
-          }}
-
+        <div class="w-12 h-12 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-bleu-nuit shrink-0">
+          {{ (cotisation.membre.prenom + ' ' + cotisation.membre.nom) | initiales }}
         </div>
-
-
-        <!-- Informations membre -->
         <div>
-
-          <p class="font-bold text-anthracite">
-
-            {{ cotisation.membre.prenom }}
-            {{ cotisation.membre.nom }}
-
-          </p>
-
-          <p class="text-sm text-anthracite/50">
-
-            {{ cotisation.membre.telephone }}
-
-          </p>
-
+          <p class="font-bold text-anthracite">{{ cotisation.membre.prenom }} {{ cotisation.membre.nom }}</p>
+          <p class="text-sm text-anthracite/50">{{ cotisation.membre.telephone }}</p>
         </div>
-
       </div>
-
-
-
-      <!-- =================================== -->
-      <!-- INFORMATIONS COTISATION -->
-      <!-- =================================== -->
-
       <div class="flex flex-col gap-md">
-
-
-        <!-- Session -->
         <div class="flex justify-between gap-md">
-
-          <span class="text-sm text-anthracite/50">
-            Session
-          </span>
-
-          <span class="font-semibold text-anthracite text-right">
-
-            {{ cotisation.session.libelle }}
-
-          </span>
-
+          <span class="text-sm text-anthracite/50">Session</span>
+          <span class="font-semibold text-anthracite text-right">{{ cotisation.session.libelle }}</span>
         </div>
-
-
-        <!-- Montant -->
         <div class="flex justify-between gap-md">
-
-          <span class="text-sm text-anthracite/50">
-            Montant
-          </span>
-
-          <span class="font-bold text-anthracite text-right">
-
-            {{ cotisation.session.montant | number }}
-            FCFA
-
-          </span>
-
+          <span class="text-sm text-anthracite/50">Montant</span>
+          <span class="font-bold text-anthracite text-right">{{ cotisation.session.montant | number }} FCFA</span>
         </div>
-
-
-        <!-- Statut -->
         <div class="flex justify-between gap-md">
-
-          <span class="text-sm text-anthracite/50">
-            Statut
-          </span>
-
+          <span class="text-sm text-anthracite/50">Statut</span>
           <span class="font-semibold text-anthracite">
-
-            {{
-              cotisation.statut === 'paye'
-                ? 'PAYÉ'
-                : cotisation.statut === 'en_retard'
-                  ? 'EN RETARD'
-                  : 'EN COURS'
-            }}
-
+            {{ cotisation.statut === 'paye' ? 'PAYÉ' : cotisation.statut === 'en_retard' ? 'EN RETARD' : 'EN COURS' }}
           </span>
-
         </div>
-
-
-        <!-- Date paiement -->
         @if (cotisation.datePaiement) {
-
           <div class="flex justify-between gap-md">
-
-            <span class="text-sm text-anthracite/50">
-              Date de paiement
-            </span>
-
-            <span class="font-semibold text-anthracite text-right">
-
-              {{ cotisation.datePaiement | date:'dd/MM/yyyy à HH:mm' }}
-
-            </span>
-
+            <span class="text-sm text-anthracite/50">Date de paiement</span>
+            <span class="font-semibold text-anthracite text-right">{{ cotisation.datePaiement | date:'dd/MM/yyyy à HH:mm' }}</span>
           </div>
-
         }
-
-
-        <!-- Mode paiement -->
         @if (cotisation.modePaiement) {
-
           <div class="flex justify-between gap-md">
-
-            <span class="text-sm text-anthracite/50">
-              Mode de paiement
-            </span>
-
+            <span class="text-sm text-anthracite/50">Mode de paiement</span>
             <span class="font-semibold text-anthracite">
-
-              {{
-                cotisation.modePaiement === 'especes'
-                  ? 'Espèces'
-                  : cotisation.modePaiement
-              }}
-
+              {{ cotisation.modePaiement === 'especes' ? 'Espèces' : cotisation.modePaiement }}
             </span>
-
           </div>
-
         }
+      </div>
+    </div>
+  }
+</p-dialog>
+<!-- Modal desktop : Nouvelle session -->
+<p-dialog
+  [(visible)]="modalSessionVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  (onHide)="fermerModalSession()"
+  [style]="{ width: '600px' }"
+  [contentStyle]="{ overflow: 'visible', padding: '24px' }"
+  header="Nouvelle session de cotisation">
+  <div class="flex flex-col gap-5">
 
+    @if (erreurDatesModal()) {
+      <div class="bg-red-50 text-red-600 text-sm rounded-xl p-3 flex items-center gap-2">
+        <i class="pi pi-exclamation-circle shrink-0"></i>
+        {{ erreurDatesModal() }}
+      </div>
+    }
+
+    <form [formGroup]="formSession" class="flex flex-col gap-5">
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-sm font-medium text-[#1E3A5F]">Libellé de la session</label>
+        <input pInputText formControlName="libelle" placeholder="Ex. Cotisation septembre 2026" class="w-full" />
+        @if (formSession.get('libelle')?.invalid && formSession.get('libelle')?.touched) {
+          <span class="text-xs text-red-500">Champ obligatoire</span>
+        }
       </div>
 
+      <div class="flex flex-col gap-1.5">
+        <label class="text-sm font-medium text-[#1E3A5F]">Montant par membre</label>
+        <div class="relative">
+          <input pInputText formControlName="montant" type="number" min="1" placeholder="5 000" class="w-full pr-16" />
+          <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-[#1E3A5F]/50">FCFA</span>
+        </div>
+        @if (formSession.get('montant')?.invalid && formSession.get('montant')?.touched) {
+          <span class="text-xs text-red-500">Montant invalide</span>
+        }
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-[#1E3A5F]">Date de début</label>
+          <input type="date" formControlName="dateDebut"
+            class="w-full border border-[#1E3A5F]/20 rounded-xl px-4 py-2.5 text-[#1E3A5F] bg-white" />
+          @if (formSession.get('dateDebut')?.invalid && formSession.get('dateDebut')?.touched) {
+            <span class="text-xs text-red-500">Obligatoire</span>
+          }
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-[#1E3A5F]">Date de fin</label>
+          <input type="date" formControlName="dateFin"
+            class="w-full border border-[#1E3A5F]/20 rounded-xl px-4 py-2.5 text-[#1E3A5F] bg-white" />
+          @if (formSession.get('dateFin')?.invalid && formSession.get('dateFin')?.touched) {
+            <span class="text-xs text-red-500">Obligatoire</span>
+          }
+        </div>
+      </div>
+
+    </form>
+
+    <!-- Récapitulatif -->
+    <div class="bg-[#1E3A5F]/5 rounded-2xl p-5">
+      <div class="flex items-center gap-2 mb-3">
+        <i class="pi pi-list text-[#1E3A5F] text-sm"></i>
+        <p class="font-bold text-xs text-[#1E3A5F]/70 uppercase tracking-wide">Récapitulatif</p>
+      </div>
+      <div class="flex flex-col gap-3">
+        <div class="flex justify-between">
+          <p class="text-sm text-[#1E3A5F]/60">Montant par membre</p>
+          <p class="text-sm font-bold text-[#1E3A5F]">{{ (formSession.get('montant')?.value || 0) | number:'1.0-0' }} FCFA</p>
+        </div>
+      </div>
     </div>
 
+    @if (erreurDatesModal()) {
+      <div class="bg-red-50 text-red-600 text-sm rounded-xl p-3 flex items-center gap-2">
+        <i class="pi pi-exclamation-circle shrink-0"></i>
+        {{ erreurDatesModal() }}
+      </div>
+    }
+
+    <button type="button" (click)="lancerSessionModal()"
+      [disabled]="service.isLoading()"
+      class="w-full bg-[#1E3A5F] text-white font-semibold rounded-xl py-3.5 flex items-center justify-center gap-2 disabled:opacity-50">
+      @if (service.isLoading()) { <i class="pi pi-spin pi-spinner"></i> }
+      Lancer la session
+    </button>
+
+  </div>
+</p-dialog>
+
+<!-- Modal desktop : Payer une cotisation -->
+<p-dialog
+  [(visible)]="modalPaiementVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  (onHide)="modalPaiementVisible.set(false)"
+  [style]="{ width: '560px' }"
+  [contentStyle]="{ overflow: 'visible', padding: '24px' }"
+  header="Enregistrer un paiement">
+
+  @if (cotisationAPayer(); as c) {
+    <div class="flex flex-col gap-5">
+
+      <!-- Infos membre -->
+      <div class="bg-[#F7F8FA] rounded-2xl p-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-[#1E3A5F]/10 flex items-center justify-center font-semibold text-sm text-[#1E3A5F] shrink-0">
+            {{ (c.membre.prenom + ' ' + c.membre.nom) | initiales }}
+          </div>
+          <div>
+            <p class="text-xs text-[#1E3A5F]/50 uppercase">Membre</p>
+            <p class="font-bold text-[#1E3A5F]">{{ c.membre.prenom }} {{ c.membre.nom }}</p>
+            <p class="text-xs text-[#1E3A5F]/50">{{ c.session.libelle }}</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="font-bold text-[#1E3A5F] text-xl">{{ c.session.montant | number:'1.0-0' }}</p>
+          <p class="text-xs text-[#1E3A5F]/50">FCFA</p>
+        </div>
+      </div>
+
+      <!-- Mode de paiement -->
+      <div>
+        <p class="font-semibold text-[#1E3A5F] mb-3 text-sm">Mode de paiement</p>
+        <div class="flex flex-col gap-3">
+
+          @if (!payePourSoiModal()) {
+            <button (click)="modePaiementSelectionne.set('especes')"
+              class="flex items-center gap-4 p-4 rounded-2xl border-2 transition-all"
+              [class]="modePaiementSelectionne() === 'especes' ? 'border-[#1E3A5F] bg-[#1E3A5F]/5' : 'border-[#1E3A5F]/10 bg-white'">
+              <div class="w-10 h-10 rounded-xl bg-[#2E7D5B]/10 flex items-center justify-center shrink-0">
+                <i class="pi pi-money-bill text-[#2E7D5B] text-xl"></i>
+              </div>
+              <div class="flex-1 text-left">
+                <p class="font-semibold text-[#1E3A5F]">Espèces</p>
+                <p class="text-xs text-[#1E3A5F]/50">Paiement reçu directement</p>
+              </div>
+              <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0"
+                   [class]="modePaiementSelectionne() === 'especes' ? 'bg-[#1E3A5F] border-[#1E3A5F]' : 'border-[#1E3A5F]/30'">
+                @if (modePaiementSelectionne() === 'especes') { <i class="pi pi-check text-white text-[10px]"></i> }
+              </div>
+            </button>
+          }
+
+          @if (payePourSoiModal()) {
+            <button (click)="modePaiementSelectionne.set('wave')"
+              class="flex items-center gap-4 p-4 rounded-2xl border-2 transition-all"
+              [class]="modePaiementSelectionne() === 'wave' ? 'border-[#1E3A5F] bg-[#1E3A5F]/5' : 'border-[#1E3A5F]/10 bg-white'">
+              <div class="w-10 h-10 rounded-xl bg-[#F7F8FA] flex items-center justify-center shrink-0 overflow-hidden">
+                <img src="images/wave.png" alt="Wave" class="h-7 object-contain" />
+              </div>
+              <span class="flex-1 font-semibold text-[#1E3A5F] text-left">Wave</span>
+              <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0"
+                   [class]="modePaiementSelectionne() === 'wave' ? 'bg-[#1E3A5F] border-[#1E3A5F]' : 'border-[#1E3A5F]/30'">
+                @if (modePaiementSelectionne() === 'wave') { <i class="pi pi-check text-white text-[10px]"></i> }
+              </div>
+            </button>
+
+            <button (click)="modePaiementSelectionne.set('orange_money')"
+              class="flex items-center gap-4 p-4 rounded-2xl border-2 transition-all"
+              [class]="modePaiementSelectionne() === 'orange_money' ? 'border-[#1E3A5F] bg-[#1E3A5F]/5' : 'border-[#1E3A5F]/10 bg-white'">
+              <div class="w-10 h-10 rounded-xl bg-[#F7F8FA] flex items-center justify-center shrink-0 overflow-hidden">
+                <img src="images/orange_money.png" alt="Orange Money" class="h-7 object-contain" />
+              </div>
+              <span class="flex-1 font-semibold text-[#1E3A5F] text-left">Orange Money</span>
+              <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0"
+                   [class]="modePaiementSelectionne() === 'orange_money' ? 'bg-[#1E3A5F] border-[#1E3A5F]' : 'border-[#1E3A5F]/30'">
+                @if (modePaiementSelectionne() === 'orange_money') { <i class="pi pi-check text-white text-[10px]"></i> }
+              </div>
+            </button>
+          }
+
+        </div>
+      </div>
+
+      <!-- Bouton confirmer -->
+      <button type="button" (click)="confirmerPaiementModal()"
+        [disabled]="service.isLoading()"
+        class="w-full bg-[#2E7D5B] text-white font-semibold rounded-xl py-3.5 flex items-center justify-center gap-2 disabled:opacity-50">
+        @if (service.isLoading()) { <i class="pi pi-spin pi-spinner"></i> }
+        Confirmer le paiement
+      </button>
+
+    </div>
   }
 
 </p-dialog>

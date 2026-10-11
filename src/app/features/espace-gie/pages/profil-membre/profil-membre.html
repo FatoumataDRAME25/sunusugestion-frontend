@@ -1,195 +1,566 @@
-<app-navbar />
+<div class="relative flex min-h-screen bg-gris-fond">
 
-<div class="min-h-screen bg-gris-fond pb-24">
+  <!-- ═══════════════════════════════════════════════════════
+       SIDEBAR
+  ════════════════════════════════════════════════════════ -->
+  <app-gie-sidebar></app-gie-sidebar>
 
-  <!-- En-tête -->
-  <div class="p-lg flex flex-col gap-lg">
-    <h1 class="font-bold text-2xl text-anthracite">Mon profil</h1>
+  <!-- ═══════════════════════════════════════════════════════
+       CONTENU PRINCIPAL
+  ════════════════════════════════════════════════════════ -->
+  <div class="flex min-w-0 flex-1 flex-col ml-0 lg:ml-[264px]">
 
-    <!-- Avatar + nom -->
-    <div class="flex flex-col items-center gap-sm">
-      <div class="w-20 h-20 rounded-full bg-vert-succes flex items-center justify-center font-bold text-2xl text-blanc-lait">
-        @if (authService.currentUser(); as utilisateur) {
-          {{ (utilisateur.prenom + ' ' + utilisateur.nom) | initiales }}
-        }
-      </div>
-      <h2 class="font-bold text-xl text-anthracite">
-        {{ authService.currentUser()?.prenom }} {{ authService.currentUser()?.nom }}
-      </h2>
-      <p class="text-sm text-anthracite/60">Consultez et gérez vos informations personnelles.</p>
-    </div>
+    <!-- Navbar -->
+    <app-navbar titre="Mon profil"></app-navbar>
 
-    <!-- Message succès -->
-    @if (succes()) {
-      <div class="bg-vert-clair text-vert-foret text-sm rounded-xl p-md flex items-center gap-sm">
-        <i class="pi pi-check-circle"></i>
-        Modifications enregistrées avec succès
-      </div>
-    }
+    <main class="flex-1 pb-24 lg:pb-8 lg:pt-20">
 
-    <!-- Message erreur -->
-    @if (errorMessage()) {
-      <div class="bg-rouge-clair text-rouge-alerte text-sm rounded-xl p-md">
-        {{ errorMessage() }}
-      </div>
-    }
+      <div class="flex flex-col gap-lg p-lg md:p-8">
 
-    <!-- Section Informations -->
-    <div class="bg-white rounded-xl p-lg shadow-sm flex flex-col gap-lg">
+        <!-- Titre de la page -->
+        <h1 class="text-2xl md:text-3xl font-bold text-anthracite">
+          Mon profil
+        </h1>
 
-      <div class="flex items-center gap-sm">
-        <i class="pi pi-user text-bleu-nuit"></i>
-        <p class="font-bold text-sm text-anthracite uppercase tracking-wide">Informations</p>
-      </div>
+        <!-- ═══════════════════════════════════════════════════
+             CONTENEUR PRINCIPAL
+        ════════════════════════════════════════════════════ -->
+        <div
+          class="flex flex-col gap-lg
+                 md:rounded-2xl md:bg-white md:p-8 md:shadow-sm"
+        >
 
-      <!-- Prénom (lecture seule) -->
-      <div class="flex flex-col gap-xs">
-        <label class="text-xs font-bold text-anthracite/50 uppercase tracking-wide">Prénom</label>
-        <div class="relative">
-          <input type="text" [value]="authService.currentUser()?.prenom" readonly
-            class="w-full border border-anthracite/20 rounded-xl px-md py-sm bg-gris-fond text-anthracite pr-10" />
-          <i class="pi pi-lock absolute right-md top-1/2 -translate-y-1/2 text-anthracite/30 text-sm"></i>
-        </div>
-      </div>
+          <!-- ═════════════════════════════════════════════════
+               AVATAR ET IDENTITÉ
+          ══════════════════════════════════════════════════ -->
+          <div
+            class="flex flex-col items-center gap-sm
+                   md:flex-row md:items-center md:gap-md
+                   md:border-b md:border-anthracite/10 md:pb-lg"
+          >
 
-      <!-- Nom (lecture seule) -->
-      <div class="flex flex-col gap-xs">
-        <label class="text-xs font-bold text-anthracite/50 uppercase tracking-wide">Nom</label>
-        <div class="relative">
-          <input type="text" [value]="authService.currentUser()?.nom" readonly
-            class="w-full border border-anthracite/20 rounded-xl px-md py-sm bg-gris-fond text-anthracite pr-10" />
-          <i class="pi pi-lock absolute right-md top-1/2 -translate-y-1/2 text-anthracite/30 text-sm"></i>
-        </div>
-      </div>
+            <!-- Avatar -->
+            <div
+              class="flex h-20 w-20 shrink-0 items-center justify-center
+                     rounded-full bg-vert-succes text-2xl font-bold
+                     text-blanc-lait
+                     md:h-16 md:w-16 md:rounded-2xl
+                     md:bg-bleu-nuit/10 md:text-xl md:text-bleu-nuit"
+            >
+              @if (authService.currentUser(); as utilisateur) {
+                {{ (utilisateur.prenom + ' ' + utilisateur.nom) | initiales }}
+              }
+            </div>
 
-      <!-- Téléphone (modifiable) -->
-      <form [formGroup]="formInfos" class="flex flex-col gap-lg">
-        <div class="flex flex-col gap-xs">
-          <label class="text-xs font-bold text-anthracite/50 uppercase tracking-wide">Téléphone</label>
-          <p-iconfield>
-            <p-inputicon styleClass="pi pi-phone" />
-            <input pInputText formControlName="telephone" type="tel" class="w-full" />
-          </p-iconfield>
-          @if (telephone.invalid && telephone.touched) {
-            <span class="text-xs text-rouge-alerte">Le téléphone est obligatoire</span>
+            <!-- Nom et description -->
+            <div class="flex flex-col items-center gap-sm md:items-start md:gap-0">
+
+              <h2 class="text-xl font-bold text-anthracite">
+                {{ authService.currentUser()?.prenom }}
+                {{ authService.currentUser()?.nom }}
+              </h2>
+
+              <p class="text-center text-sm text-anthracite/60 md:text-left">
+                Consultez et gérez vos informations personnelles.
+              </p>
+
+            </div>
+
+          </div>
+
+          <!-- ═════════════════════════════════════════════════
+               MESSAGE DE SUCCÈS
+          ══════════════════════════════════════════════════ -->
+          @if (succes()) {
+            <div
+              class="flex items-center gap-sm rounded-xl
+                     bg-vert-clair p-md text-sm text-vert-foret"
+              role="status"
+            >
+              <i class="pi pi-check-circle"></i>
+              <span>Modifications enregistrées avec succès.</span>
+            </div>
           }
+
+          <!-- ═════════════════════════════════════════════════
+               MESSAGE D'ERREUR
+          ══════════════════════════════════════════════════ -->
+          @if (errorMessage()) {
+            <div
+              class="rounded-xl bg-rouge-clair p-md
+                     text-sm text-rouge-alerte"
+              role="alert"
+            >
+              {{ errorMessage() }}
+            </div>
+          }
+
+          <!-- ═════════════════════════════════════════════════
+               SECTION INFORMATIONS PERSONNELLES
+          ══════════════════════════════════════════════════ -->
+          <section
+            class="flex flex-col gap-lg rounded-xl bg-white p-lg shadow-sm
+                   md:rounded-none md:border-b md:border-anthracite/10
+                   md:bg-transparent md:p-0 md:pb-lg md:shadow-none"
+          >
+
+            <!-- Titre de section -->
+            <div class="flex items-center gap-sm">
+
+              <i class="pi pi-user text-bleu-nuit md:hidden"></i>
+
+              <h2
+                class="text-sm font-bold uppercase tracking-wide
+                       text-anthracite md:text-base md:normal-case"
+              >
+                <span class="md:hidden">Informations</span>
+                <span class="hidden md:inline">Informations personnelles</span>
+              </h2>
+
+            </div>
+
+            <!-- Formulaire informations -->
+            <form
+              [formGroup]="formInfos"
+              (ngSubmit)="enregistrer()"
+              class="grid grid-cols-1 gap-lg md:grid-cols-2"
+            >
+
+              <!-- Prénom : lecture seule -->
+              <div class="flex min-w-0 flex-col gap-xs">
+
+                <label
+                  for="prenom"
+                  class="text-xs font-bold uppercase tracking-wide
+                         text-anthracite/50"
+                >
+                  Prénom
+                </label>
+
+                <div class="relative">
+
+                  <input
+                    id="prenom"
+                    type="text"
+                    [value]="authService.currentUser()?.prenom ?? ''"
+                    readonly
+                    class="w-full rounded-xl border border-anthracite/20
+                           bg-gris-fond px-md py-sm pr-10 text-anthracite
+                           outline-none"
+                  />
+
+                  <i
+                    class="pi pi-lock absolute right-md top-1/2
+                           -translate-y-1/2 text-sm text-anthracite/30"
+                  ></i>
+
+                </div>
+
+              </div>
+
+              <!-- Nom : lecture seule -->
+              <div class="flex min-w-0 flex-col gap-xs">
+
+                <label
+                  for="nom"
+                  class="text-xs font-bold uppercase tracking-wide
+                         text-anthracite/50"
+                >
+                  Nom
+                </label>
+
+                <div class="relative">
+
+                  <input
+                    id="nom"
+                    type="text"
+                    [value]="authService.currentUser()?.nom ?? ''"
+                    readonly
+                    class="w-full rounded-xl border border-anthracite/20
+                           bg-gris-fond px-md py-sm pr-10 text-anthracite
+                           outline-none"
+                  />
+
+                  <i
+                    class="pi pi-lock absolute right-md top-1/2
+                           -translate-y-1/2 text-sm text-anthracite/30"
+                  ></i>
+
+                </div>
+
+              </div>
+
+              <!-- Téléphone -->
+              <div class="flex min-w-0 flex-col gap-xs">
+
+                <label
+                  for="telephone"
+                  class="text-xs font-bold uppercase tracking-wide
+                         text-anthracite/50"
+                >
+                  Téléphone
+                </label>
+
+                <p-iconfield>
+
+                  <p-inputicon styleClass="pi pi-phone"></p-inputicon>
+
+                  <input
+                    id="telephone"
+                    pInputText
+                    formControlName="telephone"
+                    type="tel"
+                    autocomplete="tel"
+                    class="w-full"
+                  />
+
+                </p-iconfield>
+
+                @if (telephone.invalid && telephone.touched) {
+                  <span class="text-xs text-rouge-alerte">
+                    Le téléphone est obligatoire.
+                  </span>
+                }
+
+              </div>
+
+              <!-- Email -->
+              <div class="flex min-w-0 flex-col gap-xs">
+
+                <label
+                  for="email"
+                  class="text-xs font-bold uppercase tracking-wide
+                         text-anthracite/50"
+                >
+                  Adresse email
+                </label>
+
+                <p-iconfield>
+
+                  <p-inputicon styleClass="pi pi-envelope"></p-inputicon>
+
+                  <input
+                    id="email"
+                    pInputText
+                    formControlName="email"
+                    type="email"
+                    autocomplete="email"
+                    placeholder="exemple@email.com"
+                    class="w-full"
+                  />
+
+                </p-iconfield>
+
+              </div>
+
+              <!-- Rôle : visible sur desktop -->
+              <div class="hidden min-w-0 flex-col gap-xs md:flex">
+
+                <label
+                  class="text-xs font-bold uppercase tracking-wide
+                         text-anthracite/50"
+                >
+                  Rôle
+                </label>
+
+                <div
+                  class="inline-flex w-fit items-center gap-sm rounded-xl
+                         bg-bleu-nuit/10 px-md py-sm
+                         text-sm font-medium text-bleu-nuit"
+                >
+                  <i class="pi pi-shield"></i>
+                  {{ authService.currentUser()?.role }}
+                </div>
+
+              </div>
+
+              <!-- Bouton Enregistrer : desktop -->
+              <div class="hidden items-end justify-end md:flex">
+
+                <button
+                  type="submit"
+                  [disabled]="isSaving()"
+                  class="flex items-center justify-center gap-sm
+                         rounded-xl bg-bleu-nuit px-lg py-sm
+                         font-semibold text-blanc-lait
+                         transition-opacity hover:opacity-90
+                         disabled:cursor-not-allowed disabled:opacity-50"
+                >
+
+                  @if (isSaving()) {
+                    <i class="pi pi-spin pi-spinner"></i>
+                    <span>Enregistrement...</span>
+                  } @else {
+                    <i class="pi pi-check"></i>
+                    <span>Enregistrer les modifications</span>
+                  }
+
+                </button>
+
+              </div>
+
+            </form>
+
+          </section>
+
+          <!-- ═════════════════════════════════════════════════
+               SECTION SÉCURITÉ
+          ══════════════════════════════════════════════════ -->
+          <section
+            class="flex flex-col gap-lg rounded-xl bg-white p-lg shadow-sm
+                   md:rounded-none md:bg-transparent md:p-0 md:shadow-none"
+          >
+
+            <!-- Titre -->
+            <div class="flex items-center gap-sm">
+
+              <i class="pi pi-shield text-rouge-alerte md:hidden"></i>
+
+              <h2
+                class="text-sm font-bold uppercase tracking-wide
+                       text-anthracite md:text-base md:normal-case"
+              >
+                <span class="md:hidden">Sécurité</span>
+                <span class="hidden md:inline">Sécurité — Changer le PIN</span>
+              </h2>
+
+            </div>
+
+            <!-- Ligne de résumé : mobile uniquement -->
+            <div class="flex items-center justify-between md:hidden">
+
+              <span class="text-lg tracking-widest text-anthracite/40">
+                ••••••
+              </span>
+
+              <button
+                type="button"
+                (click)="securityExpanded.update(v => !v)"
+                class="font-semibold text-bleu-nuit"
+                [attr.aria-expanded]="securityExpanded()"
+              >
+                {{ securityExpanded() ? 'Masquer' : 'Modifier' }}
+              </button>
+
+            </div>
+
+            <!-- Contenu sécurité :
+                 replié sur mobile, visible sur desktop -->
+            <div
+              class="flex-col gap-lg md:flex"
+              [class.flex]="securityExpanded()"
+              [class.hidden]="!securityExpanded()"
+            >
+
+              <!-- Succès modification PIN -->
+              @if (succesPin()) {
+                <div
+                  class="flex items-center gap-sm rounded-xl
+                         bg-vert-clair p-md text-sm text-vert-foret"
+                  role="status"
+                >
+                  <i class="pi pi-check-circle"></i>
+                  <span>Code PIN modifié avec succès.</span>
+                </div>
+              }
+
+              <!-- Erreur modification PIN -->
+              @if (errorMessagePin()) {
+                <div
+                  class="rounded-xl bg-rouge-clair p-md
+                         text-sm text-rouge-alerte"
+                  role="alert"
+                >
+                  {{ errorMessagePin() }}
+                </div>
+              }
+
+              <!-- Formulaire de changement du PIN -->
+              <form
+                [formGroup]="formPin"
+                (ngSubmit)="changerPin()"
+                class="flex flex-col gap-lg md:grid md:grid-cols-3"
+              >
+
+                <!-- PIN actuel -->
+                <div class="flex min-w-0 flex-col gap-xs">
+
+                  <label
+                    for="pinActuel"
+                    class="text-xs font-bold uppercase tracking-wide
+                           text-anthracite/50"
+                  >
+                    Code PIN actuel
+                  </label>
+
+                  <p-password
+                    inputId="pinActuel"
+                    formControlName="pinActuel"
+                    [feedback]="false"
+                    [toggleMask]="true"
+                    autocomplete="current-password"
+                    styleClass="w-full"
+                    inputStyleClass="w-full"
+                  ></p-password>
+
+                  @if (pinActuel.invalid && pinActuel.touched) {
+                    <span class="text-xs text-rouge-alerte">
+                      Le PIN actuel est obligatoire.
+                    </span>
+                  }
+
+                </div>
+
+                <!-- Nouveau PIN -->
+                <div class="flex min-w-0 flex-col gap-xs">
+
+                  <label
+                    for="nouveauPin"
+                    class="text-xs font-bold uppercase tracking-wide
+                           text-anthracite/50"
+                  >
+                    Nouveau code PIN
+                  </label>
+
+                  <p-password
+                    inputId="nouveauPin"
+                    formControlName="nouveauPin"
+                    [feedback]="false"
+                    [toggleMask]="true"
+                    autocomplete="new-password"
+                    placeholder="Saisir nouveau"
+                    styleClass="w-full"
+                    inputStyleClass="w-full"
+                  ></p-password>
+
+                  @if (nouveauPin.invalid && nouveauPin.touched) {
+                    <span class="text-xs text-rouge-alerte">
+                      Le nouveau PIN est obligatoire (4 chiffres min.).
+                    </span>
+                  }
+
+                </div>
+
+                <!-- Confirmation -->
+                <div class="flex min-w-0 flex-col gap-xs">
+
+                  <label
+                    for="confirmationPin"
+                    class="text-xs font-bold uppercase tracking-wide
+                           text-anthracite/50"
+                  >
+                    Confirmer le PIN
+                  </label>
+
+                  <p-password
+                    inputId="confirmationPin"
+                    formControlName="confirmationPin"
+                    [feedback]="false"
+                    [toggleMask]="true"
+                    autocomplete="new-password"
+                    placeholder="Répéter"
+                    styleClass="w-full"
+                    inputStyleClass="w-full"
+                  ></p-password>
+
+                  @if (
+                    confirmationPin.invalid &&
+                    confirmationPin.touched
+                  ) {
+                    <span class="text-xs text-rouge-alerte">
+                      La confirmation est obligatoire.
+                    </span>
+                  }
+
+                </div>
+
+                <!-- Information sur le PIN -->
+                <div
+                  class="flex items-center gap-sm text-xs text-vert-foret
+                         md:col-span-3"
+                >
+                  <i class="pi pi-check-circle"></i>
+                  <span>Le code PIN doit contenir 4 chiffres.</span>
+                </div>
+
+                <!-- Bouton de changement du PIN -->
+                <button
+                  type="submit"
+                  [disabled]="isSavingPin()"
+                  class="flex w-full items-center justify-center gap-sm
+                         rounded-xl bg-rouge-alerte py-md
+                         font-semibold text-blanc-lait
+                         transition-opacity hover:opacity-90
+                         disabled:cursor-not-allowed disabled:opacity-50
+                         md:col-span-3 md:w-auto md:justify-self-end
+                         md:px-lg md:py-sm"
+                >
+
+                  @if (isSavingPin()) {
+                    <i class="pi pi-spin pi-spinner"></i>
+                    <span>Modification...</span>
+                  } @else {
+                    <i class="pi pi-lock"></i>
+                    <span>Changer le code PIN</span>
+                  }
+
+                </button>
+
+              </form>
+
+            </div>
+
+          </section>
+
         </div>
 
-        <!-- Email (modifiable) -->
-        <div class="flex flex-col gap-xs">
-          <label class="text-xs font-bold text-anthracite/50 uppercase tracking-wide">Adresse email</label>
-          <p-iconfield>
-            <p-inputicon styleClass="pi pi-envelope" />
-            <input pInputText formControlName="email" type="email"
-              placeholder="exemple@email.com" class="w-full" />
-          </p-iconfield>
-        </div>
-      </form>
+        <!-- ═══════════════════════════════════════════════════
+             BOUTONS MOBILES
+        ════════════════════════════════════════════════════ -->
+        <div class="mt-2 flex flex-col gap-md md:hidden">
 
-    </div>
+          <!-- Enregistrer -->
+          <button
+            type="button"
+            (click)="enregistrer()"
+            [disabled]="isSaving()"
+            class="flex w-full items-center justify-center gap-sm
+                   rounded-xl bg-bleu-nuit py-md font-semibold
+                   text-blanc-lait transition-opacity
+                   hover:opacity-90
+                   disabled:cursor-not-allowed disabled:opacity-50"
+          >
 
-    <!-- Section Sécurité -->
-    <div class="bg-white rounded-xl p-lg shadow-sm flex flex-col gap-lg">
-
-      <!-- Titre -->
-      <div class="flex items-center gap-sm">
-        <i class="pi pi-shield text-rouge-alerte"></i>
-        <p class="font-bold text-sm text-anthracite uppercase tracking-wide">Sécurité</p>
-      </div>
-
-      <!-- Ligne points + bouton Modifier -->
-      <div class="flex items-center justify-between">
-        <span class="text-anthracite/40 tracking-widest text-lg">••••••••••</span>
-        <button (click)="securityExpanded.update(v => !v)"
-          class="text-sm text-bleu-nuit font-semibold">
-          {{ securityExpanded() ? 'Masquer' : 'Modifier' }}
-        </button>
-      </div>
-
-      @if (securityExpanded()) {
-
-        <!-- Message succès PIN -->
-        @if (succesPin()) {
-          <div class="bg-vert-clair text-vert-foret text-sm rounded-xl p-md flex items-center gap-sm">
-            <i class="pi pi-check-circle"></i>
-            Code PIN modifié avec succès
-          </div>
-        }
-
-        <!-- Message erreur PIN -->
-        @if (errorMessagePin()) {
-          <div class="bg-rouge-clair text-rouge-alerte text-sm rounded-xl p-md">
-            {{ errorMessagePin() }}
-          </div>
-        }
-
-        <form [formGroup]="formPin" class="flex flex-col gap-lg">
-
-          <!-- PIN actuel -->
-          <div class="flex flex-col gap-xs">
-            <label class="text-xs font-bold text-anthracite/50 uppercase tracking-wide">Code PIN actuel</label>
-            <p-password formControlName="pinActuel" [feedback]="false" [toggleMask]="true"
-              styleClass="w-full" inputStyleClass="w-full" />
-            @if (pinActuel.invalid && pinActuel.touched) {
-              <span class="text-xs text-rouge-alerte">Le PIN actuel est obligatoire</span>
+            @if (isSaving()) {
+              <i class="pi pi-spin pi-spinner"></i>
+              <span>Enregistrement...</span>
+            } @else {
+              <i class="pi pi-check"></i>
+              <span>Enregistrer les modifications</span>
             }
-          </div>
 
-          <!-- Nouveau PIN -->
-          <div class="flex flex-col gap-xs">
-            <label class="text-xs font-bold text-anthracite/50 uppercase tracking-wide">Nouveau Code PIN</label>
-            <p-password formControlName="nouveauPin" [feedback]="false" [toggleMask]="true"
-              placeholder="Saisir nouveau" styleClass="w-full" inputStyleClass="w-full" />
-            @if (nouveauPin.invalid && nouveauPin.touched) {
-              <span class="text-xs text-rouge-alerte">Le nouveau PIN est obligatoire (4 chiffres min.)</span>
-            }
-          </div>
-
-          <!-- Confirmer PIN -->
-          <div class="flex flex-col gap-xs">
-            <label class="text-xs font-bold text-anthracite/50 uppercase tracking-wide">Confirmer</label>
-            <p-password formControlName="confirmationPin" [feedback]="false" [toggleMask]="true"
-              placeholder="Répéter" styleClass="w-full" inputStyleClass="w-full" />
-            @if (confirmationPin.invalid && confirmationPin.touched) {
-              <span class="text-xs text-rouge-alerte">La confirmation est obligatoire</span>
-            }
-          </div>
-
-          <!-- Info -->
-          <div class="flex items-center gap-sm text-xs text-vert-foret">
-            <i class="pi pi-check-circle"></i>
-            Le Code PIN doit contenir 4 chiffres.
-          </div>
-
-          <!-- Bouton changer PIN -->
-          <button type="button" (click)="changerPin()"
-            [disabled]="isSavingPin()"
-            class="w-full bg-rouge-alerte text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-50">
-            @if (isSavingPin()) { <i class="pi pi-spin pi-spinner"></i> }
-            Changer le code PIN
           </button>
 
-        </form>
-      }
+          <!-- Annuler -->
+          <button
+            type="button"
+            routerLink="/mon-espace"
+            class="w-full py-md text-center font-semibold text-bleu-nuit"
+          >
+            Annuler
+          </button>
 
-    </div>
+        </div>
 
-    <!-- Bouton enregistrer infos -->
-    <div class="flex flex-col gap-md mt-2">
-      <button (click)="enregistrer()"
-        [disabled]="isSaving()"
-        class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-50">
-        @if (isSaving()) { <i class="pi pi-spin pi-spinner"></i> }
-        Enregistrer les modifications
-      </button>
-      <button routerLink="/mon-espace"
-        class="w-full text-bleu-nuit font-semibold py-md text-center">
-        Annuler
-      </button>
-    </div>
+      </div>
+
+    </main>
+
+    <!-- ═══════════════════════════════════════════════════════
+         NAVIGATION MOBILE
+    ════════════════════════════════════════════════════════ -->
+    <app-bottom-nav class="md:hidden"></app-bottom-nav>
 
   </div>
 
 </div>
-
-<app-bottom-nav />

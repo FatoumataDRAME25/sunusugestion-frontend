@@ -38,7 +38,7 @@ import { adminGuard } from './core/guards/admin.guard';
 import { authGuard } from './core/guards/auth.guard';
 import { RetourPaiement } from './features/espace-gie/pages/paiement/retour-paiement';
 import { LandingPage } from './features/landing-page/landing-page';
-import { Landing } from './features/landing/landing';
+
 
 
 
@@ -48,15 +48,13 @@ import { Landing } from './features/landing/landing';
 
 export const routes: Routes = [
 
+  { path: '', component: LandingPage },
   { path: 'sunugestion-vitrine', component: Accueil },
-  {path: 'landing-page', component: LandingPage},
-  {path: 'landing', component: Landing},
   { path: 'login', component: Login },
   { path: 'inscription/gie', component: EtapeGie },
   { path: 'inscription/compte', component: EtapeCompte },
   { path: 'inscription/otp', component: EtapeOtp },
   { path: 'inscription/succes', component: EtapeSucces },
-  { path: '', redirectTo: 'sunugestion-vitrine', pathMatch: 'full' },
 
   // Les routes pour l'admin
   {

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -25,15 +25,69 @@ import { Router, RouterLink } from '@angular/router';
   styleUrl: './login.css',
   templateUrl: './login.html',
 })
-export class Login {
+export class Login implements OnDestroy{
 
   telephone = signal('');
   codePin = signal('');
   pinVisible = false;
+  secondesRestantes = signal<number | null>(null);
+
+private intervalleCompteARebours: ReturnType<typeof setInterval> | null = null;
 
   protected authService = inject(AuthService);
   private firebaseService = inject(FirebaseService);
   private router = inject(Router);
+
+
+  /**
+ * Démarre le compte à rebours du verrouillage.
+ */
+private demarrerCompteARebours(secondes: number): void {
+  this.arreterCompteARebours();
+
+  this.secondesRestantes.set(secondes);
+
+  this.intervalleCompteARebours = setInterval(() => {
+    const restantes = this.secondesRestantes();
+
+  if (restantes === null || restantes <= 1) {
+    this.secondesRestantes.set(null);
+    this.authService.errorMessage.set(null);
+    this.authService.secondesVerrouillage.set(null);
+    this.arreterCompteARebours();
+    return;
+  }
+
+    this.secondesRestantes.set(restantes - 1);
+  }, 1000);
+}
+
+  /**
+   * Arrête le compte à rebours.
+   */
+  private arreterCompteARebours(): void {
+    if (this.intervalleCompteARebours !== null) {
+      clearInterval(this.intervalleCompteARebours);
+      this.intervalleCompteARebours = null;
+    }
+  }
+
+  /**
+   * Formate les secondes en MM:SS.
+   */
+  formatTempsRestant(secondes: number): string {
+    const minutes = Math.floor(secondes / 60);
+    const secondesAffichees = secondes % 60;
+
+    return `${String(minutes).padStart(2, '0')}:${String(secondesAffichees).padStart(2, '0')}`;
+  }
+
+  /**
+   * Nettoie le compteur lorsque l'on quitte la page.
+   */
+  ngOnDestroy(): void {
+    this.arreterCompteARebours();
+  }
 
   seConnecter(): void {
 
@@ -49,11 +103,15 @@ export class Login {
         if (role === 'administrateur') {
           this.router.navigate(['/dashboard']);
         } else {
-          this.router.navigate(['/mon-espace']);
+          this.router.navigate(['/mon-espace/dashboard-president']);
         }
       },
       error: (err) => {
-        this.authService.errorMessage.set(err?.error?.detail ?? 'Identifiants incorrects');
+        const secondes = this.authService.secondesVerrouillage();
+
+        if (secondes !== null) {
+          this.demarrerCompteARebours(secondes);
+        }
       }
     });
   }

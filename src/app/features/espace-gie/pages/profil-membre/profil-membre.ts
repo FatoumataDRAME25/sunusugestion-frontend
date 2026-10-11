@@ -11,6 +11,7 @@ import { BottomNav } from '../../../../shared/ui/bottom-nav/bottom-nav';
 import { Navbar } from '../../../../shared/ui/navbar/navbar';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
+import { GieSidebar } from '../../../../shared/ui/gie-sidebar/gie-sidebar';
 
 @Component({
   selector: 'app-profil-membre',
@@ -23,8 +24,9 @@ import { environment } from '../../../../../environments/environment';
     InputIconModule,
     InitialesPipe,
     BottomNav,
-    Navbar
-  ],
+    Navbar,
+    GieSidebar
+],
   styleUrl: './profil-membre.css',
   templateUrl: './profil-membre.html',
 })

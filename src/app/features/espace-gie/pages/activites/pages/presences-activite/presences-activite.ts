@@ -5,13 +5,14 @@ import { ActiviteService } from '../../../../../../core/services/activite.servic
 import { AuthService } from '../../../../../../core/services/auth.service';
 import { Navbar } from '../../../../../../shared/ui/navbar/navbar';
 import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
+import { GieSidebar } from '../../../../../../shared/ui/gie-sidebar/gie-sidebar';
 import { InitialesPipe } from '../../../../../../shared/pipes/initiales-pipe';
 import { MembrePresence } from '../../../../../../core/models/activite.model';
 
 @Component({
   selector: 'app-presences-activite',
   templateUrl: './presences-activite.html',
-  imports: [ DatePipe, InitialesPipe, Navbar, BottomNav],
+  imports: [ DatePipe, InitialesPipe, Navbar, BottomNav, GieSidebar],
 })
 export class PresencesActivite implements OnInit {
 

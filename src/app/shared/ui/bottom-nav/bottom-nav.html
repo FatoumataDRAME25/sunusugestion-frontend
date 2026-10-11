@@ -1,35 +1,103 @@
-<nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-anthracite/10 flex justify-around py-sm px-md">
+<!-- Overlay pour fermer le menu Plus -->
+@if (menuPlusOuvert()) {
+  <div class="fixed inset-0 z-40 bg-black/30" (click)="fermerMenuPlus()"></div>
 
-  <a routerLink="/mon-espace"
-    routerLinkActive="text-bleu-nuit"
-    [routerLinkActiveOptions]="{ exact: true }"
-    class="flex flex-col items-center gap-xs text-anthracite/40 text-xs"
-  >
-    <i class="pi pi-home text-lg"></i>
-    Accueil
-  </a>
+  <!-- Drawer menu Plus -->
+  <div class="fixed bottom-16 left-3 right-3 z-50 bg-white rounded-2xl shadow-2xl overflow-hidden">
+    <div class="px-4 py-3 border-b border-[#1E3A5F]/5">
+      <p class="text-[#1A1D23]/40 text-xs font-bold uppercase tracking-[1px]">Plus d'options</p>
+    </div>
 
-  <a routerLink="/mon-espace/historiques"
-    routerLinkActive="text-bleu-nuit"
-    class="flex flex-col items-center gap-xs text-anthracite/40 text-xs"
-  >
-    <i class="pi pi-wallet text-lg"></i>
-    Opérations
-  </a>
+    <a routerLink="/mon-espace/cotisations" (click)="fermerMenuPlus()"
+       class="flex items-center gap-3 px-4 py-4 border-b border-[#1E3A5F]/5 active:bg-[#1E3A5F]/5">
+      <div class="w-9 h-9 rounded-xl bg-[#2E7D5B]/10 flex items-center justify-center flex-shrink-0">
+        <i class="pi pi-wallet text-[#2E7D5B] text-base"></i>
+      </div>
+      <span class="text-[#1E3A5F] text-sm font-medium">Cotisations</span>
+      <i class="pi pi-chevron-right text-[#1E3A5F]/30 text-xs ml-auto"></i>
+    </a>
 
-  <a routerLink="/mon-espace/membres"
-    routerLinkActive="text-bleu-nuit"
-    class="flex flex-col items-center gap-xs text-anthracite/40 text-xs"
-  >
-    <i class="pi pi-users text-lg"></i>
-    Membres
-  </a>
+    <a routerLink="/mon-espace/prets" (click)="fermerMenuPlus()"
+       class="flex items-center gap-3 px-4 py-4 border-b border-[#1E3A5F]/5 active:bg-[#1E3A5F]/5">
+      <div class="w-9 h-9 rounded-xl bg-[#EA580C]/10 flex items-center justify-center flex-shrink-0">
+        <i class="pi pi-credit-card text-[#EA580C] text-base"></i>
+      </div>
+      <span class="text-[#1E3A5F] text-sm font-medium">Prêts</span>
+      <i class="pi pi-chevron-right text-[#1E3A5F]/30 text-xs ml-auto"></i>
+    </a>
 
-  <a routerLink="/mon-espace/profil-membre"
-    routerLinkActive="text-bleu-nuit"
-    class="flex flex-col items-center gap-xs text-anthracite/40 text-xs"
-  >
-    <i class="pi pi-user text-lg"></i>
-    Profil
-  </a>
+    <a routerLink="/mon-espace/rapports" (click)="fermerMenuPlus()"
+       class="flex items-center gap-3 px-4 py-4 border-b border-[#1E3A5F]/5 active:bg-[#1E3A5F]/5">
+      <div class="w-9 h-9 rounded-xl bg-[#1E3A5F]/10 flex items-center justify-center flex-shrink-0">
+        <i class="pi pi-file text-[#1E3A5F] text-base"></i>
+      </div>
+      <span class="text-[#1E3A5F] text-sm font-medium">Rapports</span>
+      <i class="pi pi-chevron-right text-[#1E3A5F]/30 text-xs ml-auto"></i>
+    </a>
+
+    <a routerLink="/mon-espace/profil-membre" (click)="fermerMenuPlus()"
+       class="flex items-center gap-3 px-4 py-4 active:bg-[#1E3A5F]/5">
+      <div class="w-9 h-9 rounded-xl bg-[#1E3A5F]/10 flex items-center justify-center flex-shrink-0">
+        <i class="pi pi-user text-[#1E3A5F] text-base"></i>
+      </div>
+      <span class="text-[#1E3A5F] text-sm font-medium">Mon profil</span>
+      <i class="pi pi-chevron-right text-[#1E3A5F]/30 text-xs ml-auto"></i>
+    </a>
+  </div>
+}
+
+<!-- Bottom nav pill -->
+<nav class="fixed bottom-0 left-0 right-0 flex lg:hidden z-50 bg-transparent">
+  <div class="w-full bg-[#1E3A5F] rounded-t-4xl flex items-center px-2 py-[6px] shadow-xl">
+
+    <!-- Accueil -->
+    <a routerLink="/mon-espace/dashboard-president"
+       routerLinkActive
+       #rlaAccueil="routerLinkActive"
+       [routerLinkActiveOptions]="{ exact: true }"
+       class="flex-1 flex flex-col items-center justify-center gap-1 py-2 px-2 rounded-full transition-all"
+       [class]="rlaAccueil.isActive ? 'bg-[#2E4E6E]' : ''">
+      <i class="pi pi-home text-lg" [class]="rlaAccueil.isActive ? 'text-white' : 'text-white/60'"></i>
+      <span class="text-[9px] uppercase tracking-wide" [class]="rlaAccueil.isActive ? 'text-white font-bold' : 'text-white/60'">Accueil</span>
+    </a>
+
+    <!-- Membres -->
+    <a routerLink="/mon-espace/membres"
+       routerLinkActive
+       #rlaMembres="routerLinkActive"
+       class="flex-1 flex flex-col items-center justify-center gap-1 py-2 px-2 rounded-full transition-all"
+       [class]="rlaMembres.isActive ? 'bg-[#2E4E6E]' : ''">
+      <i class="pi pi-users text-lg" [class]="rlaMembres.isActive ? 'text-white' : 'text-white/60'"></i>
+      <span class="text-[9px] uppercase tracking-wide" [class]="rlaMembres.isActive ? 'text-white font-bold' : 'text-white/60'">Membres</span>
+    </a>
+
+    <!-- Activités -->
+    <a routerLink="/mon-espace/activites"
+       routerLinkActive
+       #rlaActivites="routerLinkActive"
+       class="flex-1 flex flex-col items-center justify-center gap-1 py-2 px-2 rounded-full transition-all"
+       [class]="rlaActivites.isActive ? 'bg-[#2E4E6E]' : ''">
+      <i class="pi pi-calendar text-lg" [class]="rlaActivites.isActive ? 'text-white' : 'text-white/60'"></i>
+      <span class="text-[9px] uppercase tracking-wide" [class]="rlaActivites.isActive ? 'text-white font-bold' : 'text-white/60'">Activités</span>
+    </a>
+
+    <!-- Opérations -->
+    <a routerLink="/mon-espace/historiques"
+       routerLinkActive
+       #rlaOps="routerLinkActive"
+       class="flex-1 flex flex-col items-center justify-center gap-1 py-2 px-2 rounded-full transition-all"
+       [class]="rlaOps.isActive ? 'bg-[#2E4E6E]' : ''">
+      <i class="pi pi-wallet text-lg" [class]="rlaOps.isActive ? 'text-white' : 'text-white/60'"></i>
+      <span class="text-[9px] uppercase tracking-wide" [class]="rlaOps.isActive ? 'text-white font-bold' : 'text-white/60'">Opérations</span>
+    </a>
+
+    <!-- Plus -->
+    <button (click)="toggleMenuPlus()"
+       class="flex-1 flex flex-col items-center justify-center gap-1 py-2 px-2 rounded-full transition-all"
+       [class]="menuPlusOuvert() ? 'bg-[#2E4E6E]' : ''">
+      <i class="pi pi-th-large text-lg" [class]="menuPlusOuvert() ? 'text-white' : 'text-white/60'"></i>
+      <span class="text-[9px] uppercase tracking-wide" [class]="menuPlusOuvert() ? 'text-white font-bold' : 'text-white/60'">Plus</span>
+    </button>
+
+  </div>
 </nav>

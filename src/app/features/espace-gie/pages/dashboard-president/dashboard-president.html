@@ -1,121 +1,15 @@
 <div class="relative flex bg-[#F7F8FA] min-h-screen">
 
-  <!-- ═══════════════════════════════════════
-       SIDEBAR (desktop uniquement)
-  ════════════════════════════════════════ -->
-  <aside class="w-[264px] min-h-screen bg-[#1E3A5F]/100 backdrop-blur-[10px] hidden lg:flex flex-col fixed left-0 top-0 z-50">
-
-    <!-- Logo -->
-    <div class="p-8">
-      <img src="images/logo-sunugestion-fond-bleu.png" alt="Logo SunuGestion" class="w-[174px] h-auto" />
-    </div>
-
-    <!-- Navigation -->
-    <nav class="flex-1 px-4 pt-6 flex flex-col gap-2">
-      <a routerLink="/mon-espace/dashboard" class="flex items-center gap-3 px-4 py-[14px] bg-white/10 rounded-2xl cursor-pointer">
-        <i class="pi pi-home text-white text-base w-5"></i>
-        <span class="text-white text-base font-medium leading-6">Tableau de bord</span>
-      </a>
-      <a routerLink="/mon-espace/membres" class="flex items-center gap-3 px-4 py-[14px] rounded-2xl cursor-pointer">
-        <i class="pi pi-users text-white/60 text-base w-5"></i>
-        <span class="text-white/60 text-base font-medium leading-6">Membres</span>
-      </a>
-      <a routerLink="/mon-espace/cotisations" class="flex items-center gap-3 px-4 py-[14px] rounded-2xl cursor-pointer">
-        <i class="pi pi-wallet text-white/60 text-base w-5"></i>
-        <span class="text-white/60 text-base font-medium leading-6">Cotisations</span>
-      </a>
-      <a routerLink="/mon-espace/prets" class="flex items-center gap-3 px-4 py-[14px] rounded-2xl cursor-pointer">
-        <i class="pi pi-credit-card text-white/60 text-base w-5"></i>
-        <span class="text-white/60 text-base font-medium leading-6">Prêts</span>
-      </a>
-      <a routerLink="/mon-espace/activites" class="flex items-center gap-3 px-4 py-[14px] rounded-2xl cursor-pointer">
-        <i class="pi pi-calendar text-white/60 text-base w-5"></i>
-        <span class="text-white/60 text-base font-medium leading-6">Activités</span>
-      </a>
-      <a routerLink="/mon-espace/historiques" class="flex items-center gap-3 px-4 py-[14px] rounded-2xl cursor-pointer">
-        <i class="pi pi-chart-bar text-white/60 text-base w-5"></i>
-        <span class="text-white/60 text-base font-medium leading-6">Finances & Opérations</span>
-      </a>
-      <a routerLink="/mon-espace/rapports" class="flex items-center gap-3 px-4 py-[14px] rounded-2xl cursor-pointer">
-        <i class="pi pi-file text-white/60 text-base w-5"></i>
-        <span class="text-white/60 text-base font-medium leading-6">Rapports</span>
-      </a>
-
-      <!-- Paramètres -->
-      <div class="mt-8 px-4">
-        <p class="text-white/30 text-xs font-bold uppercase tracking-[1.2px] mb-4">Paramètres</p>
-        <div class="flex flex-col gap-2">
-          <a class="flex items-center gap-3 py-2 cursor-pointer">
-            <i class="pi pi-cog text-white/60 text-sm w-5"></i>
-            <span class="text-white/60 text-sm leading-5">Configuration</span>
-          </a>
-          <a class="flex items-center gap-3 py-2 cursor-pointer">
-            <i class="pi pi-shield text-white/60 text-sm w-5"></i>
-            <span class="text-white/60 text-sm leading-5">Sécurité</span>
-          </a>
-        </div>
-      </div>
-    </nav>
-
-    <!-- Déconnexion -->
-    <div class="p-6">
-      <button class="w-full flex items-center gap-3 px-4 py-3 bg-[#3E5776] rounded-2xl cursor-pointer">
-        <i class="pi pi-sign-out text-white text-base w-5"></i>
-        <span class="text-white text-base font-medium leading-6">Déconnexion</span>
-      </button>
-    </div>
-
-  </aside>
+  <!-- Sidebar GIE réutilisable -->
+  <app-gie-sidebar></app-gie-sidebar>
 
   <!-- ═══════════════════════════════════════
        CONTENU PRINCIPAL
   ════════════════════════════════════════ -->
   <div class="flex-1 ml-0 lg:ml-[264px] min-w-0 flex flex-col">
 
-    <!-- TOPBAR DESKTOP -->
-    <header class="h-20 px-10 bg-white/70 border-b border-white/30 backdrop-blur-[10px] hidden lg:flex items-center justify-between sticky top-0 z-40">
-      <h1 class="text-[#1E3A5F] text-2xl font-bold leading-8">Tableau de bord</h1>
-      <div class="flex items-center gap-8">
-        <!-- Recherche -->
-        <div class="relative">
-          <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-[#1E3A5F]/40 text-sm"></i>
-          <input type="text" placeholder="Rechercher..."
-            class="w-64 pl-10 pr-4 py-[9px] bg-[#1E3A5F]/5 rounded-full text-sm text-gray-400 outline-none" />
-        </div>
-        <!-- Actions -->
-        <div class="flex items-center gap-4">
-          <!-- Notif -->
-          <div class="relative w-10 h-10 flex items-center justify-center">
-            <i class="pi pi-bell text-[#1E3A5F]/60 text-lg"></i>
-            <div class="absolute top-2 right-2 w-2 h-2 bg-[#C1654A] rounded-full border-2 border-white"></div>
-          </div>
-          <div class="w-px h-8 bg-[#1E3A5F]/10"></div>
-          <!-- Profil -->
-          <div class="flex items-center gap-3">
-            <div class="flex flex-col items-end">
-              <span class="text-[#1E3A5F] text-sm font-bold leading-5">{{ nomCompletAffiche() }}</span>
-              <span class="text-[#2E7D5B] text-[10px] font-bold uppercase tracking-[0.5px]">{{ utilisateur()?.role }}</span>
-            </div>
-            <div class="w-10 h-10 rounded-full bg-[#2E7D5B]/20 flex items-center justify-center border-2 border-white shadow-sm">
-              <span class="text-[#2E7D5B] text-sm font-bold">{{ initiales() }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <!-- TOPBAR MOBILE -->
-    <header class="flex lg:hidden h-16 px-4 bg-white items-center justify-between sticky top-0 z-40 shadow-sm">
-      <img src="images/logo-sunu-gestion.png" alt="SunuGestion" class="h-7 w-auto" />
-      <div class="flex items-center gap-3">
-        <button class="w-9 h-9 flex items-center justify-center">
-          <i class="pi pi-search text-[#1E3A5F] text-lg"></i>
-        </button>
-        <div class="w-9 h-9 rounded-full bg-[#2E7D5B]/20 flex items-center justify-center border-2 border-white shadow-sm">
-          <span class="text-[#2E7D5B] text-xs font-bold">{{ initiales() }}</span>
-        </div>
-      </div>
-    </header>
+    <!-- Topbar réutilisable (desktop + mobile) -->
+    <app-navbar titre="Tableau de bord"></app-navbar>
 
     <!-- BODY -->
     <main class="p-4 lg:p-10 flex flex-col gap-6 lg:gap-10 pb-24 lg:pb-10">
@@ -124,7 +18,7 @@
       <div class="hidden lg:flex flex-col gap-1">
         <h2 class="text-3xl font-bold leading-9">
           <span class="text-[#1E3A5F]">Bonjour </span>
-          <span class="text-[#2E7D5B]">{{ prenomAffiche() }}</span>
+          <span class="text-[#2E7D5B]">{{ utilisateur()?.prenom }}</span>
         </h2>
         <p class="text-[#1A1D23]/50 text-base leading-6">Voici le résumé de l'activité de votre organisation pour aujourd'hui.</p>
       </div>
@@ -132,7 +26,7 @@
       <!-- Salutation MOBILE -->
       <div class="flex lg:hidden flex-col gap-1 pt-2">
         <p class="text-[#1A1D23]/60 text-sm leading-5">Bonjour,</p>
-        <h2 class="text-[#1E3A5F] text-2xl font-bold leading-8">{{ nomCompletAffiche() }}</h2>
+        <h2 class="text-[#1E3A5F] text-2xl font-bold leading-8">{{ utilisateur()?.prenom }} {{ utilisateur()?.nom }}</h2>
         <span class="inline-flex self-start mt-1 px-2 py-[2px] bg-[#2E7D5B]/10 rounded-full text-[#2E7D5B] text-[10px] font-bold uppercase tracking-[1px]">{{ utilisateur()?.role }}</span>
       </div>
 
@@ -639,36 +533,8 @@
 
     </main>
 
-    <!-- BOTTOM NAV MOBILE -->
-    <nav class="fixed bottom-0 left-0 right-0 flex lg:hidden z-50 bg-[#F7F8FA] px-3 pt-3 pb-3">
-      <div class="w-full bg-[#1E3A5F] rounded-4xl flex items-center px-2 py-[6px] shadow-xl">
-        <!-- Accueil (actif) -->
-        <a routerLink="/mon-espace/dashboard" class="flex-1 flex flex-col items-center justify-center gap-1 ">
-          <i class="pi pi-home text-white text-lg"></i>
-          <span class="text-white text-[9px] font-bold uppercase tracking-wide">Accueil</span>
-        </a>
-        <!-- Membres -->
-        <a routerLink="/mon-espace/membres" class="flex-1 flex flex-col items-center justify-center gap-1 py-2 px-2">
-          <i class="pi pi-users text-white/60 text-lg"></i>
-          <span class="text-white/60 text-[9px] uppercase tracking-wide">Membres</span>
-        </a>
-        <!-- Activités -->
-        <a routerLink="/mon-espace/activites" class="flex-1 flex flex-col items-center justify-center gap-1 py-2 px-2">
-          <i class="pi pi-calendar text-white/60 text-lg"></i>
-          <span class="text-white/60 text-[9px] uppercase tracking-wide">Activités</span>
-        </a>
-        <!-- Opérations -->
-        <a routerLink="/mon-espace/historiques" class="flex-1 flex flex-col items-center justify-center gap-1 py-2 px-2">
-          <i class="pi pi-wallet text-white/60 text-lg"></i>
-          <span class="text-white/60 text-[9px] uppercase tracking-wide">Opérations</span>
-        </a>
-        <!-- Plus -->
-        <a class="flex-1 flex flex-col items-center justify-center gap-1 py-2 px-2 cursor-pointer">
-          <i class="pi pi-question-circle text-white/60 text-lg"></i>
-          <span class="text-white/60 text-[9px] uppercase tracking-wide">Plus</span>
-        </a>
-      </div>
-    </nav>
+    <!-- Bottom nav réutilisable -->
+    <app-bottom-nav></app-bottom-nav>
 
   </div>
 

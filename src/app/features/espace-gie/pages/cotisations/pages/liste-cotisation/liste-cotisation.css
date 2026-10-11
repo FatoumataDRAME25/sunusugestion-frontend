@@ -1,0 +1,31 @@
+/* Écraser le layout complet de session-cotisation quand dans un modal */
+.modal-session-content ::ng-deep > div {
+  min-height: unset !important;
+  height: auto !important;
+}
+
+/* Masquer sidebar, navbar, bottom-nav dans le modal */
+.modal-session-content ::ng-deep app-gie-sidebar,
+.modal-session-content ::ng-deep app-navbar,
+.modal-session-content ::ng-deep app-bottom-nav {
+  display: none !important;
+}
+
+/* Supprimer le ml-[264px] du contenu principal */
+.modal-session-content ::ng-deep .flex-1 {
+  margin-left: 0 !important;
+}
+
+/* Masquer la version mobile à l'intérieur du modal */
+.modal-session-content ::ng-deep .lg-hidden {
+  display: none !important;
+}
+
+/* Afficher la version desktop, supprimer padding */
+.modal-session-content ::ng-deep .hidden {
+  display: block !important;
+}
+
+.modal-session-content ::ng-deep .p-10 {
+  padding: 0 !important;
+}

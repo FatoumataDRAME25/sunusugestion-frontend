@@ -5,12 +5,14 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { DialogModule } from 'primeng/dialog';
 import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
+import { GieSidebar } from '../../../../../../shared/ui/gie-sidebar/gie-sidebar';
+import { Navbar } from '../../../../../../shared/ui/navbar/navbar';
 import { HistoriqueOperationService } from '../../../../../../core/services/historique-operation.service';
 
 
 @Component({
   selector: 'app-nouvelle-operation',
-  imports: [ReactiveFormsModule, RouterLink, InputTextModule, TextareaModule, DialogModule, BottomNav],
+  imports: [ReactiveFormsModule, RouterLink, InputTextModule, TextareaModule, DialogModule, BottomNav, GieSidebar, Navbar],
   templateUrl: './nouvelle-operation.html'
 })
 export class NouvelleOperation {

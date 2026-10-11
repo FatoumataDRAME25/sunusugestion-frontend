@@ -6,13 +6,14 @@ import { PretService } from '../../../../../../core/services/pret.service';
 import { AuthService } from '../../../../../../core/services/auth.service';
 import { Navbar } from '../../../../../../shared/ui/navbar/navbar';
 import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
+import { GieSidebar } from '../../../../../../shared/ui/gie-sidebar/gie-sidebar';
 
 type Mode = 'vue' | 'creation' | 'modification' | 'succes';
 
 @Component({
   selector: 'app-regles-pret',
   templateUrl: './regles-pret.html',
-  imports: [RouterLink, DecimalPipe, FormsModule, Navbar, BottomNav],
+  imports: [RouterLink, DecimalPipe, FormsModule, Navbar, BottomNav, GieSidebar],
 })
 export class ReglesPret implements OnInit {
 

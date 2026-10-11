@@ -10,10 +10,13 @@ import { ActiviteService } from '../../../../core/services/activite.service';
 import { HistoriqueOperation } from '../../../../core/models/historique-operation.model';
 import { Solde } from '../../../../core/models/solde.model';
 import { Activite } from '../../../../core/models/activite.model';
+import { GieSidebar } from '../../../../shared/ui/gie-sidebar/gie-sidebar';
+import { Navbar } from '../../../../shared/ui/navbar/navbar';
+import { BottomNav } from '../../../../shared/ui/bottom-nav/bottom-nav';
 
 @Component({
   selector: 'app-dashboard-president',
-  imports: [RouterLink, CommonModule, DecimalPipe],
+  imports: [RouterLink, CommonModule, DecimalPipe, GieSidebar, Navbar, BottomNav],
   templateUrl: './dashboard-president.html',
 })
 export class DashboardPresident implements OnInit {
@@ -27,19 +30,6 @@ export class DashboardPresident implements OnInit {
 
   // ── Utilisateur connecté ──────────────────────────────────
   utilisateur = this.authService.currentUser;
-
-  prenomAffiche = computed(() => this.utilisateur()?.prenom ?? '');
-
-  nomCompletAffiche = computed(() => {
-    const u = this.utilisateur();
-    return u ? `${u.prenom} ${u.nom}` : '';
-  });
-
-  initiales = computed(() => {
-    const u = this.utilisateur();
-    if (!u) return '';
-    return `${u.prenom.charAt(0)}${u.nom.charAt(0)}`.toUpperCase();
-  });
 
   // ── Rôle ──────────────────────────────────────────────────
   estPresident = computed(() => this.utilisateur()?.role === 'president');
