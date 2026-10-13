@@ -48,8 +48,8 @@ export class ProfilMembre {
   securityExpanded = signal(false);
 
   // Formulaire infos personnelles
+  // Le téléphone est l'identifiant de connexion : il n'est pas modifiable
   formInfos: FormGroup = this.fb.group({
-    telephone: [this.authService.currentUser()?.telephone ?? '', Validators.required],
     email:     [this.authService.currentUser()?.email ?? '']
   });
 
@@ -60,7 +60,6 @@ export class ProfilMembre {
     confirmationPin: ['', Validators.required]
   });
 
-  get telephone()       { return this.formInfos.get('telephone')!; }
   get pinActuel()       { return this.formPin.get('pinActuel')!; }
   get nouveauPin()      { return this.formPin.get('nouveauPin')!; }
   get confirmationPin() { return this.formPin.get('confirmationPin')!; }
@@ -83,7 +82,6 @@ export class ProfilMembre {
       next: (reponse: any) => {
         // Met à jour le signal currentUser avec les nouvelles infos
         this.authService.updateProfil({
-          telephone: this.formInfos.value.telephone,
           email: this.formInfos.value.email
         });
         this.isSaving.set(false);

@@ -13,10 +13,11 @@ import { Activite } from '../../../../core/models/activite.model';
 import { GieSidebar } from '../../../../shared/ui/gie-sidebar/gie-sidebar';
 import { Navbar } from '../../../../shared/ui/navbar/navbar';
 import { BottomNav } from '../../../../shared/ui/bottom-nav/bottom-nav';
+import { Rapports } from '../rapports/rapports';
 
 @Component({
   selector: 'app-dashboard-president',
-  imports: [RouterLink, CommonModule, DecimalPipe, GieSidebar, Navbar, BottomNav],
+  imports: [RouterLink, CommonModule, DecimalPipe, GieSidebar, Navbar, BottomNav, Rapports],
   templateUrl: './dashboard-president.html',
 })
 export class DashboardPresident implements OnInit {
@@ -34,6 +35,10 @@ export class DashboardPresident implements OnInit {
   // ── Rôle ──────────────────────────────────────────────────
   estPresident = computed(() => this.utilisateur()?.role === 'president');
   estTresorier = computed(() => this.utilisateur()?.role === 'tresorier');
+
+  // ── Rapport périodique (président et trésorier uniquement) ─
+  peutGenererRapport = computed(() => this.estPresident() || this.estTresorier());
+  rapportOuvert = signal(false);
 
   // ── Stats membres (via EspaceGieService comme accueil-espace) ─
   membresActifs = computed(() => this.espaceGieService.stats().nombreMembres);

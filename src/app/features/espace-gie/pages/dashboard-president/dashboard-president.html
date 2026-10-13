@@ -1,4 +1,4 @@
-<div class="relative flex bg-[#F7F8FA] min-h-screen">
+<div class="relative flex bg-[#F7F8FA] lg:bg-fond-desktop min-h-screen">
 
   <!-- Sidebar GIE réutilisable -->
   <app-gie-sidebar></app-gie-sidebar>
@@ -12,15 +12,28 @@
     <app-navbar titre="Tableau de bord"></app-navbar>
 
     <!-- BODY -->
-    <main class="p-4 lg:p-10 flex flex-col gap-6 lg:gap-10 pb-24 lg:pb-10">
+    <main class="p-4 lg:p-10 lg:pt-[120px] flex flex-col gap-6 lg:gap-10 pb-24 lg:pb-10">
 
       <!-- Salutation DESKTOP -->
-      <div class="hidden lg:flex flex-col gap-1">
-        <h2 class="text-3xl font-bold leading-9">
-          <span class="text-[#1E3A5F]">Bonjour </span>
-          <span class="text-[#2E7D5B]">{{ utilisateur()?.prenom }}</span>
-        </h2>
-        <p class="text-[#1A1D23]/50 text-base leading-6">Voici le résumé de l'activité de votre organisation pour aujourd'hui.</p>
+      <div class="hidden lg:flex items-center justify-between gap-6">
+        <div class="flex flex-col gap-1">
+          <h2 class="text-3xl font-bold leading-9">
+            <span class="text-[#1E3A5F]">Bonjour </span>
+            <span class="text-[#2E7D5B]">{{ utilisateur()?.prenom }}</span>
+          </h2>
+          <p class="text-[#1A1D23]/50 text-base leading-6">Voici le résumé de l'activité de votre organisation pour aujourd'hui.</p>
+        </div>
+
+        @if (peutGenererRapport()) {
+          <button
+            type="button"
+            (click)="rapportOuvert.set(true)"
+            class="flex flex-shrink-0 items-center gap-2 border border-[#1E3A5F]/20 text-[#1E3A5F] font-semibold rounded-xl px-5 py-[10px] text-sm bg-white"
+          >
+            <i class="pi pi-file-pdf"></i>
+            Générer Rapport PDF
+          </button>
+        }
       </div>
 
       <!-- Salutation MOBILE -->
@@ -28,6 +41,17 @@
         <p class="text-[#1A1D23]/60 text-sm leading-5">Bonjour,</p>
         <h2 class="text-[#1E3A5F] text-2xl font-bold leading-8">{{ utilisateur()?.prenom }} {{ utilisateur()?.nom }}</h2>
         <span class="inline-flex self-start mt-1 px-2 py-[2px] bg-[#2E7D5B]/10 rounded-full text-[#2E7D5B] text-[10px] font-bold uppercase tracking-[1px]">{{ utilisateur()?.role }}</span>
+
+        @if (peutGenererRapport()) {
+          <button
+            type="button"
+            (click)="rapportOuvert.set(true)"
+            class="mt-md w-full border border-bleu-nuit/30 text-bleu-nuit font-semibold rounded-xl py-md flex items-center justify-center gap-sm bg-white"
+          >
+            <i class="pi pi-file-pdf"></i>
+            Générer Rapport PDF
+          </button>
+        }
       </div>
 
       <!-- CARTES STATS DESKTOP -->
@@ -539,3 +563,8 @@
   </div>
 
 </div>
+
+<!-- Fenêtre de génération du rapport périodique -->
+@if (rapportOuvert()) {
+  <app-rapport-modal (fermer)="rapportOuvert.set(false)"></app-rapport-modal>
+}

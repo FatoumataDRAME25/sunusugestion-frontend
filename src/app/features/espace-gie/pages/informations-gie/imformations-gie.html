@@ -1,4 +1,4 @@
-<div class="relative flex bg-[#F7F8FA] min-h-screen">
+<div class="relative flex bg-[#F7F8FA] lg:bg-fond-desktop min-h-screen">
   <!-- ═══════════════════════════════════════════
        SIDEBAR DESKTOP
   ═══════════════════════════════════════════ -->
@@ -134,20 +134,22 @@
                   />
                 </div>
 
-                <!-- Secteur -->
+                <!-- Type d'organisation -->
                 <div class="flex flex-col gap-2 min-w-0">
-                  <label for="secteur-mobile" class="text-sm font-medium text-anthracite">
-                    Secteur d'activité
+                  <label for="type-gie-mobile" class="text-sm font-medium text-anthracite">
+                    Type d'organisation
                   </label>
 
-                  <input
-                    id="secteur-mobile"
-                    pInputText
-                    formControlName="secteur"
-                    [readonly]="!estPresident"
+                  <select
+                    id="type-gie-mobile"
+                    formControlName="typeGie"
                     class="w-full border border-anthracite/20 rounded-xl px-4 py-3 text-anthracite outline-none"
                     [ngClass]="!estPresident ? 'bg-gris-fond' : 'bg-white focus:border-bleu-nuit'"
-                  />
+                  >
+                    @for (type of typesOrganisation; track type.value) {
+                      <option [ngValue]="type.value">{{ type.label }}</option>
+                    }
+                  </select>
                 </div>
 
                 <!-- Téléphone -->
@@ -360,20 +362,22 @@
                     />
                   </div>
 
-                  <!-- Secteur -->
+                  <!-- Type d'organisation -->
                   <div class="flex flex-col gap-2 min-w-0">
-                    <label for="secteur-desktop" class="text-sm font-medium text-anthracite">
-                      Secteur d'activité
+                    <label for="type-gie-desktop" class="text-sm font-medium text-anthracite">
+                      Type d'organisation
                     </label>
 
-                    <input
-                      id="secteur-desktop"
-                      pInputText
-                      formControlName="secteur"
-                      [readonly]="!estPresident"
+                    <select
+                      id="type-gie-desktop"
+                      formControlName="typeGie"
                       class="w-full border border-anthracite/20 rounded-xl px-4 py-3 text-anthracite outline-none"
                       [ngClass]="!estPresident ? 'bg-gris-fond' : 'bg-white focus:border-bleu-nuit'"
-                    />
+                    >
+                      @for (type of typesOrganisation; track type.value) {
+                        <option [ngValue]="type.value">{{ type.label }}</option>
+                      }
+                    </select>
                   </div>
 
                   <!-- Téléphone -->

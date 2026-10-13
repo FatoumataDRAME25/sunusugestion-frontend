@@ -201,26 +201,24 @@
                   Téléphone
                 </label>
 
-                <p-iconfield>
-
-                  <p-inputicon styleClass="pi pi-phone"></p-inputicon>
+                <div class="relative">
 
                   <input
                     id="telephone"
-                    pInputText
-                    formControlName="telephone"
                     type="tel"
-                    autocomplete="tel"
-                    class="w-full"
+                    [value]="authService.currentUser()?.telephone ?? ''"
+                    readonly
+                    class="w-full rounded-xl border border-anthracite/20
+                           bg-gris-fond px-md py-sm pr-10 text-anthracite
+                           outline-none"
                   />
 
-                </p-iconfield>
+                  <i
+                    class="pi pi-lock absolute right-md top-1/2
+                           -translate-y-1/2 text-sm text-anthracite/30"
+                  ></i>
 
-                @if (telephone.invalid && telephone.touched) {
-                  <span class="text-xs text-rouge-alerte">
-                    Le téléphone est obligatoire.
-                  </span>
-                }
+                </div>
 
               </div>
 

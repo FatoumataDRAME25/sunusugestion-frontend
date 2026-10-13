@@ -30,19 +30,33 @@ export class InformationsGie {
   form: FormGroup = this.fb.group({
     nom: [''],
     region: [''],
-    secteur: [''],
+    typeGie: [''],
     telephone: [''],
     description: ['']
   });
 
+  // Mêmes types d'organisation que ceux proposés à l'inscription
+  readonly typesOrganisation = [
+    { label: 'Association', value: 'association' },
+    { label: 'Organisation communautaire', value: 'organisation_communautaire' },
+    { label: 'Groupement', value: 'groupement' },
+    { label: 'Autre', value: 'autre' },
+  ];
+
   ngOnInit(): void {
+    // Seul le président peut changer le type d'organisation
+    if (!this.estPresident) {
+      this.form.get('typeGie')!.disable();
+    }
+
+
     this.gieService.chargerInfos().subscribe({
       next: (infos) => {
         // Pré-remplir le formulaire avec les données reçues
         this.form.patchValue({
           nom: infos.nom,
           region: infos.region,
-          secteur: infos.typeGie,
+          typeGie: infos.typeGie,
           telephone: infos.telephone ?? '',
         });
       }
@@ -52,7 +66,9 @@ export class InformationsGie {
   enregistrer(): void {
     if (this.form.pristine) return; // rien n'a changé
 
-    this.gieService.modifierInfos(this.form.value).subscribe({
+    const { nom, region, typeGie, telephone } = this.form.value;
+
+    this.gieService.modifierInfos({ nom, region, typeGie, telephone }).subscribe({
       next: () => {
         this.succes.set(true);
         this.form.markAsPristine();

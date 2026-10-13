@@ -135,6 +135,9 @@ export const routes: Routes = [
     // le diagnostic
 
     {path: 'diagnostic', component: Diagnostic},
+
+    // ── Rapports ── la génération se fait depuis une fenêtre du tableau de bord
+    { path: 'rapports', redirectTo: '/mon-espace/dashboard-president' },
     // ── Paiement PayDunya retour ──
 
 

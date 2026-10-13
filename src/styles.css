@@ -14,6 +14,8 @@
 
   /* Fond et texte */
   --color-blanc-lait: #F5F7FA;
+  /* Fond de la zone de contenu sur desktop : fait ressortir les cartes blanches */
+  --color-fond-desktop: #E6EBF2;
   --color-anthracite: #2D2D2D;
 
   /* Couleurs secondaires (fonds d'états) */
