@@ -38,6 +38,7 @@ import { adminGuard } from './core/guards/admin.guard';
 import { authGuard } from './core/guards/auth.guard';
 import { RetourPaiement } from './features/espace-gie/pages/paiement/retour-paiement';
 import { LandingPage } from './features/landing-page/landing-page';
+import { Diagnostic } from './features/espace-gie/pages/diagnostic/diagnostic';
 
 
 
@@ -131,6 +132,9 @@ export const routes: Routes = [
     { path: 'activites/:id', component: DetailActivite },
     { path: 'activites/:id/presences', component: PresencesActivite },
 
+    // le diagnostic
+
+    {path: 'diagnostic', component: Diagnostic},
     // ── Paiement PayDunya retour ──
 
 
