@@ -36,6 +36,18 @@ export class DetailOperation implements OnInit {
     });
   }
 
+  libelleStatutPret(statut: string): string {
+    const libelles: Record<string, string> = {
+      en_attente: 'En attente',
+      approuve: 'Approuvé',
+      en_cours: 'En cours',
+      rembourse: 'Remboursé',
+      refuse: 'Refusé',
+      en_retard: 'En retard',
+    };
+    return libelles[statut] ?? statut;
+  }
+
   retour(): void {
     this.router.navigate(['/mon-espace/historiques']);
   }

@@ -10,10 +10,12 @@ import { GieSidebar } from '../../../../../../shared/ui/gie-sidebar/gie-sidebar'
 import { DialogModule } from 'primeng/dialog';
 import { AjouterMembre } from '../ajouter-membre/ajouter-membre';
 import { ImporterMembre } from '../importer-membre/importer-membre';
+import { ConfirmationModal } from '../../../../../../shared/ui/confirmation-modal/confirmation-modal';
+import { LIBELLES_ROLES, Membre } from '../../../../../../core/models/membre.model';
 
 @Component({
   selector: 'app-liste-membre',
-  imports: [RouterLink, FormsModule, BottomNav, InitialesPipe, Navbar, GieSidebar, DialogModule, AjouterMembre, ImporterMembre],
+  imports: [RouterLink, FormsModule, BottomNav, InitialesPipe, Navbar, GieSidebar, DialogModule, AjouterMembre, ImporterMembre, ConfirmationModal],
   styleUrl: './liste-membre.css',
   templateUrl: './liste-membre.html'
 })
@@ -30,6 +32,47 @@ export class ListeMembre implements OnInit {
   ];
 
   statutActuel = 'Tous';
+
+  readonly libellesRoles = LIBELLES_ROLES;
+
+  // ── Activer / Désactiver un compte (président) ────────────
+  membreACharger = signal<Membre | null>(null);
+  changementEnCours = signal(false);
+  erreurChangement = signal<string | null>(null);
+
+  voitBoutonStatut(): boolean {
+    return this.service.voitBoutonStatut(this.authService.currentUser());
+  }
+
+  raisonStatutImpossible(membre: Membre): string | null {
+    return this.service.raisonStatutImpossible(membre, this.authService.currentUser());
+  }
+
+  demanderChangementStatut(membre: Membre): void {
+    this.erreurChangement.set(null);
+    this.membreACharger.set(membre);
+  }
+
+  confirmerChangementStatut(): void {
+    const membre = this.membreACharger();
+    if (!membre) return;
+
+    this.changementEnCours.set(true);
+    this.erreurChangement.set(null);
+
+    this.service.changerStatutCompte(membre).subscribe({
+      next: () => {
+        this.changementEnCours.set(false);
+        this.membreACharger.set(null);
+        // Met à jour les compteurs (actifs / inactifs)
+        this.service.chargerMembres().subscribe();
+      },
+      error: (err) => {
+        this.erreurChangement.set(this.service.messageErreur(err, 'Action impossible pour le moment.'));
+        this.changementEnCours.set(false);
+      }
+    });
+  }
 
   // ── Modals desktop ────────────────────────────────────────
   modalAjouterVisible = signal(false);

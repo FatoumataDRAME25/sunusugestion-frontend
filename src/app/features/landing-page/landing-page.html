@@ -37,10 +37,10 @@
         </a>
 
         <a
-          (click)="scrollVers('pourquoi')"
+          (click)="scrollVers('problemes')"
           class="text-[#1E3A5F]/80 text-sm font-medium whitespace-nowrap cursor-pointer"
         >
-          Pour qui
+          Problèmes
         </a>
 
         <a
@@ -219,7 +219,7 @@
   <!-- =========================================================
        PROBLÈMES
   ========================================================== -->
-  <section class="w-full px-4 md:px-10 lg:px-20 py-24 md:py-[120px] pb-24 flex flex-col gap-16">
+  <section id="problemes" class="w-full px-4 md:px-10 lg:px-20 py-24 md:py-[120px] pb-24 flex flex-col gap-16">
     <div class="flex flex-col items-center gap-3 md:gap-4 text-center">
       <h2 class="text-[#1E3A5F] text-2xl leading-8 md:text-4xl md:leading-[45px] font-bold">
         <span class="md:hidden">Un suivi difficile ?</span>
@@ -240,8 +240,8 @@
       <article
         class="p-6 md:p-8 bg-white rounded-3xl border border-[#F3F4F6] flex flex-row md:flex-col items-start gap-4 md:gap-3"
       >
-        <div class="w-12 h-12 shrink-0 bg-red-50 rounded-xl flex items-center justify-center">
-          <i class="pi pi-book text-[#EF4444] text-xl"></i>
+        <div class="w-12 h-12 shrink-0 bg-[#1E3A5F]/10 rounded-xl flex items-center justify-center">
+          <i class="pi pi-book text-[#1E3A5F] text-xl"></i>
         </div>
 
         <div class="min-w-0">
@@ -265,8 +265,8 @@
       <article
         class="p-6 md:p-8 bg-white rounded-3xl border border-[#F3F4F6] flex flex-row md:flex-col items-start gap-4 md:gap-3"
       >
-        <div class="w-12 h-12 shrink-0 bg-red-50 rounded-xl flex items-center justify-center">
-          <i class="pi pi-file-excel text-[#EF4444] text-xl"></i>
+        <div class="w-12 h-12 shrink-0 bg-[#1E3A5F]/10 rounded-xl flex items-center justify-center">
+          <i class="pi pi-file-excel text-[#1E3A5F] text-xl"></i>
         </div>
 
         <div class="min-w-0">
@@ -288,8 +288,8 @@
       <article
         class="p-6 md:p-8 bg-white rounded-3xl border border-[#F3F4F6] flex flex-row md:flex-col items-start gap-4 md:gap-3"
       >
-        <div class="w-12 h-12 shrink-0 bg-red-50 rounded-xl flex items-center justify-center">
-          <i class="pi pi-sitemap text-[#EF4444] text-xl"></i>
+        <div class="w-12 h-12 shrink-0 bg-[#1E3A5F]/10 rounded-xl flex items-center justify-center">
+          <i class="pi pi-sitemap text-[#1E3A5F] text-xl"></i>
         </div>
 
         <div class="min-w-0">
@@ -311,8 +311,8 @@
       <article
         class="p-6 md:p-8 bg-white rounded-3xl border border-[#F3F4F6] flex flex-row md:flex-col items-start gap-4 md:gap-3"
       >
-        <div class="w-12 h-12 shrink-0 bg-red-50 rounded-xl flex items-center justify-center">
-          <i class="pi pi-clock text-[#EF4444] text-xl"></i>
+        <div class="w-12 h-12 shrink-0 bg-[#1E3A5F]/10 rounded-xl flex items-center justify-center">
+          <i class="pi pi-clock text-[#1E3A5F] text-xl"></i>
         </div>
 
         <div class="min-w-0">
@@ -331,196 +331,118 @@
   <!-- =========================================================
        FONCTIONNALITÉS
   ========================================================== -->
-  <section id="fonctionnalites" class="w-full bg-[#1E3A5F] py-16 md:px-10 lg:px-20 md:py-24">
-    <div class="flex flex-col items-center gap-10 md:gap-20 w-full">
-      <!-- Titre -->
-      <div class="flex flex-col items-center gap-3 md:gap-4 text-center px-4 md:px-0">
-        <h2 class="text-white text-2xl leading-8 md:text-4xl md:leading-10 font-bold">
-          <span class="md:hidden">Un seul espace complet</span>
+  <section id="fonctionnalites" class="w-full bg-[#1E3A5F] px-4 py-16 md:px-10 lg:px-20 md:py-24">
+    <div class="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16 lg:items-start">
 
-          <span class="hidden md:inline"> Un seul espace pour gérer votre organisation. </span>
-        </h2>
-
-        <p class="text-white/60 text-sm leading-5 md:text-lg md:leading-7">
-          <span class="md:hidden">Pensé pour le contexte local.</span>
-
-          <span class="hidden md:inline">
-            Toutes les fonctionnalités pensées pour les groupements et associations.
-          </span>
-        </p>
-      </div>
-
-      <!-- =====================================================
-           CAROUSEL MOBILE / GRID DESKTOP
-      ====================================================== -->
-
-      <!-- GRID DESKTOP -->
-      <div class="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 w-full">
-        <article class="min-h-[158px] p-6 md:p-8 bg-[#1E3A5F]/70 border border-white/15 rounded-3xl backdrop-blur-[15px] flex flex-col gap-1">
-          <i class="pi pi-users text-[#2E7D5B] text-2xl mb-2"></i>
-          <h3 class="text-white text-lg md:text-xl leading-7 font-bold">Gestion des Membres</h3>
-          <p class="text-white/60 text-sm md:text-base leading-5 md:leading-6">Annuaire complet avec fiches individuelles et historique d'activité.</p>
-        </article>
-        <article class="min-h-[158px] p-6 md:p-8 bg-[#1E3A5F]/70 border border-white/15 rounded-3xl backdrop-blur-[15px] flex flex-col gap-1">
-          <i class="pi pi-wallet text-[#2E7D5B] text-2xl mb-2"></i>
-          <h3 class="text-white text-lg md:text-xl leading-7 font-bold">Cotisations</h3>
-          <p class="text-white/60 text-sm md:text-base leading-5 md:leading-6">Suivi automatique des paiements, rappels et états de caisse en temps réel.</p>
-        </article>
-        <article class="min-h-[158px] p-6 md:p-8 bg-[#1E3A5F]/70 border border-white/15 rounded-3xl backdrop-blur-[15px] flex flex-col gap-1">
-          <i class="pi pi-credit-card text-[#2E7D5B] text-2xl mb-2"></i>
-          <h3 class="text-white text-lg md:text-xl leading-7 font-bold">Prêts & Tontines</h3>
-          <p class="text-white/60 text-sm md:text-base leading-5 md:leading-6">Gestion transparente des demandes, des validations et des remboursements.</p>
-        </article>
-        <article class="min-h-[158px] p-6 md:p-8 bg-[#1E3A5F]/70 border border-white/15 rounded-3xl backdrop-blur-[15px] flex flex-col gap-1">
-          <i class="pi pi-calendar text-[#2E7D5B] text-2xl mb-2"></i>
-          <h3 class="text-white text-lg md:text-xl leading-7 font-bold">Activités</h3>
-          <p class="text-white/60 text-sm md:text-base leading-5 md:leading-6">Planifiez vos réunions et événements avec gestion des présences.</p>
-        </article>
-        <article class="min-h-[158px] p-6 md:p-8 bg-[#1E3A5F]/70 border border-white/15 rounded-3xl backdrop-blur-[15px] flex flex-col gap-1">
-          <i class="pi pi-chart-bar text-[#2E7D5B] text-2xl mb-2"></i>
-          <h3 class="text-white text-lg md:text-xl leading-7 font-bold">Finances</h3>
-          <p class="text-white/60 text-sm md:text-base leading-5 md:leading-6">Rapports financiers clairs et exportables pour vos assemblées générales.</p>
-        </article>
-        <article class="min-h-[158px] p-6 md:p-8 bg-[#1E3A5F]/70 border border-white/15 rounded-3xl backdrop-blur-[15px] flex flex-col gap-1">
-          <i class="pi pi-bell text-[#2E7D5B] text-2xl mb-2"></i>
-          <h3 class="text-white text-lg md:text-xl leading-7 font-bold">Notifications</h3>
-          <p class="text-white/60 text-sm md:text-base leading-5 md:leading-6">Alertez instantanément tous les membres par SMS ou notification push.</p>
-        </article>
-      </div>
-
-      <!-- CAROUSEL MOBILE - swipe tactile -->
-      <div class="md:hidden w-full relative overflow-hidden px-4"
-        #carouselContainer
-        (touchstart)="onTouchStart($event)"
-        (touchend)="onTouchEnd($event)"
-        (mousedown)="onMouseDown($event)"
-        (mouseup)="onMouseUp($event)">
-        <div
-          class="flex gap-4 transition-transform duration-300 ease-in-out"
-          [style.transform]="'translateX(' + carouselOffset() + 'px)'"
-        >
-          <div class="shrink-0 w-full bg-[#1E3A5F]/70 border border-white/15 rounded-3xl backdrop-blur-[15px] p-6 flex flex-col gap-2">
-            <i class="pi pi-users text-[#2E7D5B] text-2xl mb-2"></i>
-            <h3 class="text-white text-lg font-bold">Gestion des Membres</h3>
-            <p class="text-white/60 text-sm leading-5">Annuaire complet avec fiches individuelles et historique d'activité.</p>
-          </div>
-          <div class="shrink-0 w-full bg-[#1E3A5F]/70 border border-white/15 rounded-3xl backdrop-blur-[15px] p-6 flex flex-col gap-2">
-            <i class="pi pi-wallet text-[#2E7D5B] text-2xl mb-2"></i>
-            <h3 class="text-white text-lg font-bold">Cotisations</h3>
-            <p class="text-white/60 text-sm leading-5">Suivi automatique des paiements, rappels et états de caisse en temps réel.</p>
-          </div>
-          <div class="shrink-0 w-full bg-[#1E3A5F]/70 border border-white/15 rounded-3xl backdrop-blur-[15px] p-6 flex flex-col gap-2">
-            <i class="pi pi-credit-card text-[#2E7D5B] text-2xl mb-2"></i>
-            <h3 class="text-white text-lg font-bold">Prêts & Tontines</h3>
-            <p class="text-white/60 text-sm leading-5">Gestion transparente des demandes, des validations et des remboursements.</p>
-          </div>
-          <div class="shrink-0 w-full bg-[#1E3A5F]/70 border border-white/15 rounded-3xl backdrop-blur-[15px] p-6 flex flex-col gap-2">
-            <i class="pi pi-calendar text-[#2E7D5B] text-2xl mb-2"></i>
-            <h3 class="text-white text-lg font-bold">Activités</h3>
-            <p class="text-white/60 text-sm leading-5">Planifiez vos réunions et événements avec gestion des présences.</p>
-          </div>
-          <div class="shrink-0 w-full bg-[#1E3A5F]/70 border border-white/15 rounded-3xl backdrop-blur-[15px] p-6 flex flex-col gap-2">
-            <i class="pi pi-chart-bar text-[#2E7D5B] text-2xl mb-2"></i>
-            <h3 class="text-white text-lg font-bold">Finances</h3>
-            <p class="text-white/60 text-sm leading-5">Rapports financiers clairs et exportables pour vos assemblées générales.</p>
-          </div>
-          <div class="shrink-0 w-full bg-[#1E3A5F]/70 border border-white/15 rounded-3xl backdrop-blur-[15px] p-6 flex flex-col gap-2">
-            <i class="pi pi-bell text-[#2E7D5B] text-2xl mb-2"></i>
-            <h3 class="text-white text-lg font-bold">Notifications</h3>
-            <p class="text-white/60 text-sm leading-5">Alertez instantanément tous les membres par SMS ou notification push.</p>
-          </div>
+      <!-- Colonne gauche : présentation et points forts -->
+      <div class="flex flex-col gap-8 md:gap-10">
+        <div class="flex flex-col gap-4">
+          <p class="flex items-center gap-2 text-white/60 text-xs font-bold uppercase tracking-[1.5px]">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#2E7D5B]"></span>
+            Toutes les fonctionnalités
+          </p>
+          <h2 class="text-white text-3xl md:text-5xl font-bold leading-tight">
+            L'outil complet<br />
+            du groupement moderne.
+          </h2>
         </div>
 
-        <!-- Points indicateurs uniquement -->
-        <div class="flex justify-center gap-2 mt-4">
-          @for (i of [0,1,2,3,4,5]; track i) {
-            <div [class]="carouselIndex() === i ? 'w-4 h-2 rounded-full bg-white' : 'w-2 h-2 rounded-full bg-white/40'"></div>
-          }
-        </div>
+        <ol class="flex flex-col gap-6 md:gap-8">
+          <li class="flex gap-4">
+            <span class="pt-1 font-mono text-xs text-white/40">01</span>
+            <div class="flex flex-col gap-1">
+              <h3 class="text-white text-lg font-bold leading-7">Simple et mobile</h3>
+              <p class="text-white/60 text-sm leading-6">Pensé pour le téléphone et utilisable par tous les membres, sans formation particulière.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="pt-1 font-mono text-xs text-white/40">02</span>
+            <div class="flex flex-col gap-1">
+              <h3 class="text-white text-lg font-bold leading-7">Traçabilité financière</h3>
+              <p class="text-white/60 text-sm leading-6">Cotisations, prêts et caisse : chaque mouvement est enregistré, en espèces, Wave ou Orange Money.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="pt-1 font-mono text-xs text-white/40">03</span>
+            <div class="flex flex-col gap-1">
+              <h3 class="text-white text-lg font-bold leading-7">Rapports et suivi</h3>
+              <p class="text-white/60 text-sm leading-6">Rapport périodique en PDF et diagnostic de la trésorerie pour préparer vos assemblées.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="pt-1 font-mono text-xs text-white/40">04</span>
+            <div class="flex flex-col gap-1">
+              <h3 class="text-white text-lg font-bold leading-7">Transparence</h3>
+              <p class="text-white/60 text-sm leading-6">Notifications à chaque événement et rôles clairs pour chaque membre du bureau.</p>
+            </div>
+          </li>
+        </ol>
       </div>
 
-      <!-- =====================================================
-           DASHBOARD MOCKUP
-      ====================================================== -->
-      <div
-        class="w-full max-w-[1024px] bg-[#0F172A] rounded-2xl overflow-hidden border-4 md:border-[12px] border-[#1E293B]"
-      >
-        <!-- Barre navigateur -->
-        <div class="hidden md:flex p-4 bg-[#1E293B]/50 items-center gap-1.5">
-          <span class="w-3 h-3 rounded-full bg-red-400"></span>
-          <span class="w-3 h-3 rounded-full bg-yellow-400"></span>
-          <span class="w-3 h-3 rounded-full bg-green-400"></span>
-        </div>
-
-        <div class="p-4 md:p-6 bg-[#F7F8FA] flex flex-col gap-4">
-          <!-- Header -->
-          <div class="p-3 md:p-4 bg-white rounded-xl flex items-center justify-between">
-            <div class="w-24 md:w-[141px] h-4 md:h-8 bg-[#1E3A5F]/10 rounded"></div>
-
-            <span
-              class="px-2 md:px-3 py-1.5 md:py-2 bg-[#2E7D5B]/20 rounded-full text-[#2E7D5B] text-[8px] md:text-[10px] font-bold"
-            >
-              ACTIF
-            </span>
-          </div>
-
-          <!-- Stats -->
-          <div class="grid grid-cols-3 gap-2 md:gap-4">
-            <div
-              class="min-h-[84px] md:h-32 p-3 md:p-4 bg-white rounded-xl border-l-4 border-[#2E7D5B] flex flex-col justify-center"
-            >
-              <span class="text-[#6B7280] text-[8px] md:text-xs font-bold"> CAISSE </span>
-
-              <strong class="text-[#1E3A5F] text-sm md:text-2xl font-bold">
-                <span class="md:hidden">2.4M F</span>
-                <span class="hidden md:inline">2 450 000 F</span>
-              </strong>
-            </div>
-
-            <div
-              class="min-h-[84px] md:h-32 p-3 md:p-4 bg-white rounded-xl border-l-4 border-blue-500 flex flex-col justify-center"
-            >
-              <span class="text-[#6B7280] text-[8px] md:text-xs font-bold"> MEMBRES </span>
-
-              <strong class="text-[#1E3A5F] text-sm md:text-2xl font-bold"> 124 </strong>
-            </div>
-
-            <div
-              class="min-h-[84px] md:h-32 p-3 md:p-4 bg-white rounded-xl border-l-4 border-orange-500 flex flex-col justify-center"
-            >
-              <span class="text-[#6B7280] text-[8px] md:text-xs font-bold"> PRÊTS </span>
-
-              <strong class="text-[#1E3A5F] text-sm md:text-2xl font-bold"> 12 </strong>
-            </div>
-          </div>
-
-          <!-- Tableau -->
-          <div class="p-3 md:p-6 bg-white rounded-xl flex flex-col gap-3 md:gap-4">
-            <div class="hidden md:flex items-center justify-between">
-              <div class="w-48 h-6 bg-gray-100 rounded"></div>
-
-              <button type="button" class="px-3 py-2 bg-[#1E3A5F] rounded text-white text-[10px]">
-                NOUVEAU
-              </button>
-            </div>
-
-            <div class="h-10 md:h-12 border-b border-gray-50 flex items-center justify-between">
-              <div class="flex-1 h-2.5 md:h-4 bg-gray-100 rounded"></div>
-              <div class="ml-4 w-10 md:w-16 h-2.5 md:h-4 bg-green-100 rounded"></div>
-            </div>
-
-            <div class="h-10 md:h-12 border-b border-gray-50 flex items-center justify-between">
-              <div class="flex-1 h-2.5 md:h-4 bg-gray-100 rounded"></div>
-              <div class="ml-4 w-10 md:w-16 h-2.5 md:h-4 bg-green-100 rounded"></div>
-            </div>
-
-            <div class="h-10 md:h-12 border-b border-gray-50 flex items-center justify-between">
-              <div class="flex-1 h-2.5 md:h-4 bg-gray-100 rounded"></div>
-              <div class="ml-4 w-10 md:w-16 h-2.5 md:h-4 bg-red-100 rounded"></div>
-            </div>
-          </div>
-        </div>
+      <!-- Colonne droite : modules de l'application -->
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4">
+        <article class="flex flex-col gap-2 rounded-2xl bg-white p-4 md:p-5 shadow-sm">
+          <i class="pi pi-th-large text-[#1E3A5F] text-xl md:text-2xl"></i>
+          <h3 class="mt-1 text-[#1A1D23] text-sm md:text-base font-bold leading-5">Tableau de bord</h3>
+          <p class="text-[#1A1D23]/60 text-xs md:text-sm leading-5">Vue d'ensemble de la caisse, des prêts et des activités.</p>
+        </article>
+        <article class="flex flex-col gap-2 rounded-2xl bg-white p-4 md:p-5 shadow-sm">
+          <i class="pi pi-users text-[#1E3A5F] text-xl md:text-2xl"></i>
+          <h3 class="mt-1 text-[#1A1D23] text-sm md:text-base font-bold leading-5">Membres</h3>
+          <p class="text-[#1A1D23]/60 text-xs md:text-sm leading-5">Liste des membres, fiches individuelles et invitations.</p>
+        </article>
+        <article class="flex flex-col gap-2 rounded-2xl bg-white p-4 md:p-5 shadow-sm">
+          <i class="pi pi-sitemap text-[#1E3A5F] text-xl md:text-2xl"></i>
+          <h3 class="mt-1 text-[#1A1D23] text-sm md:text-base font-bold leading-5">Bureau</h3>
+          <p class="text-[#1A1D23]/60 text-xs md:text-sm leading-5">Président, trésorier, secrétaire et leurs adjoints.</p>
+        </article>
+        <article class="flex flex-col gap-2 rounded-2xl bg-white p-4 md:p-5 shadow-sm">
+          <i class="pi pi-wallet text-[#1E3A5F] text-xl md:text-2xl"></i>
+          <h3 class="mt-1 text-[#1A1D23] text-sm md:text-base font-bold leading-5">Cotisations</h3>
+          <p class="text-[#1A1D23]/60 text-xs md:text-sm leading-5">Sessions, paiements et suivi des retards.</p>
+        </article>
+        <article class="flex flex-col gap-2 rounded-2xl bg-white p-4 md:p-5 shadow-sm">
+          <i class="pi pi-credit-card text-[#1E3A5F] text-xl md:text-2xl"></i>
+          <h3 class="mt-1 text-[#1A1D23] text-sm md:text-base font-bold leading-5">Prêts</h3>
+          <p class="text-[#1A1D23]/60 text-xs md:text-sm leading-5">Demandes, approbation, décaissement et remboursement.</p>
+        </article>
+        <article class="flex flex-col gap-2 rounded-2xl bg-white p-4 md:p-5 shadow-sm">
+          <i class="pi pi-calendar text-[#1E3A5F] text-xl md:text-2xl"></i>
+          <h3 class="mt-1 text-[#1A1D23] text-sm md:text-base font-bold leading-5">Activités</h3>
+          <p class="text-[#1A1D23]/60 text-xs md:text-sm leading-5">Réunions et événements planifiés, avec comptes rendus.</p>
+        </article>
+        <article class="flex flex-col gap-2 rounded-2xl bg-white p-4 md:p-5 shadow-sm">
+          <i class="pi pi-money-bill text-[#1E3A5F] text-xl md:text-2xl"></i>
+          <h3 class="mt-1 text-[#1A1D23] text-sm md:text-base font-bold leading-5">Caisse</h3>
+          <p class="text-[#1A1D23]/60 text-xs md:text-sm leading-5">Entrées, sorties et solde de la trésorerie.</p>
+        </article>
+        <article class="flex flex-col gap-2 rounded-2xl bg-white p-4 md:p-5 shadow-sm">
+          <i class="pi pi-file-pdf text-[#1E3A5F] text-xl md:text-2xl"></i>
+          <h3 class="mt-1 text-[#1A1D23] text-sm md:text-base font-bold leading-5">Rapports PDF</h3>
+          <p class="text-[#1A1D23]/60 text-xs md:text-sm leading-5">Bilan mensuel, trimestriel ou annuel du groupement.</p>
+        </article>
+        <article class="flex flex-col gap-2 rounded-2xl bg-white p-4 md:p-5 shadow-sm">
+          <i class="pi pi-bell text-[#1E3A5F] text-xl md:text-2xl"></i>
+          <h3 class="mt-1 text-[#1A1D23] text-sm md:text-base font-bold leading-5">Notifications</h3>
+          <p class="text-[#1A1D23]/60 text-xs md:text-sm leading-5">Alertes dans l'application à chaque événement.</p>
+        </article>
+        <article class="flex flex-col gap-2 rounded-2xl bg-white p-4 md:p-5 shadow-sm">
+          <i class="pi pi-chart-line text-[#1E3A5F] text-xl md:text-2xl"></i>
+          <h3 class="mt-1 text-[#1A1D23] text-sm md:text-base font-bold leading-5">Diagnostic</h3>
+          <p class="text-[#1A1D23]/60 text-xs md:text-sm leading-5">Analyse de la trésorerie et recommandations.</p>
+        </article>
+        <article class="flex flex-col gap-2 rounded-2xl bg-white p-4 md:p-5 shadow-sm">
+          <i class="pi pi-file-import text-[#1E3A5F] text-xl md:text-2xl"></i>
+          <h3 class="mt-1 text-[#1A1D23] text-sm md:text-base font-bold leading-5">Import de membres</h3>
+          <p class="text-[#1A1D23]/60 text-xs md:text-sm leading-5">Ajout de membres par fichier Excel ou photo.</p>
+        </article>
+        <article class="flex flex-col gap-2 rounded-2xl bg-white p-4 md:p-5 shadow-sm">
+          <i class="pi pi-lock text-[#1E3A5F] text-xl md:text-2xl"></i>
+          <h3 class="mt-1 text-[#1A1D23] text-sm md:text-base font-bold leading-5">Sécurité</h3>
+          <p class="text-[#1A1D23]/60 text-xs md:text-sm leading-5">Code PIN et accès selon le rôle de chacun.</p>
+        </article>
       </div>
+
     </div>
   </section>
 
@@ -807,7 +729,7 @@
       <!-- Brand -->
       <div class="col-span-2 md:col-span-1 flex flex-col gap-4 md:gap-6">
         <img
-          src="images/logo-sunugestion-fond-bleu.png"
+          src="images/logo-sunu-gestion.png"
           alt="Logo SunuGestion"
           class="w-[150px] md:w-40 h-auto"
         />
@@ -865,7 +787,7 @@
     </div>
 
     <!-- Réseaux sociaux -->
-    <div class="flex gap-4 mb-8 md:mb-8">
+    <!-- <div class="flex gap-4 mb-8 md:mb-8">
       <button
         type="button"
         class="w-10 h-10 rounded-full border border-[#E5E7EB] flex items-center justify-center"
@@ -886,14 +808,14 @@
       >
         <i class="pi pi-linkedin text-[#1E3A5F]/60 text-sm"></i>
       </button>
-    </div>
+    </div> -->
 
     <!-- Bottom -->
     <div
       class="pt-8 border-t border-[#F3F4F6] flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
     >
       <span class="text-[#1A1D23]/40 text-xs md:text-sm font-medium">
-        © 2024 SunuGestion. Tous droits réservés.
+        © 2026 SunuGestion. Tous droits réservés.
       </span>
 
       <div class="flex items-center gap-4 md:gap-8">

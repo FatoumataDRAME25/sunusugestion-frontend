@@ -39,6 +39,8 @@ import { authGuard } from './core/guards/auth.guard';
 import { RetourPaiement } from './features/espace-gie/pages/paiement/retour-paiement';
 import { LandingPage } from './features/landing-page/landing-page';
 import { Diagnostic } from './features/espace-gie/pages/diagnostic/diagnostic';
+import { FicheMembre } from './features/espace-gie/pages/membres/pages/fiche-membre/fiche-membre';
+import { Bureau } from './features/espace-gie/pages/bureau/bureau';
 
 
 
@@ -100,6 +102,9 @@ export const routes: Routes = [
       data: { roles: ['president', 'secretaire'] }
     },
     { path: 'membres', component: ListeMembre },
+    // Après « ajouter » et « importer » pour ne pas les intercepter
+    { path: 'membres/:id', component: FicheMembre },
+    { path: 'bureau', component: Bureau },
     { path: 'cotisations', component: ListeCotisations },
     {
       path: 'cotisations/session-cotisation',

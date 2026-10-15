@@ -1,14 +1,16 @@
-import { Component, Input, inject, computed } from '@angular/core';
+import { Component, HostListener, Input, OnInit, inject, computed, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { NotificationItem, NotificationService } from '../../../core/services/notification.service';
 
 @Component({
-  imports: [],
+  imports: [DatePipe, RouterLink],
   selector: 'app-navbar',
   templateUrl: './navbar.html',
 })
-export class Navbar {
+export class Navbar implements OnInit {
 
   @Input() titre: string = '';
 
@@ -27,6 +29,42 @@ export class Navbar {
     if (!u) return '';
     return `${u.prenom.charAt(0)}${u.nom.charAt(0)}`.toUpperCase();
   });
+
+  // ── Notifications ─────────────────────────────────────────
+  protected notificationService = inject(NotificationService);
+
+  notificationsOuvertes = signal(false);
+
+  // Icône et couleur selon le module de la notification
+  readonly iconesModules: Record<string, string> = {
+    activites: 'pi-calendar',
+    cotisations: 'pi-wallet',
+    prets: 'pi-credit-card',
+    membres: 'pi-users',
+    general: 'pi-bell',
+  };
+
+  ngOnInit(): void {
+    // Chaque page a sa barre du haut : les notifications sont donc
+    // rechargées à chaque changement de page, sans minuteur.
+    this.notificationService.rafraichir();
+  }
+
+  ouvrirNotifications(): void {
+    this.notificationsOuvertes.set(true);
+    this.notificationService.rafraichir();
+  }
+
+  @HostListener('document:keydown.escape')
+  fermerNotifications(): void {
+    this.notificationsOuvertes.set(false);
+  }
+
+  ouvrirNotification(notification: NotificationItem): void {
+    this.notificationService.marquerCommeLue(notification);
+    this.fermerNotifications();
+    this.router.navigateByUrl(this.notificationService.routeDe(notification));
+  }
 
   deconnecter(): void {
     this.authService.logout();

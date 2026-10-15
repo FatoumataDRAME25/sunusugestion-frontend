@@ -59,7 +59,8 @@ export class EspacesGieList implements OnInit{
       label: 'Annuler',
       text: true
     },
-    accept: () => this.service.basculerStatut(gie.id)
+    // Les statistiques (actifs / inactifs) sont rechargées après le changement
+    accept: () => this.service.basculerStatut(gie.id, () => this.dashboardService.chargerStatistiques())
   } as any);
 
 }

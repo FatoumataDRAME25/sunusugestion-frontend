@@ -31,6 +31,7 @@ export class ListePrets implements OnInit {
     { label: 'En attente', value: 'en_attente' },
     { label: 'Approuvés', value: 'approuve' },
     { label: 'En cours', value: 'en_cours' },
+    { label: 'En retard', value: 'en_retard' },
   ];
 
   pretsFiltres = computed(() => {

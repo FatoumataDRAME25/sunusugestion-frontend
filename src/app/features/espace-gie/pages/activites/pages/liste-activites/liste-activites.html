@@ -4,18 +4,13 @@
   <div class="flex-1 ml-0 lg:ml-[264px] min-w-0 flex flex-col">
     <app-navbar titre="Activités"></app-navbar>
 
-    <main class="pt-20 pb-24 lg:pt-24 lg:pb-8">
+    <main class="pb-24 lg:pt-24 lg:pb-8">
       <!-- ════════════════════════════════
            VERSION MOBILE
       ════════════════════════════════ -->
       <div class="lg:hidden min-h-screen bg-gris-fond pb-24">
-        <div class="p-lg pt-md">
-          <div class="flex items-center gap-md mb-lg">
-            <a routerLink="/mon-espace" class="text-anthracite/60">
-              <i class="pi pi-chevron-left text-lg"></i>
-            </a>
-            <h1 class="font-bold text-2xl text-anthracite">Activités</h1>
-          </div>
+        <div class="p-lg">
+          <h1 class="font-bold text-2xl text-anthracite mb-lg">Activités</h1>
 
           @if (estPresidentOuSecretaire()) {
             <a
@@ -276,6 +271,7 @@
 <p-dialog
   [(visible)]="modalPlanifierVisible"
   [modal]="true"
+  [dismissableMask]="true"
   [draggable]="false"
   [resizable]="false"
   [closable]="true"
@@ -363,6 +359,7 @@
 <p-dialog
   [(visible)]="modalDetailVisible"
   [modal]="true"
+  [dismissableMask]="true"
   [draggable]="false"
   [resizable]="false"
   [closable]="true"
@@ -510,6 +507,7 @@
 <p-dialog
   [(visible)]="modalDemarrerVisible"
   [modal]="true"
+  [dismissableMask]="true"
   [draggable]="false"
   [resizable]="false"
   [closable]="true"
@@ -555,6 +553,7 @@
 <p-dialog
   [(visible)]="modalTerminerVisible"
   [modal]="true"
+  [dismissableMask]="true"
   [draggable]="false"
   [resizable]="false"
   [closable]="true"
@@ -610,6 +609,7 @@
 <p-dialog
   [(visible)]="modalAnnulerVisible"
   [modal]="true"
+  [dismissableMask]="true"
   [draggable]="false"
   [resizable]="false"
   [closable]="true"
@@ -658,6 +658,7 @@
 <p-dialog
   [(visible)]="modalPresencesVisible"
   [modal]="true"
+  [dismissableMask]="true"
   [draggable]="false"
   [resizable]="false"
   [closable]="true"

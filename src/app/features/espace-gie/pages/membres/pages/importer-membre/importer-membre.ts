@@ -1,3 +1,4 @@
+import { environment } from '../../../../../../../environments/environment';
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { MembresService } from '../../../../../../core/services/membres.service';
 import { OcrService } from '../../../../../../core/services/ocr.service';
@@ -50,7 +51,7 @@ export class ImporterMembre implements OnInit {
   readonly rolesDisponibles = ['president', 'tresorier', 'secretaire', 'membre'];
 
   // URL de base pour les liens d'activation (même valeur que ajouter-membre.ts)
-  private readonly urlNgrok = 'https://reviving-gurgle-pauper.ngrok-free.dev';
+  private readonly urlNgrok = environment.URL_PUBLIQUE;
 
   ngOnInit(): void {
     this.service.reinitialiserExcel();

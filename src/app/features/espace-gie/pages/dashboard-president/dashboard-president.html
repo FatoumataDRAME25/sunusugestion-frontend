@@ -55,18 +55,20 @@
       </div>
 
       <!-- CARTES STATS DESKTOP -->
-      <div class="hidden lg:grid grid-cols-5 gap-6">
+      <div class="hidden lg:grid gap-6"
+           [class.grid-cols-5]="voitIndicateursPrets()"
+           [class.grid-cols-3]="!voitIndicateursPrets()">
 
-        <div class="col-span-1 h-[150px] px-6 pt-6 pb-14 bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col gap-1">
-          <div class="w-10 h-10 bg-[#1E3A5F]/10 rounded-xl flex items-center justify-center">
+        <div class="col-span-1 min-h-[150px] p-6 bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col gap-1">
+          <div class="w-10 h-10 flex-shrink-0 bg-[#1E3A5F]/10 rounded-xl flex items-center justify-center">
             <i class="pi pi-users text-[#1E3A5F] text-base"></i>
           </div>
           <p class="text-[#1A1D23]/50 text-sm font-medium pt-3">Membres actifs</p>
           <p class="text-[#1E3A5F] text-2xl font-bold leading-8">{{ membresActifs() | number:'1.0-0' }}</p>
         </div>
 
-        <div class="col-span-1 h-[150px] p-6 bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col gap-1">
-          <div class="w-10 h-10 bg-[#2E7D5B]/10 rounded-xl flex items-center justify-center">
+        <div class="col-span-1 min-h-[150px] p-6 bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col gap-1">
+          <div class="w-10 h-10 flex-shrink-0 bg-[#2E7D5B]/10 rounded-xl flex items-center justify-center">
             <i class="pi pi-wallet text-[#2E7D5B] text-base"></i>
           </div>
           <p class="text-[#1A1D23]/50 text-sm font-medium pt-3">Cotisations collectées</p>
@@ -76,21 +78,23 @@
           </p>
         </div>
 
-        <div class="col-span-1 h-[150px] px-6 pt-6 pb-14 bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col gap-1">
-          <div class="w-10 h-10 bg-red-500/10 rounded-xl flex items-center justify-center">
-            <i class="pi pi-exclamation-circle text-[#EB2528] text-base"></i>
+        @if (voitIndicateursPrets()) {
+          <div class="col-span-1 min-h-[150px] p-6 bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col gap-1">
+            <div class="w-10 h-10 flex-shrink-0 bg-red-500/10 rounded-xl flex items-center justify-center">
+              <i class="pi pi-exclamation-circle text-[#EB2528] text-base"></i>
+            </div>
+            <p class="text-[#1A1D23]/50 text-sm font-medium pt-3">Prêts en attente</p>
+            <p class="text-[#1E3A5F] text-2xl font-bold leading-8">{{ nbPretsEnAttente() }}</p>
           </div>
-          <p class="text-[#1A1D23]/50 text-sm font-medium pt-3">Prêts en attente</p>
-          <p class="text-[#1E3A5F] text-2xl font-bold leading-8">{{ nbPretsEnAttente() }}</p>
-        </div>
 
-        <div class="col-span-1 h-[150px] px-6 pt-6 pb-14 bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col gap-1">
-          <div class="w-10 h-10 bg-orange-500/10 rounded-xl flex items-center justify-center">
-            <i class="pi pi-credit-card text-[#EA580C] text-base"></i>
+          <div class="col-span-1 min-h-[150px] p-6 bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col gap-1">
+            <div class="w-10 h-10 flex-shrink-0 bg-orange-500/10 rounded-xl flex items-center justify-center">
+              <i class="pi pi-credit-card text-[#EA580C] text-base"></i>
+            </div>
+            <p class="text-[#1A1D23]/50 text-sm font-medium pt-3">Prêts en retard</p>
+            <p class="text-[#1E3A5F] text-2xl font-bold leading-8">{{ pretsEnRetard().length }}</p>
           </div>
-          <p class="text-[#1A1D23]/50 text-sm font-medium pt-3">Prêts en retard</p>
-          <p class="text-[#1E3A5F] text-2xl font-bold leading-8">{{ pretsEnRetard().length }}</p>
-        </div>
+        }
 
         <div class="col-span-1 p-6 bg-[#1E3A5F] rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col gap-1">
           <p class="text-white/60 text-sm font-medium pt-3">Solde caisse</p>
@@ -107,14 +111,14 @@
       <div class="flex lg:hidden flex-col gap-3">
         <div class="grid grid-cols-2 gap-3">
           <div class="p-4 bg-white rounded-2xl shadow-sm flex flex-col gap-2">
-            <div class="w-8 h-8 bg-[#1E3A5F]/10 rounded-xl flex items-center justify-center">
+            <div class="w-8 h-8 flex-shrink-0 bg-[#1E3A5F]/10 rounded-xl flex items-center justify-center">
               <i class="pi pi-users text-[#1E3A5F] text-sm"></i>
             </div>
             <p class="text-[#1A1D23]/50 text-xs font-medium">Membres</p>
             <p class="text-[#1E3A5F] text-2xl font-bold leading-7">{{ membresActifs() | number:'1.0-0' }}</p>
           </div>
           <div class="p-4 bg-white rounded-2xl shadow-sm flex flex-col gap-2">
-            <div class="w-8 h-8 bg-[#2E7D5B]/10 rounded-xl flex items-center justify-center">
+            <div class="w-8 h-8 flex-shrink-0 bg-[#2E7D5B]/10 rounded-xl flex items-center justify-center">
               <i class="pi pi-wallet text-[#2E7D5B] text-sm"></i>
             </div>
             <p class="text-[#1A1D23]/50 text-xs font-medium">Cotis. collectées</p>
@@ -209,13 +213,13 @@
                       </div>
                       <div class="flex flex-col items-end gap-1">
                         <span class="text-[#1E3A5F] text-sm font-bold leading-5">{{ pret.montant | number:'1.0-0' }} F</span>
-                        <a routerLink="/mon-espace/prets" class="text-[#2E7D5B] text-[10px] font-bold leading-[15px]">Examiner</a>
+                        <a routerLink="/mon-espace/prets/demandes-a-traiter" class="text-[#2E7D5B] text-[10px] font-bold leading-[15px]">Examiner</a>
                       </div>
                     </div>
                   }
                 </div>
               }
-              <a routerLink="/mon-espace/prets" class="w-full py-2 rounded-2xl outline outline-1 outline-[#1E3A5F]/10 text-[#1E3A5F]/60 text-xs font-bold leading-4 text-center block">Voir tout</a>
+              <a routerLink="/mon-espace/prets/demandes-a-traiter" class="w-full py-2 rounded-2xl outline outline-1 outline-[#1E3A5F]/10 text-[#1E3A5F]/60 text-xs font-bold leading-4 text-center block">Voir tout</a>
             </div>
 
             <!-- Prêts en retard -->
@@ -302,6 +306,14 @@
             </div>
           }
 
+          @if (!voitIndicateursPrets()) {
+            <!-- SECRÉTAIRE / MEMBRE : ses cotisations et prêts -->
+            <div class="p-6 bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col gap-4">
+              <h3 class="text-[#1E3A5F] text-base font-bold leading-6">Mes cotisations et prêts</h3>
+              <ng-container *ngTemplateOutlet="mesCotisationsEtPrets"></ng-container>
+            </div>
+          }
+
         </div>
 
       </div>
@@ -333,13 +345,13 @@
                   </div>
                   <div class="flex flex-col items-end gap-1">
                     <span class="text-[#1E3A5F] text-sm font-bold">{{ pret.montant | number:'1.0-0' }} F</span>
-                    <span class="text-[#2E7D5B] text-[10px] font-bold">GÉRER</span>
+                    <a routerLink="/mon-espace/prets/demandes-a-traiter" class="text-[#2E7D5B] text-[10px] font-bold">GÉRER</a>
                   </div>
                 </div>
               }
             </div>
           }
-          <a routerLink="/mon-espace/prets" class="w-full py-3 rounded-2xl outline outline-1 outline-[#1E3A5F]/10 text-[#1E3A5F]/60 text-xs font-bold text-center block">Voir toutes les demandes</a>
+          <a routerLink="/mon-espace/prets/demandes-a-traiter" class="w-full py-3 rounded-2xl outline outline-1 outline-[#1E3A5F]/10 text-[#1E3A5F]/60 text-xs font-bold text-center block">Voir toutes les demandes</a>
         </div>
 
         <div class="flex lg:hidden flex-col gap-4 bg-white rounded-2xl p-4 shadow-sm">
@@ -412,6 +424,14 @@
               }
             </div>
           }
+        </div>
+      }
+
+      @if (!voitIndicateursPrets()) {
+        <!-- SECRÉTAIRE / MEMBRE MOBILE : ses cotisations et prêts -->
+        <div class="flex lg:hidden flex-col gap-4 bg-white rounded-2xl p-4 shadow-sm">
+          <h3 class="text-[#1E3A5F] text-base font-bold">Mes cotisations et prêts</h3>
+          <ng-container *ngTemplateOutlet="mesCotisationsEtPrets"></ng-container>
         </div>
       }
 
@@ -568,3 +588,46 @@
 @if (rapportOuvert()) {
   <app-rapport-modal (fermer)="rapportOuvert.set(false)"></app-rapport-modal>
 }
+
+<!-- Mes cotisations et prêts (secrétaire, membre simple) : contenu commun ordinateur / mobile -->
+<ng-template #mesCotisationsEtPrets>
+  @if (mesCotisationsNonPayees().length === 0 && mesPretsEnCours().length === 0) {
+    <p class="text-[#1A1D23]/40 text-sm text-center py-4">Aucune cotisation ni prêt en cours</p>
+  } @else {
+    <div class="flex flex-col gap-3">
+      @for (cotisation of mesCotisationsNonPayees(); track cotisation.id) {
+        <a [routerLink]="['/mon-espace/cotisations/payer', cotisation.id]"
+           class="flex items-center gap-3 p-3 bg-white rounded-xl shadow-sm">
+          <div class="w-10 h-10 rounded-full bg-[#E8A020]/10 flex items-center justify-center flex-shrink-0">
+            <i class="pi pi-wallet text-[#E8A020]"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[#1E3A5F] text-sm font-bold leading-5 truncate">Cotisation — {{ cotisation.session.libelle }}</p>
+            <p class="text-[#1A1D23]/50 text-xs">{{ cotisation.session.montant | number:'1.0-0' }} FCFA · Non payée</p>
+          </div>
+          <span class="text-[#2E7D5B] text-[10px] font-bold uppercase flex-shrink-0">Payer</span>
+        </a>
+      }
+
+      @for (pret of mesPretsEnCours(); track pret.id) {
+        <a [routerLink]="['/mon-espace/prets', pret.id]"
+           class="flex items-center gap-3 p-3 bg-white rounded-xl shadow-sm">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+               [class]="pret.statut === 'en_retard' ? 'bg-[#C1654A]/10' : 'bg-[#1E3A5F]/10'">
+            <i class="pi pi-credit-card" [class]="pret.statut === 'en_retard' ? 'text-[#C1654A]' : 'text-[#1E3A5F]'"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[#1E3A5F] text-sm font-bold leading-5">
+              {{ pret.statut === 'en_retard' ? 'Prêt en retard' : 'Prêt en cours' }}
+            </p>
+            <p class="text-[#1A1D23]/50 text-xs">
+              {{ pret.montant | number:'1.0-0' }} FCFA
+              @if (pret.dateEcheance) { · Échéance {{ pret.dateEcheance | date:'dd/MM/yyyy' }} }
+            </p>
+          </div>
+          <span class="text-[#2E7D5B] text-[10px] font-bold uppercase flex-shrink-0">Voir</span>
+        </a>
+      }
+    </div>
+  }
+</ng-template>

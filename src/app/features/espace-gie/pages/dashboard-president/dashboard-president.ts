@@ -36,6 +36,25 @@ export class DashboardPresident implements OnInit {
   estPresident = computed(() => this.utilisateur()?.role === 'president');
   estTresorier = computed(() => this.utilisateur()?.role === 'tresorier');
 
+  // Indicateurs sur les prêts du groupement : président et trésorier uniquement.
+  // Le secrétaire et le membre simple voient à la place leurs propres
+  // cotisations et prêts.
+  voitIndicateursPrets = computed(() => this.estPresident() || this.estTresorier());
+
+  mesCotisationsNonPayees = computed(() => {
+    const moi = this.utilisateur()?.id;
+    return this.cotisationService.cotisations().filter(
+      (c) => c.membre.id === moi && c.statut !== 'paye'
+    );
+  });
+
+  mesPretsEnCours = computed(() => {
+    const moi = this.utilisateur()?.id;
+    return this.pretService.prets().filter(
+      (p) => p.membre.id === moi && (p.statut === 'en_cours' || p.statut === 'en_retard')
+    );
+  });
+
   // ── Rapport périodique (président et trésorier uniquement) ─
   peutGenererRapport = computed(() => this.estPresident() || this.estTresorier());
   rapportOuvert = signal(false);

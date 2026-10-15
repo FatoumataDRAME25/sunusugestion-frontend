@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { OcrResult, ProcessDocumentResponse } from '../models/ocr.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class OcrService {
@@ -10,7 +11,8 @@ export class OcrService {
   private http = inject(HttpClient);
 
   // Base URL du service OCR — séparé de l'API Django
-  private readonly OCR_BASE_URL = 'http://localhost:8000';
+  // Racine du backend déduite de l'API : '' en développement (proxy), adresse complète sinon
+  private readonly OCR_BASE_URL = environment.API_URL.replace(/\/api\/?$/, '');
 
   // Contraintes identiques au backend OCR
   readonly FORMATS_ACCEPTES = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];

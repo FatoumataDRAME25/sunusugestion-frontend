@@ -30,6 +30,7 @@ export class PretService {
   statsEnAttente = signal(0);
   statsApprouve = signal(0);
   statsEnCours = signal(0);
+  statsEnRetard = signal(0);
 
   // ─── LISTE ───────────────────────────────────────────────
   chargerPrets(): Observable<Pret[]> {
@@ -42,6 +43,7 @@ export class PretService {
         this.statsEnAttente.set(liste.filter(p => p.statut === 'en_attente').length);
         this.statsApprouve.set(liste.filter(p => p.statut === 'approuve').length);
         this.statsEnCours.set(liste.filter(p => p.statut === 'en_cours').length);
+        this.statsEnRetard.set(liste.filter(p => p.statut === 'en_retard').length);
         this.isLoading.set(false);
       }),
       catchError((err) => {

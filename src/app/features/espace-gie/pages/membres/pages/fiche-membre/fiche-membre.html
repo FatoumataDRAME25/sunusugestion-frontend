@@ -1,0 +1,231 @@
+<div class="relative flex bg-[#F7F8FA] lg:bg-fond-desktop min-h-screen">
+  <app-gie-sidebar></app-gie-sidebar>
+  <div class="flex-1 ml-0 lg:ml-[264px] min-w-0 flex flex-col">
+    <app-navbar titre="Fiche membre"></app-navbar>
+
+    <main class="pb-24 lg:pb-8 lg:pt-20">
+      <div class="p-4 lg:p-10 flex flex-col gap-6">
+
+        <a routerLink="/mon-espace/membres"
+          class="inline-flex items-center gap-2 self-start text-sm font-semibold text-[#1E3A5F]/60 hover:text-[#1E3A5F]">
+          <i class="pi pi-arrow-left text-xs"></i>
+          Retour aux membres
+        </a>
+
+        @if (chargement()) {
+          <div class="flex justify-center py-16">
+            <i class="pi pi-spin pi-spinner text-2xl text-[#1E3A5F]"></i>
+          </div>
+        }
+
+        @if (erreur()) {
+          <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700" role="alert">
+            {{ erreur() }}
+          </div>
+        }
+
+        @if (membre(); as m) {
+
+          <!-- ── Informations du membre ── -->
+          <section class="rounded-2xl bg-white p-5 shadow-sm lg:p-6">
+            <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+              <div class="flex items-center gap-4 min-w-0">
+                <div class="w-14 h-14 rounded-full bg-[#1E3A5F]/10 flex items-center justify-center flex-shrink-0">
+                  <span class="text-[#1E3A5F] font-bold">{{ (m.prenom + ' ' + m.nom) | initiales }}</span>
+                </div>
+                <div class="min-w-0">
+                  <h2 class="text-xl font-bold text-[#1E3A5F] truncate">{{ m.prenom }} {{ m.nom }}</h2>
+                  <div class="mt-1 flex flex-wrap items-center gap-2">
+                    <span class="px-2 py-[3px] rounded-full text-[10px] font-bold bg-[#1E3A5F]/10 text-[#1E3A5F]">
+                      {{ libellesRoles[m.role] }}
+                    </span>
+                    @if (m.fonctionBureau) {
+                      <span class="px-2 py-[3px] rounded-full text-[10px] font-bold bg-[#E8A020]/10 text-[#B7791F]">
+                        {{ libellesFonctions[m.fonctionBureau] }}
+                      </span>
+                    }
+                    <span class="px-2 py-[3px] rounded-full text-[10px] font-bold"
+                      [class]="m.statut === 'actif'   ? 'bg-[#2E7D5B]/10 text-[#2E7D5B]' :
+                               m.statut === 'inactif' ? 'bg-[#C1654A]/10 text-[#C1654A]' :
+                                                        'bg-[#1E3A5F]/10 text-[#1E3A5F]/60'">
+                      {{ m.statut === 'actif' ? 'Actif' : m.statut === 'inactif' ? 'Inactif' : 'En attente' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              @if (voitBoutonStatut()) {
+                <div class="flex flex-col gap-1 sm:items-end">
+                  <button
+                    type="button"
+                    (click)="ouvrirConfirmation()"
+                    [disabled]="raisonStatutImpossible() !== null"
+                    class="flex items-center justify-center gap-2 rounded-xl px-5 py-[10px] text-sm font-semibold border bg-white disabled:cursor-not-allowed disabled:border-[#1A1D23]/10 disabled:text-[#1A1D23]/30"
+                    [class]="m.statut === 'actif'
+                      ? 'border-[#C1654A]/30 text-[#C1654A]'
+                      : 'border-[#2E7D5B]/30 text-[#2E7D5B]'"
+                  >
+                    <i class="pi" [class]="m.statut === 'inactif' ? 'pi-check' : 'pi-ban'"></i>
+                    {{ m.statut === 'inactif' ? 'Activer le compte' : 'Désactiver le compte' }}
+                  </button>
+                  @if (raisonStatutImpossible(); as raison) {
+                    <p class="text-xs text-[#1A1D23]/50 sm:text-right sm:max-w-[260px]">{{ raison }}</p>
+                  }
+                </div>
+              }
+            </div>
+
+            @if (m.statut === 'en_attente') {
+              <div class="mt-4 flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center sm:justify-between"
+                [class]="invitationExpiree() ? 'border-[#C1654A]/20 bg-[#C1654A]/5' : 'border-[#1E3A5F]/10 bg-[#1E3A5F]/5'">
+                <div class="flex items-start gap-3">
+                  <i class="pi pi-envelope mt-[2px]" [class]="invitationExpiree() ? 'text-[#C1654A]' : 'text-[#1E3A5F]'"></i>
+                  <div>
+                    <p class="text-sm font-semibold text-[#1E3A5F]">Compte pas encore activé</p>
+                    <p class="text-xs text-[#4A5568]">
+                      @if (!m.invitationExpiration) {
+                        Invitation envoyée.
+                      } @else if (invitationExpiree()) {
+                        L'invitation a expiré le {{ m.invitationExpiration | date:'dd/MM/yyyy' }} à {{ m.invitationExpiration | date:'HH:mm' }}. Le compte sera supprimé automatiquement.
+                      } @else {
+                        L'invitation expire le {{ m.invitationExpiration | date:'dd/MM/yyyy' }} à {{ m.invitationExpiration | date:'HH:mm' }}. Sans activation, le compte sera supprimé.
+                      }
+                    </p>
+                  </div>
+                </div>
+
+                @if (peutRenvoyerInvitation()) {
+                  <button
+                    type="button"
+                    (click)="renvoyerInvitation()"
+                    [disabled]="invitationEnCours()"
+                    class="flex flex-shrink-0 items-center justify-center gap-2 border border-[#1E3A5F]/20 text-[#1E3A5F] font-semibold rounded-xl px-5 py-[10px] text-sm bg-white disabled:opacity-50"
+                  >
+                    <i class="pi" [class]="invitationEnCours() ? 'pi-spin pi-spinner' : 'pi-send'"></i>
+                    Renvoyer l'invitation
+                  </button>
+                }
+              </div>
+
+              @if (erreurInvitation()) {
+                <div class="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700" role="alert">
+                  {{ erreurInvitation() }}
+                </div>
+              }
+            }
+
+            @if (succes()) {
+              <div class="mt-4 rounded-xl border border-green-200 bg-green-50 p-3 text-sm text-[#2E7D5B]" role="status">
+                {{ succes() }}
+              </div>
+            }
+
+            <div class="mt-5 grid grid-cols-1 gap-4 border-t border-[#1E3A5F]/5 pt-5 sm:grid-cols-2">
+              <div>
+                <p class="text-xs font-bold uppercase tracking-wide text-[#1A1D23]/40">Téléphone</p>
+                <p class="mt-1 text-sm font-medium text-[#1A1D23]">{{ m.telephone }}</p>
+              </div>
+              <div>
+                <p class="text-xs font-bold uppercase tracking-wide text-[#1A1D23]/40">Adresse email</p>
+                <p class="mt-1 text-sm font-medium text-[#1A1D23] break-all">{{ m.email || '—' }}</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ── Cotisations ── -->
+          @if (cotisations(); as c) {
+            <section class="flex flex-col gap-4">
+              <h3 class="text-lg font-bold text-[#1E3A5F]">Cotisations</h3>
+
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <div class="rounded-2xl bg-white p-5 shadow-sm">
+                  <p class="text-xs font-bold uppercase tracking-wide text-[#1A1D23]/40">Total payé</p>
+                  <p class="mt-1 text-2xl font-bold text-[#2E7D5B]">{{ +c.totalPaye | number:'1.0-0' }} <span class="text-sm">FCFA</span></p>
+                  <p class="mt-1 text-xs text-[#1A1D23]/40">{{ c.nombrePayees }} cotisation(s) réglée(s)</p>
+                </div>
+                <div class="rounded-2xl bg-white p-5 shadow-sm">
+                  <p class="text-xs font-bold uppercase tracking-wide text-[#1A1D23]/40">En retard</p>
+                  <p class="mt-1 text-2xl font-bold text-[#C1654A]">{{ +c.totalEnRetard | number:'1.0-0' }} <span class="text-sm">FCFA</span></p>
+                  <p class="mt-1 text-xs text-[#1A1D23]/40">{{ c.nombreEnRetard }} cotisation(s) en retard</p>
+                </div>
+                <div class="rounded-2xl bg-white p-5 shadow-sm">
+                  <p class="text-xs font-bold uppercase tracking-wide text-[#1A1D23]/40">En cours</p>
+                  <p class="mt-1 text-2xl font-bold text-[#1E3A5F]">{{ +c.totalEnCours | number:'1.0-0' }} <span class="text-sm">FCFA</span></p>
+                  <p class="mt-1 text-xs text-[#1A1D23]/40">Sessions encore ouvertes</p>
+                </div>
+              </div>
+
+              @if (c.cotisations.length === 0) {
+                <div class="rounded-2xl bg-white p-8 text-center text-sm font-semibold text-[#1A1D23]/40 shadow-sm">
+                  Aucune cotisation pour ce membre.
+                </div>
+              } @else {
+                <!-- Tableau (desktop) -->
+                <div class="hidden lg:block rounded-2xl bg-white shadow-sm overflow-hidden">
+                  <div class="grid grid-cols-[2fr_1fr_1.4fr_1fr_1.2fr_1fr] px-6 py-4 border-b border-[#1E3A5F]/5">
+                    <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Session</span>
+                    <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Montant</span>
+                    <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Période</span>
+                    <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Statut</span>
+                    <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Payée le</span>
+                    <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Mode</span>
+                  </div>
+                  @for (cotisation of c.cotisations; track cotisation.id) {
+                    <div class="grid grid-cols-[2fr_1fr_1.4fr_1fr_1.2fr_1fr] px-6 py-4 items-center border-t border-[#1E3A5F]/5 text-sm">
+                      <span class="font-medium text-[#1E3A5F] truncate pr-2">{{ cotisation.session }}</span>
+                      <span class="text-[#1A1D23]/70">{{ +cotisation.montant | number:'1.0-0' }} FCFA</span>
+                      <span class="text-[#1A1D23]/60 text-xs">{{ cotisation.dateDebut | date:'dd/MM/yyyy' }} – {{ cotisation.dateFin | date:'dd/MM/yyyy' }}</span>
+                      <span class="w-fit px-2 py-[3px] rounded-full text-[10px] font-bold" [class]="classeStatutCotisation(cotisation.statut)">
+                        {{ libelleStatutCotisation(cotisation.statut) }}
+                      </span>
+                      <span class="text-[#1A1D23]/60">{{ cotisation.datePaiement ? (cotisation.datePaiement | date:'dd/MM/yyyy') : '—' }}</span>
+                      <span class="text-[#1A1D23]/60">{{ libelleModePaiement(cotisation.modePaiement) }}</span>
+                    </div>
+                  }
+                </div>
+
+                <!-- Cartes (mobile) -->
+                <div class="flex flex-col gap-3 lg:hidden">
+                  @for (cotisation of c.cotisations; track cotisation.id) {
+                    <div class="rounded-xl bg-white p-4 shadow-sm">
+                      <div class="flex items-start justify-between gap-3">
+                        <p class="font-semibold text-[#1E3A5F]">{{ cotisation.session }}</p>
+                        <span class="flex-shrink-0 px-2 py-[3px] rounded-full text-[10px] font-bold" [class]="classeStatutCotisation(cotisation.statut)">
+                          {{ libelleStatutCotisation(cotisation.statut) }}
+                        </span>
+                      </div>
+                      <p class="mt-1 text-sm font-bold text-[#1A1D23]">{{ +cotisation.montant | number:'1.0-0' }} FCFA</p>
+                      <p class="mt-1 text-xs text-[#1A1D23]/50">
+                        Du {{ cotisation.dateDebut | date:'dd/MM/yyyy' }} au {{ cotisation.dateFin | date:'dd/MM/yyyy' }}
+                      </p>
+                      @if (cotisation.datePaiement) {
+                        <p class="mt-1 text-xs text-[#2E7D5B]">
+                          Payée le {{ cotisation.datePaiement | date:'dd/MM/yyyy' }} · {{ libelleModePaiement(cotisation.modePaiement) }}
+                        </p>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </section>
+          }
+
+          @if (confirmationOuverte()) {
+            <app-confirmation-modal
+              [titre]="m.statut === 'actif' ? 'Désactiver ce compte ?' : 'Réactiver ce compte ?'"
+              [message]="m.statut === 'actif'
+                ? m.prenom + ' ' + m.nom + ' ne pourra plus se connecter ni utiliser l\'application jusqu\'à sa réactivation.'
+                : m.prenom + ' ' + m.nom + ' pourra de nouveau se connecter.'"
+              [libelleConfirmer]="m.statut === 'actif' ? 'Désactiver' : 'Réactiver'"
+              [danger]="m.statut === 'actif'"
+              [enCours]="actionEnCours()"
+              [erreur]="erreurAction()"
+              (confirmer)="confirmerChangementStatut()"
+              (annuler)="confirmationOuverte.set(false)"
+            ></app-confirmation-modal>
+          }
+        }
+      </div>
+    </main>
+  </div>
+</div>

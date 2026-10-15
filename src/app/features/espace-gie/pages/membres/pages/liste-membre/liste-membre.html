@@ -119,13 +119,13 @@
                   </div>
                 } @else {
                   @for (membre of service.membresFiltres(); track membre.id) {
-                    <div class="bg-white rounded-xl p-md shadow-sm flex items-center gap-md">
+                    <a [routerLink]="['/mon-espace/membres', membre.id]" class="bg-white rounded-xl p-md shadow-sm flex items-center gap-md">
                       <div class="w-12 h-12 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-bleu-nuit shrink-0">
                         {{ (membre.prenom + ' ' + membre.nom) | initiales }}
                       </div>
                       <div class="flex-1 min-w-0">
                         <p class="font-semibold text-anthracite truncate">{{ membre.prenom }} {{ membre.nom }}</p>
-                        <p class="text-xs text-anthracite/50">{{ membre.telephone }}</p>
+                        <p class="text-xs text-anthracite/50">{{ membre.telephone }} · {{ libellesRoles[membre.role] }}</p>
                         <div class="mt-xs">
                           <span [class]="
                             membre.statut === 'actif'   ? 'inline-flex items-center gap-xs text-xs text-vert-foret' :
@@ -139,10 +139,10 @@
                           </span>
                         </div>
                       </div>
-                      <button class="text-anthracite/30 px-sm">
+                      <span class="text-anthracite/30 px-sm">
                         <i class="pi pi-chevron-right"></i>
-                      </button>
-                    </div>
+                      </span>
+                    </a>
                   }
                 }
               </div>
@@ -231,9 +231,10 @@
           </div>
 
           <!-- En-tête colonnes -->
-          <div class="grid grid-cols-[2fr_1.5fr_1fr_auto] px-8 py-4 border-b border-[#1E3A5F]/5">
+          <div class="grid grid-cols-[2fr_1.3fr_1fr_1fr_170px] px-8 py-4 border-b border-[#1E3A5F]/5">
             <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Prénom & Nom</span>
             <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Téléphone</span>
+            <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Rôle</span>
             <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Statut</span>
             <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Action</span>
           </div>
@@ -260,7 +261,7 @@
               </div>
             } @else {
               @for (membre of membresPagines(); track membre.id; let last = $last) {
-                <div class="grid grid-cols-[2fr_1.5fr_1fr_auto] px-8 py-[18px] items-center border-t border-[#1E3A5F]/5">
+                <div class="grid grid-cols-[2fr_1.3fr_1fr_1fr_170px] px-8 py-[18px] items-center border-t border-[#1E3A5F]/5">
                   <!-- Prénom & Nom -->
                   <div class="flex items-center gap-3">
                     <div class="w-9 h-9 rounded-full bg-[#1E3A5F]/10 flex items-center justify-center flex-shrink-0">
@@ -270,6 +271,8 @@
                   </div>
                   <!-- Téléphone -->
                   <span class="text-[#1A1D23]/60 text-sm">{{ membre.telephone }}</span>
+                  <!-- Rôle -->
+                  <span class="text-[#1E3A5F] text-sm">{{ libellesRoles[membre.role] }}</span>
                   <!-- Statut -->
                   <span class="w-fit inline-flex items-center px-2 py-[3px] rounded-full text-[10px] font-bold"
                         [class]="membre.statut === 'actif'   ? 'bg-[#2E7D5B]/10 text-[#2E7D5B]' :
@@ -278,7 +281,27 @@
                     {{ membre.statut === 'actif' ? 'Actif' : membre.statut === 'inactif' ? 'Inactif' : 'En attente' }}
                   </span>
                   <!-- Action -->
-                  <a class="text-[#2E7D5B] text-xs font-bold cursor-pointer">Voir plus</a>
+                  <div class="flex items-center justify-end gap-3">
+                    @if (voitBoutonStatut()) {
+                      @let raison = raisonStatutImpossible(membre);
+                      <!-- Enveloppe : un bouton désactivé n'affiche pas d'info-bulle -->
+                      <span [attr.title]="raison" [class.cursor-not-allowed]="raison">
+                        <button
+                          type="button"
+                          (click)="demanderChangementStatut(membre)"
+                          [disabled]="raison !== null"
+                          [attr.aria-label]="raison ?? null"
+                          class="text-xs font-bold px-3 py-[6px] rounded-lg border disabled:pointer-events-none disabled:border-[#1A1D23]/10 disabled:text-[#1A1D23]/30"
+                          [class]="membre.statut === 'actif'
+                            ? 'border-[#C1654A]/30 text-[#C1654A]'
+                            : 'border-[#2E7D5B]/30 text-[#2E7D5B]'"
+                        >
+                          {{ membre.statut === 'inactif' ? 'Activer' : 'Désactiver' }}
+                        </button>
+                      </span>
+                    }
+                    <a [routerLink]="['/mon-espace/membres', membre.id]" class="text-[#2E7D5B] text-xs font-bold cursor-pointer">Voir plus</a>
+                  </div>
                 </div>
               }
             }
@@ -331,6 +354,7 @@
 <p-dialog
   [(visible)]="modalAjouterVisible"
   [modal]="true"
+  [dismissableMask]="true"
   [draggable]="false"
   [resizable]="false"
   [closable]="true"
@@ -349,6 +373,7 @@
 <p-dialog
   [(visible)]="modalImporterVisible"
   [modal]="true"
+  [dismissableMask]="true"
   [draggable]="false"
   [resizable]="false"
   [closable]="true"
@@ -360,3 +385,19 @@
     <app-importer-membre></app-importer-membre>
   </div>
 </p-dialog>
+
+<!-- Confirmation Activer / Désactiver (président) -->
+@if (membreACharger(); as m) {
+  <app-confirmation-modal
+    [titre]="m.statut === 'actif' ? 'Désactiver ce compte ?' : 'Réactiver ce compte ?'"
+    [message]="m.statut === 'actif'
+      ? m.prenom + ' ' + m.nom + ' ne pourra plus se connecter ni utiliser l\'application jusqu\'à sa réactivation.'
+      : m.prenom + ' ' + m.nom + ' pourra de nouveau se connecter.'"
+    [libelleConfirmer]="m.statut === 'actif' ? 'Désactiver' : 'Réactiver'"
+    [danger]="m.statut === 'actif'"
+    [enCours]="changementEnCours()"
+    [erreur]="erreurChangement()"
+    (confirmer)="confirmerChangementStatut()"
+    (annuler)="membreACharger.set(null)"
+  ></app-confirmation-modal>
+}

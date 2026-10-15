@@ -4,7 +4,7 @@
   <div class="p-lg pt-xl">
     <button (click)="etape() === 'selection' ? null : retourSelection()"
       [routerLink]="etape() === 'selection' ? '/mon-espace/membres' : null"
-      class="text-anthracite/60 mb-lg block">
+      class="text-anthracite/60 mb-lg block lg:hidden">
       <i class="pi pi-chevron-left text-lg"></i>
     </button>
 
@@ -562,7 +562,7 @@
 </div>
 
 <!-- Modal succès -->
-<p-dialog [(visible)]="modalSuccesVisible" [modal]="true" [closable]="false" [draggable]="false"
+<p-dialog [(visible)]="modalSuccesVisible" [modal]="true" [dismissableMask]="true" [closable]="false" [draggable]="false"
   [style]="{ width: '90vw', 'max-width': '420px' }">
   <div class="flex flex-col px-md pt-xl pb-lg gap-lg">
 

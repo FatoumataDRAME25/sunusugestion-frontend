@@ -6,6 +6,15 @@
     <p class="text-sm text-anthracite/60">Supervisez  organisations présentes sur la plateforme.</p>
   </div>
 
+  @if (service.erreurStatut()) {
+    <div class="mb-lg rounded-lg border border-red-200 bg-red-50 p-md text-sm text-red-700 flex items-start justify-between gap-md" role="alert">
+      <span>{{ service.erreurStatut() }}</span>
+      <button type="button" (click)="service.erreurStatut.set(null)" aria-label="Fermer" class="text-red-700/60">
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+  }
+
   <!-- Barre de recherche et filtres -->
   <div class="bg-white rounded-lg p-lg mb-lg flex gap-md">
     <p-iconfield class="flex-1">

@@ -1,3 +1,4 @@
+import { environment } from '../../../../../../../environments/environment';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -34,7 +35,7 @@ export class AjouterMembre {
   modalSuccesVisible = signal(false);
 
   // 🚀 METTEZ À JOUR VOTRE ADRESSE NGROK ICI LORSQU'ELLE CHANGE
-  private urlNgrok = 'https://reviving-gurgle-pauper.ngrok-free.dev';
+  private urlNgrok = environment.URL_PUBLIQUE;
 
   rolesDisponibles: { label: string; value: RoleMembre }[] = [
     { label: 'Trésorier', value: 'tresorier' },

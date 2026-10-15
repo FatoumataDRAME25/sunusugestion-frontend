@@ -4,7 +4,11 @@ import { catchError, Observable, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   AjouterMembreRequest,
+  FonctionBureau,
   Membre,
+  ReponseActionMembre,
+  ReponseCotisationsMembre,
+  RoleMembre,
   MembreExcel,
   MembreImporte,
   ReponseAnalyseExcel,
@@ -175,6 +179,133 @@ membresFiltres = computed(() => {
     return correspondNom && correspondStatut;
   });
 });
+
+// ─── Fiche membre et actions du président ──────────────────────────────────
+
+/** Détail d'un membre du GIE. GET /api/membres/membres/<id>/ */
+getMembre(id: number): Observable<Membre> {
+  return this.http.get<Membre>(`${this.BASE_URL}membres/membres/${id}/`);
+}
+
+/** Cotisations d'un membre du GIE. GET /api/membres/membres/<id>/cotisations/ */
+getCotisationsMembre(id: number): Observable<ReponseCotisationsMembre> {
+  return this.http.get<ReponseCotisationsMembre>(
+    `${this.BASE_URL}membres/membres/${id}/cotisations/`
+  );
+}
+
+/** Suspend (désactive) ou réactive le compte d'un membre. Président uniquement. */
+changerStatutCompte(membre: Membre): Observable<ReponseActionMembre> {
+  const action = membre.statut === 'actif' ? 'suspendre' : 'reactiver';
+  return this.http.patch<ReponseActionMembre>(
+    `${this.BASE_URL}membres/membres/${membre.id}/${action}/`, {}
+  ).pipe(tap((reponse) => this.mettreAJourMembre(reponse.membre)));
+}
+
+/**
+ * Change le rôle d'un membre. Pour transmettre la présidence, indiquer
+ * le nouveau rôle du président actuel (roleAncienPresident).
+ */
+modifierRole(id: number, role: RoleMembre, roleAncienPresident?: RoleMembre): Observable<ReponseActionMembre> {
+  const corps: Record<string, string> = { role };
+  if (roleAncienPresident) {
+    corps['roleAncienPresident'] = roleAncienPresident;
+  }
+  return this.http.patch<ReponseActionMembre>(
+    `${this.BASE_URL}membres/membres/${id}/modifier-role/`, corps
+  ).pipe(tap((reponse) => {
+    this.mettreAJourMembre(reponse.membre);
+    if (reponse.ancienPresident) {
+      this.mettreAJourMembre(reponse.ancienPresident);
+    }
+  }));
+}
+
+/** Attribue ou retire (valeur vide) une fonction d'adjoint. Président uniquement. */
+modifierFonction(id: number, fonction: FonctionBureau | ''): Observable<ReponseActionMembre> {
+  return this.http.patch<ReponseActionMembre>(
+    `${this.BASE_URL}membres/membres/${id}/modifier-fonction/`,
+    { fonctionBureau: fonction }
+  ).pipe(tap((reponse) => this.mettreAJourMembre(reponse.membre)));
+}
+
+// Adresse publique des liens d'invitation (environment.URL_PUBLIQUE)
+private readonly URL_ACTIVATION = environment.URL_PUBLIQUE;
+
+/** Renvoyer l'invitation : réservé au président et au secrétaire. */
+peutRenvoyerInvitation(membre: Membre, utilisateur: { role: string } | null): boolean {
+  return membre.statut === 'en_attente'
+    && (utilisateur?.role === 'president' || utilisateur?.role === 'secretaire');
+}
+
+/**
+ * Génère un nouveau lien d'invitation (valable 72 h, l'ancien ne fonctionne
+ * plus) et ouvre WhatsApp avec le message, comme lors de l'ajout d'un membre.
+ * POST /api/membres/membres/<id>/renvoyer-invitation/
+ */
+renvoyerInvitation(membre: Membre): Observable<ReponseActionMembre> {
+  return this.http.post<ReponseActionMembre>(
+    `${this.BASE_URL}membres/membres/${membre.id}/renvoyer-invitation/`, {}
+  ).pipe(tap((reponse) => {
+    this.mettreAJourMembre(reponse.membre);
+    if (reponse.tokenInvitation) {
+      this.ouvrirWhatsAppInvitation(reponse.membre, reponse.tokenInvitation);
+    }
+  }));
+}
+
+private ouvrirWhatsAppInvitation(membre: Membre, token: string): void {
+  let numero = membre.telephone.replace(/\s+/g, '');
+  if (!numero.startsWith('221')) {
+    numero = '221' + numero;
+  }
+
+  const lien = `${this.URL_ACTIVATION}/activation?token=${token}`;
+  const message =
+    `Bonjour ${membre.prenom},\n\n` +
+    `Voici votre nouveau lien pour activer votre compte SunuGestion ` +
+    `et choisir votre code PIN (valable 72 heures) : ${lien}`;
+
+  window.open(`https://wa.me/${numero}?text=${encodeURIComponent(message)}`, '_blank');
+}
+
+/** Le bouton Activer / Désactiver n'est affiché qu'au président. */
+voitBoutonStatut(utilisateur: { role: string } | null): boolean {
+  return utilisateur?.role === 'president';
+}
+
+/**
+ * Raison pour laquelle le président ne peut pas activer / désactiver ce
+ * compte (mêmes règles que le backend), ou null si l'action est possible.
+ */
+raisonStatutImpossible(membre: Membre, utilisateur: { id: number } | null): string | null {
+  if (membre.id === utilisateur?.id) {
+    return 'Vous ne pouvez pas désactiver votre propre compte.';
+  }
+  if (membre.role === 'tresorier') {
+    return 'Le trésorier ne peut pas être désactivé. Changez d\'abord son rôle.';
+  }
+  if (membre.statut === 'en_attente') {
+    return 'Ce compte n\'a jamais été activé par le membre.';
+  }
+  return null;
+}
+
+peutChangerStatut(membre: Membre, utilisateur: { id: number; role: string } | null): boolean {
+  return this.voitBoutonStatut(utilisateur)
+    && this.raisonStatutImpossible(membre, utilisateur) === null;
+}
+
+/** Message d'erreur lisible renvoyé par l'API des membres. */
+messageErreur(err: any, defaut: string): string {
+  return err?.error?.erreur ?? err?.error?.detail ?? defaut;
+}
+
+private mettreAJourMembre(membre: Membre): void {
+  this.membres.update((liste) =>
+    liste.map((m) => (m.id === membre.id ? { ...m, ...membre } : m))
+  );
+}
 
 // Méthode pour charger la liste
 chargerMembres(): Observable<ReponseMembres> {
