@@ -59,7 +59,7 @@ export class DashboardPresident implements OnInit {
   peutGenererRapport = computed(() => this.estPresident() || this.estTresorier());
   rapportOuvert = signal(false);
 
-  // ── Stats membres (via EspaceGieService comme accueil-espace) ─
+  // ── Stats membres (via EspaceGieService) ──────────────────
   membresActifs = computed(() => this.espaceGieService.stats().nombreMembres);
 
   // ── Solde caisse ──────────────────────────────────────────
@@ -117,36 +117,32 @@ export class DashboardPresident implements OnInit {
   isLoading = signal(true);
 
   ngOnInit(): void {
-    // Membres — même appel que accueil-espace
+    // Membres
     this.espaceGieService.chargerStats().subscribe({
-      next: () => console.log('[Dashboard] stats membres:', this.espaceGieService.stats()),
       error: (err) => console.error('[Dashboard] erreur membres:', err)
     });
 
     // Prêts
     this.pretService.chargerPrets().subscribe({
-      next: () => console.log('[Dashboard] prêts chargés:', this.pretService.prets().length),
       error: (err) => console.error('[Dashboard] erreur prêts:', err)
     });
 
     // Sessions cotisations + cotisations de la session active (pour retards trésorier)
     this.cotisationService.getSessions().subscribe({
       next: (sessions) => {
-        console.log('[Dashboard] session active:', this.sessionActive());
         const active = sessions.find(s => s.statut === 'ouverte');
         if (active) {
           this.cotisationService.getCotisations(active.id).subscribe({
-            error: () => {}
+            error: (err) => console.error('[Dashboard] erreur cotisations:', err)
           });
         }
       },
       error: (err) => console.error('[Dashboard] erreur sessions:', err)
     });
 
-    // Solde caisse — même appel que accueil-espace et historique
+    // Solde caisse — même appel que l'historique
     this.historiqueService.getSolde().subscribe({
       next: (s) => {
-        console.log('[Dashboard] solde reçu:', s);
         this.solde.set(s);
       },
       error: (err) => console.error('[Dashboard] erreur solde:', err)
@@ -162,13 +158,12 @@ export class DashboardPresident implements OnInit {
           .slice(0, 3);
         this.activitesAVenir.set(aVenir);
       },
-      error: () => {}
+      error: (err) => console.error('[Dashboard] erreur activités:', err)
     });
 
     // Opérations récentes (3 dernières) + données graphique
     this.historiqueService.getOperations().subscribe({
       next: (ops) => {
-        console.log('[Dashboard] opérations reçues:', ops.length);
 
         // 3 dernières opérations
         const triees = [...ops].sort(

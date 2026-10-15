@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { DiagnosticResponse } from '../../../../core/models/diagnostic.model';
 import { DiagnosticService } from '../../../../core/services/diagnostic.service';
@@ -13,7 +13,7 @@ import { DiagnosticService } from '../../../../core/services/diagnostic.service'
 })
 export class Diagnostic implements OnInit {
 
-  private readonly diagnosticService = new DiagnosticService();
+  private readonly diagnosticService = inject(DiagnosticService);
 
   diagnostic = signal<DiagnosticResponse | null>(null);
   chargement = signal<boolean>(false);

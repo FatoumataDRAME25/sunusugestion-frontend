@@ -7,13 +7,12 @@ import { AuthService } from '../../../../../../core/services/auth.service';
 import { Navbar } from '../../../../../../shared/ui/navbar/navbar';
 import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
 import { GieSidebar } from '../../../../../../shared/ui/gie-sidebar/gie-sidebar';
-import { InitialesPipe } from '../../../../../../shared/pipes/initiales-pipe';
 import { ModePaiement } from '../../../../../../core/models/pret.model';
 
 @Component({
   selector: 'app-detail-pret',
   templateUrl: './detail-pret.html',
-  imports: [RouterLink, DecimalPipe, DatePipe, FormsModule, Navbar, BottomNav, GieSidebar, InitialesPipe, NgClass],
+  imports: [RouterLink, DecimalPipe, DatePipe, FormsModule, Navbar, BottomNav, GieSidebar, NgClass],
 })
 export class DetailPret implements OnInit {
 

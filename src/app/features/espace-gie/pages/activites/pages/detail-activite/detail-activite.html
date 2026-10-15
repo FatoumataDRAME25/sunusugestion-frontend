@@ -303,7 +303,7 @@
         @if (modalDemarrerVisible()) {
           <div class="fixed inset-0 z-50 flex items-end lg:items-center justify-center bg-black/50"
                (click)="modalDemarrerVisible.set(false)">
-            <div class="bg-white rounded-t-2xl lg:rounded-2xl w-full lg:max-w-md p-6"
+            <div class="bg-white rounded-t-2xl lg:rounded-2xl w-full lg:max-w-[448px] p-6"
                  (click)="$event.stopPropagation()">
               <div class="w-10 h-1 bg-[#1E3A5F]/20 rounded-full mx-auto mb-5 lg:hidden"></div>
               <h2 class="font-bold text-lg text-[#1E3A5F] mb-1">Démarrer l'activité</h2>
@@ -330,7 +330,7 @@
         @if (modalTerminerVisible()) {
           <div class="fixed inset-0 z-50 flex items-end lg:items-center justify-center bg-black/50"
                (click)="modalTerminerVisible.set(false)">
-            <div class="bg-white rounded-t-2xl lg:rounded-2xl w-full lg:max-w-md p-6"
+            <div class="bg-white rounded-t-2xl lg:rounded-2xl w-full lg:max-w-[448px] p-6"
                  (click)="$event.stopPropagation()">
               <div class="w-10 h-1 bg-[#1E3A5F]/20 rounded-full mx-auto mb-5 lg:hidden"></div>
               <h2 class="font-bold text-lg text-[#1E3A5F] mb-1">Terminer l'activité</h2>
@@ -364,7 +364,7 @@
         @if (modalAnnulerVisible()) {
           <div class="fixed inset-0 z-50 flex items-end lg:items-center justify-center bg-black/50"
                (click)="modalAnnulerVisible.set(false)">
-            <div class="bg-white rounded-t-2xl lg:rounded-2xl w-full lg:max-w-sm p-6"
+            <div class="bg-white rounded-t-2xl lg:rounded-2xl w-full lg:max-w-[384px] p-6"
                  (click)="$event.stopPropagation()">
               <div class="w-10 h-1 bg-[#1E3A5F]/20 rounded-full mx-auto mb-5 lg:hidden"></div>
               <div class="flex justify-center mb-4">

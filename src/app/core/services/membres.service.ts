@@ -33,7 +33,7 @@ export class MembresService {
   errorMessage = signal<string | null>(null);
 
 
-  // Signals à ajouter dans la classe
+  // Liste des membres et filtres
 membres = signal<Membre[]>([]);
 statsMembres = signal<{ total: number; actifs: number; inactifs: number; enAttente: number } | null>(null);
 termeRecherche = signal('');
@@ -62,9 +62,8 @@ filtreStatut = signal<'actif' | 'inactif' | 'en_attente' | null>(null);
         // On enregistre simplement les infos pour le modal de succès
         this.dernierMembreAjoute.set({ prenom: donnees.prenom, nom: donnees.nom });
         this.isLoading.set(false);
-        // 🚀 La simulation sous forme d'alerte a été retirée d'ici.
-        // C'est maintenant le composant Angular qui interceptera la "reponse"
-        // contenant le vrai token_invitation.
+        // Le composant utilise le jeton d'invitation de la réponse pour
+        // préparer le message d'invitation envoyé au membre.
       }),
       catchError((err) => {
         this.isLoading.set(false);
@@ -126,26 +125,18 @@ filtreStatut = signal<'actif' | 'inactif' | 'en_attente' | null>(null);
         role: donnees.role
       }));
 
-  console.log('Body envoyé:', { membresValides });
-
   return this.http.post<ReponseImport>(
     `${this.BASE_URL}membres/membres/importer/`,
     { membres:membresValides }
   ).pipe(
     tap((reponse) => {
-      console.log('Réponse import complète:', reponse);
-      const nb =
-        reponse.membresImportes?.length ??
-        (reponse as any).membres_importes?.length ??
-        (reponse as any).count ??
-        membresValides.length;
+      const nb = reponse.membresImportes?.length ?? membresValides.length;
       this.nombreMembresImportes.set(nb);
       this.membresImportesAvecToken.set(reponse.membresImportes ?? []);
       this.isLoading.set(false);
     }),
     catchError((err) => {
-      console.log('Erreur import complète:', err);
-      console.log('Erreur import body:', err.error);
+      console.error("Erreur lors de l'import des membres", err);
       this.isLoading.set(false);
       this.errorMessage.set(
         err?.error?.erreur ??
@@ -266,7 +257,7 @@ private ouvrirWhatsAppInvitation(membre: Membre, token: string): void {
     `Voici votre nouveau lien pour activer votre compte SunuGestion ` +
     `et choisir votre code PIN (valable 72 heures) : ${lien}`;
 
-  window.open(`https://wa.me/${numero}?text=${encodeURIComponent(message)}`, '_blank');
+  window.open(`https://wa.me/${numero}?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
 }
 
 /** Le bouton Activer / Désactiver n'est affiché qu'au président. */
@@ -314,7 +305,6 @@ chargerMembres(): Observable<ReponseMembres> {
 
   return this.http.get<ReponseMembres>(`${this.BASE_URL}membres/membres/`).pipe(
     tap((reponse) => {
-      console.log('Stats reçues:', reponse);
       this.membres.set(reponse.membres);
       this.statsMembres.set({
         total: reponse.total,

@@ -147,7 +147,7 @@
 
         <!-- Conseil -->
         <div class="bg-or-clair/30 rounded-xl p-md flex gap-md items-start">
-          <span class="text-xl">💡</span>
+          <i class="pi pi-lightbulb text-xl text-or-senegal"></i>
           <div>
             <p class="text-sm font-semibold text-anthracite">Conseil</p>
             @if (modeImport() === 'excel') {
@@ -180,10 +180,10 @@
         </button>
       }
 
-      <a routerLink="/mon-espace/membres"
+      <button type="button" (click)="annulerImport()"
         class="w-full text-bleu-nuit font-semibold py-md text-center block">
         Annuler
-      </a>
+      </button>
 
     </div>
   }
@@ -226,7 +226,7 @@
 
         <!-- Membres valides -->
         @if (membresValides().length > 0) {
-          <div>
+          <div class="w-full max-w-[480px] mx-auto">
             <div class="flex items-center gap-sm mb-md">
               <i class="pi pi-check-circle text-vert-foret"></i>
               <p class="font-semibold text-anthracite">Membres valides ({{ membresValides().length }})</p>
@@ -257,7 +257,7 @@
 
         <!-- Membres invalides avec édition inline -->
         @if (membresInvalides().length > 0) {
-          <div>
+          <div class="w-full max-w-[480px] mx-auto">
             <div class="flex items-center gap-sm mb-md">
               <i class="pi pi-exclamation-circle text-rouge-alerte"></i>
               <p class="font-semibold text-anthracite">Membres à corriger ({{ membresInvalides().length }})</p>
@@ -375,7 +375,7 @@
 
         <!-- Tableau des membres valides -->
         @if (membresValides().length > 0) {
-          <div>
+          <div class="w-full max-w-[480px] mx-auto">
             <div class="flex items-center gap-sm mb-md">
               <i class="pi pi-check-circle text-vert-foret"></i>
               <p class="font-semibold text-anthracite">
@@ -410,7 +410,7 @@
 
         <!-- Tableau des membres invalides avec édition inline -->
         @if (membresInvalides().length > 0) {
-          <div>
+          <div class="w-full max-w-[480px] mx-auto">
             <div class="flex items-center gap-sm mb-md">
               <i class="pi pi-exclamation-circle text-rouge-alerte"></i>
               <p class="font-semibold text-anthracite">
@@ -543,7 +543,7 @@
       <!-- fin mode image -->
 
       <!-- Boutons d'action -->
-      <div class="flex flex-col gap-md pb-lg">
+      <div class="w-full max-w-[480px] mx-auto flex flex-col gap-md pb-lg">
         <button (click)="importer()"
           [disabled]="service.isLoading() || membresValides().length === 0"
           class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-50">

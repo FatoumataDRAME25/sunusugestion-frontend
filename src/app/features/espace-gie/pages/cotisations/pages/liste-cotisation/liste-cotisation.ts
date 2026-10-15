@@ -206,7 +206,6 @@ export class ListeCotisations implements OnInit {
 
       next: () => {
 
-        console.log('Cotisation payée avec succès');
 
         this.voirConfirmation.set(false);
         this.cotisationAPayer.set(null);

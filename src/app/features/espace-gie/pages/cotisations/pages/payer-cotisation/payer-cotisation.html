@@ -115,7 +115,7 @@
 
       <!-- ════════════ VERSION DESKTOP ════════════ -->
       <div class="hidden md:block p-10">
-        <div class="max-w-2xl mx-auto">
+        <div class="max-w-[672px] mx-auto">
 
           <div class="mb-6">
             <h1 class="text-[#1E3A5F] text-2xl font-bold">
@@ -257,7 +257,7 @@
 <!-- MODAL CONFIRMATION -->
 @if (voirConfirmation() && cotisation()) {
   <div class="fixed inset-0 z-50 flex items-end lg:items-center justify-center bg-black/50" (click)="voirConfirmation.set(false)">
-    <div class="bg-white rounded-t-2xl lg:rounded-2xl w-full lg:max-w-md p-6" (click)="$event.stopPropagation()">
+    <div class="bg-white rounded-t-2xl lg:rounded-2xl w-full lg:max-w-[448px] p-6" (click)="$event.stopPropagation()">
 
       <div class="w-10 h-1 bg-[#1E3A5F]/20 rounded-full mx-auto mb-5 lg:hidden"></div>
       <div class="flex justify-center mb-4">

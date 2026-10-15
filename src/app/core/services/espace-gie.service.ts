@@ -1,5 +1,4 @@
 import { Injectable, signal, inject } from '@angular/core';
-import { AuthService } from './auth.service';
 import { StatsGie } from '../models/espace-gie.model';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
@@ -9,7 +8,6 @@ import { ReponseMembres } from '../models/membre.model';
 
 @Injectable({ providedIn: 'root' })
 export class EspaceGieService {
-  private authService = inject(AuthService);
 
   private http = inject(HttpClient);
   private readonly BASE_URL = environment.API_URL;
@@ -20,9 +18,6 @@ export class EspaceGieService {
 
   infosGie = signal<InfosGie | null>(null);
 
-  // Pas encore d'endpoint pour récupérer le GIE de l'utilisateur connecté —
-  // en dur pour l'instant, à remplacer par un vrai appel HTTP plus tard.
-  nomGie = signal('GIE And Defar');
 
   stats = signal<StatsGie>({
     nombreMembres: 0,
@@ -32,9 +27,6 @@ export class EspaceGieService {
     demandesApprobationPrets: 0
   });
 
-  prenomUtilisateur(): string {
-    return this.authService.currentUser()?.prenom ?? '';
-  }
 
   // Charge le nombre de membres réel depuis l'API
   chargerStats(): Observable<ReponseMembres> {
@@ -79,7 +71,10 @@ export class EspaceGieService {
       }),
       catchError((err) => {
         this.isSaving.set(false);
-        this.errorMessage.set(err?.error?.detail ?? 'Erreur lors de la sauvegarde');
+        // Message du champ refusé (nom, téléphone…) si Django en renvoie un
+        const corps = typeof err?.error === 'object' && err.error ? err.error : {};
+        const erreurChamp = Object.values(corps).flat().find(m => typeof m === 'string');
+        this.errorMessage.set(err?.error?.detail ?? erreurChamp ?? 'Erreur lors de la sauvegarde');
         return throwError(() => err);
       })
     );

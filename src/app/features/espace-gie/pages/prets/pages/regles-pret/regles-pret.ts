@@ -48,7 +48,19 @@ export class ReglesPret implements OnInit {
     this.mode.set('modification');
   }
 
+  readonly DUREE_MAX = 120;
+
   enregistrer(): void {
+    // Mêmes limites que le serveur, pour prévenir avant l'envoi
+    if (!(+this.montantMax() > 0)) {
+      this.service.errorMessage.set('Le montant maximum doit être supérieur à 0.');
+      return;
+    }
+    if (!(this.dureeMax() >= 1 && this.dureeMax() <= this.DUREE_MAX)) {
+      this.service.errorMessage.set(`La durée maximale doit être comprise entre 1 et ${this.DUREE_MAX} mois.`);
+      return;
+    }
+
     const body = {
       montantMax: this.montantMax(),
       dureeMaxMois: this.dureeMax(),

@@ -6,7 +6,7 @@ export interface Utilisateur {
   prenom: string;
   telephone: string;
   role: Role;
-  idGie?: string;        // ← l'API retourne le nom du GIE, pas idGie
+  idGie?: string;        // nom du GIE renvoyé par l'API à la connexion
   email?: string;
    codePin: string,
 }
@@ -17,5 +17,5 @@ export interface ReponseLogin {
     access: string;
     refresh: string;
   };
-  utilisateur: Utilisateur;  // ← "utilisateur" pas "user"
+  utilisateur: Utilisateur;
 }

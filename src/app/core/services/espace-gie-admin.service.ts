@@ -40,7 +40,6 @@ export class EspacesGieService {
     `${this.BASE_URL}auth/liste-gies/`
   ).subscribe({
     next: (data) => {
-      console.log('GIES ESPACES RECUS :', data);
       this.gieListe.set(data);
     },
     error: (erreur) => {

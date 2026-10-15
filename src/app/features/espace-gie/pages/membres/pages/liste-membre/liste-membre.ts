@@ -115,8 +115,7 @@ export class ListeMembre implements OnInit {
 
   ngOnInit(): void {
     this.service.chargerMembres().subscribe({
-      next: () => console.log('listes affichees'),
-      error: (err) => console.log('listes non affichees:', err)
+      error: (err) => console.error('Erreur lors du chargement des membres', err)
     });
   }
 

@@ -194,7 +194,7 @@ export class PretService {
       }),
       catchError((err) => {
         this.isLoading.set(false);
-        this.errorMessage.set(err?.error?.detail ?? 'Erreur lors de la création des règles.');
+        this.errorMessage.set(this._extraireErreurs(err));
         return throwError(() => err);
       })
     );
@@ -211,7 +211,7 @@ export class PretService {
       }),
       catchError((err) => {
         this.isLoading.set(false);
-        this.errorMessage.set(err?.error?.detail ?? 'Erreur lors de la modification des règles.');
+        this.errorMessage.set(this._extraireErreurs(err));
         return throwError(() => err);
       })
     );

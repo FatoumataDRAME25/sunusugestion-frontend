@@ -25,7 +25,7 @@ export class DashboardService {
 
   chargerStatistiques(): void {
     this.http.get<any>(`${this.BASE_URL}auth/gies/statistiques/`).subscribe({
-      next: (data) => { console.log('STATISTIQUES RECUES :', data); this.stats.set({ totalGies: data.totalGies, gieActifs: data.giesActifs, gieInactifs: data.giesInactifs, totalMembres: data.totalMembres, totalRegions: data.totalRegions, totalSecteurs: data.totalSecteurs });
+      next: (data) => { this.stats.set({ totalGies: data.totalGies, gieActifs: data.giesActifs, gieInactifs: data.giesInactifs, totalMembres: data.totalMembres, totalRegions: data.totalRegions, totalSecteurs: data.totalSecteurs });
     },
     error: (erreur) => { console.error('Erreur lors du chargement des statistiques', erreur); }
   });
@@ -34,7 +34,6 @@ export class DashboardService {
   chargerGies(): void {
     this.http.get<GIE[]>(`${this.BASE_URL}auth/liste-gies/`).subscribe({
       next: (data) => {
-        console.log('GIES RECUS', data);
 
 
       this.gieRecentsActives.set(
@@ -75,7 +74,6 @@ chargerRepartitionSecteurs(): void {
     `${this.BASE_URL}auth/gies/repartition-secteur/`
   ).subscribe({
     next: (data) => {
-      console.log('REPARTITION SECTEURS RECUE :', data);
       this.repartitionSecteurs.set(data);
     },
     error: (erreur) => {

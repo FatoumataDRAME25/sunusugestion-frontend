@@ -7,7 +7,6 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
 import { AuthService } from '../../../../core/services/auth.service';
-import { FirebaseService } from '../../../../core/services/firebase.service';
 import { Router, RouterLink } from '@angular/router';
 
 @Component({
@@ -35,7 +34,6 @@ export class Login implements OnDestroy{
 private intervalleCompteARebours: ReturnType<typeof setInterval> | null = null;
 
   protected authService = inject(AuthService);
-  private firebaseService = inject(FirebaseService);
   private router = inject(Router);
 
 
@@ -94,11 +92,6 @@ private demarrerCompteARebours(secondes: number): void {
     this.authService.login(this.telephone(), this.codePin()).subscribe({
       next: () => {
         const role = this.authService.currentUser()?.role;
-
-        // Demander la permission, récupérer le token FCM et l'envoyer à Django.
-        // Exécuté dans le contexte d'un clic utilisateur (requis par le navigateur).
-        // L'échec n'interrompt pas la navigation.
-        this.firebaseService.demanderPermission();
 
         if (role === 'administrateur') {
           this.router.navigate(['/dashboard']);

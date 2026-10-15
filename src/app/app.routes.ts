@@ -1,156 +1,115 @@
 import { Routes } from '@angular/router';
-import { Login } from './features/auth/pages/login/login';
-import { MainLayout } from './layout/main-layout/main-layout/main-layout';
-import { Dashboard } from './features/espace-admin/pages/dashboard/dashboard';
-import { EspacesGieList } from './features/espace-admin/pages/espaces-gie-list/espaces-gie-list';
-import { Profil } from './features/espace-admin/pages/profil/profil';
-import { Accueil } from './features/vitrine/pages/accueil/accueil';
-import { EtapeGie } from './features/inscription/pages/etape-gie/etape-gie';
-import { EtapeCompte } from './features/inscription/pages/etape-compte/etape-compte';
-import { EtapeOtp } from './features/inscription/pages/etape-otp/etape-otp';
-import { EtapeSucces } from './features/inscription/pages/etape-succes/etape-succes';
-import { MobileLayout } from './layout/mobile-layout/mobile-layout';
-import { AccueilEspace } from './features/espace-gie/pages/accueil-espace/accueil-espace';
-import { Historique } from './features/espace-gie/pages/operations/pages/historiques/historique';
-import { ProfilMembre } from './features/espace-gie/pages/profil-membre/profil-membre';
-import { ListeMembre } from './features/espace-gie/pages/membres/pages/liste-membre/liste-membre';
-import { AjouterMembre } from './features/espace-gie/pages/membres/pages/ajouter-membre/ajouter-membre';
-import { ImporterMembre } from './features/espace-gie/pages/membres/pages/importer-membre/importer-membre';
-import { InformationsGie } from './features/espace-gie/pages/informations-gie/imformations-gie';
-import { NouvelleOperation } from './features/espace-gie/pages/operations/pages/nouvelle-operation/nouvelle-operation';
-import { DetailOperation } from './features/espace-gie/pages/operations/pages/detail-operation/detail-operation';
-import { ListeCotisations } from './features/espace-gie/pages/cotisations/pages/liste-cotisation/liste-cotisation';
-import { SessionCotisation } from './features/espace-gie/pages/cotisations/pages/session-cotisation/session-cotisation';
-import { PayerCotisation } from './features/espace-gie/pages/cotisations/pages/payer-cotisation/payer-cotisation';
-import { ActiverCompte } from './features/espace-gie/pages/membres/pages/activer-compte/activer-compte';
-import { ListePrets } from './features/espace-gie/pages/prets/pages/liste-prets/liste-prets';
-import { DemandePret } from './features/espace-gie/pages/prets/pages/demande-pret/demande-pret';
-import { DetailPret } from './features/espace-gie/pages/prets/pages/detail-pret/detail-pret';
-import { ReglesPret } from './features/espace-gie/pages/prets/pages/regles-pret/regles-pret';
-import { DemandesATraiter } from './features/espace-gie/pages/prets/pages/demandes-a-traiter/demandes-a-traiter';
-import { ListeActivites } from './features/espace-gie/pages/activites/pages/liste-activites/liste-activites';
-import { PlanifierActivite } from './features/espace-gie/pages/activites/pages/planifier-activite/planifier-activite';
-import { DetailActivite } from './features/espace-gie/pages/activites/pages/detail-activite/detail-activite';
-import { PresencesActivite } from './features/espace-gie/pages/activites/pages/presences-activite/presences-activite';
-import { DashboardPresident } from './features/espace-gie/pages/dashboard-president/dashboard-president';
 import { roleGuard } from './core/guards/role.guard';
 import { adminGuard } from './core/guards/admin.guard';
 import { authGuard } from './core/guards/auth.guard';
-import { RetourPaiement } from './features/espace-gie/pages/paiement/retour-paiement';
-import { LandingPage } from './features/landing-page/landing-page';
-import { Diagnostic } from './features/espace-gie/pages/diagnostic/diagnostic';
-import { FicheMembre } from './features/espace-gie/pages/membres/pages/fiche-membre/fiche-membre';
-import { Bureau } from './features/espace-gie/pages/bureau/bureau';
 
-
-
-
-
-
-
-
+// Chaque page est chargée à la demande (loadComponent) : elle n'est téléchargée
+// qu'au moment où l'utilisateur l'ouvre, ce qui allège le démarrage.
 export const routes: Routes = [
 
-  { path: '', component: LandingPage },
-  { path: 'sunugestion-vitrine', component: Accueil },
-  { path: 'login', component: Login },
-  { path: 'inscription/gie', component: EtapeGie },
-  { path: 'inscription/compte', component: EtapeCompte },
-  { path: 'inscription/otp', component: EtapeOtp },
-  { path: 'inscription/succes', component: EtapeSucces },
+  { path: '', loadComponent: () => import('./features/landing-page/landing-page').then(m => m.LandingPage) },
+  // Ancienne vitrine remplacée par la page d'accueil du site : l'adresse reste valable
+  { path: 'sunugestion-vitrine', redirectTo: '', pathMatch: 'full' },
+  { path: 'login', loadComponent: () => import('./features/auth/pages/login/login').then(m => m.Login) },
+  { path: 'inscription/gie', loadComponent: () => import('./features/inscription/pages/etape-gie/etape-gie').then(m => m.EtapeGie) },
+  { path: 'inscription/compte', loadComponent: () => import('./features/inscription/pages/etape-compte/etape-compte').then(m => m.EtapeCompte) },
+  { path: 'inscription/otp', loadComponent: () => import('./features/inscription/pages/etape-otp/etape-otp').then(m => m.EtapeOtp) },
+  { path: 'inscription/succes', loadComponent: () => import('./features/inscription/pages/etape-succes/etape-succes').then(m => m.EtapeSucces) },
 
   // Les routes pour l'admin
   {
     path: '',
-    component: MainLayout,
+    loadComponent: () => import('./layout/main-layout/main-layout/main-layout').then(m => m.MainLayout),
     canActivate: [adminGuard],
     children: [
-      { path: 'espaces-gie', component: EspacesGieList },
-      { path: 'dashboard', component: Dashboard },
-      { path: 'profil', component: Profil },
+      { path: 'espaces-gie', loadComponent: () => import('./features/espace-admin/pages/espaces-gie-list/espaces-gie-list').then(m => m.EspacesGieList) },
+      { path: 'dashboard', loadComponent: () => import('./features/espace-admin/pages/dashboard/dashboard').then(m => m.Dashboard) },
+      { path: 'profil', loadComponent: () => import('./features/espace-admin/pages/profil/profil').then(m => m.Profil) },
     ]
   },
-  { path: 'activation', component: ActiverCompte },
+  { path: 'activation', loadComponent: () => import('./features/espace-gie/pages/membres/pages/activer-compte/activer-compte').then(m => m.ActiverCompte) },
 
   // Les routes pour la navigation au sein du GIE
 
   {
   path: 'mon-espace',
-  component: MobileLayout,
+  loadComponent: () => import('./layout/mobile-layout/mobile-layout').then(m => m.MobileLayout),
   canActivate: [authGuard],
   children: [
 
-    { path: '', component: AccueilEspace },    { path: 'informations-gie', component: InformationsGie },
-    { path: 'historiques', component: Historique },
+    // L'ancienne page d'accueil de l'espace est remplacée par le tableau de bord :
+    // tous les liens vers /mon-espace y mènent
+    { path: '', pathMatch: 'full', redirectTo: '/mon-espace/dashboard-president' },
+    { path: 'informations-gie', loadComponent: () => import('./features/espace-gie/pages/informations-gie/imformations-gie').then(m => m.InformationsGie) },
+    { path: 'historiques', loadComponent: () => import('./features/espace-gie/pages/operations/pages/historiques/historique').then(m => m.Historique) },
     {
       path: 'historiques/nouvelle-operation',
-      component: NouvelleOperation,
+      loadComponent: () => import('./features/espace-gie/pages/operations/pages/nouvelle-operation/nouvelle-operation').then(m => m.NouvelleOperation),
       canActivate: [roleGuard],
       data: { roles: ['tresorier'] }
     },
-    { path: 'historiques/:id', component: DetailOperation },
+    { path: 'historiques/:id', loadComponent: () => import('./features/espace-gie/pages/operations/pages/detail-operation/detail-operation').then(m => m.DetailOperation) },
     {
       path: 'membres/ajouter',
-      component: AjouterMembre,
+      loadComponent: () => import('./features/espace-gie/pages/membres/pages/ajouter-membre/ajouter-membre').then(m => m.AjouterMembre),
       canActivate: [roleGuard],
       data: { roles: ['president', 'secretaire'] }
     },
     {
       path: 'membres/importer',
-      component: ImporterMembre,
+      loadComponent: () => import('./features/espace-gie/pages/membres/pages/importer-membre/importer-membre').then(m => m.ImporterMembre),
       canActivate: [roleGuard],
       data: { roles: ['president', 'secretaire'] }
     },
-    { path: 'membres', component: ListeMembre },
+    { path: 'membres', loadComponent: () => import('./features/espace-gie/pages/membres/pages/liste-membre/liste-membre').then(m => m.ListeMembre) },
     // Après « ajouter » et « importer » pour ne pas les intercepter
-    { path: 'membres/:id', component: FicheMembre },
-    { path: 'bureau', component: Bureau },
-    { path: 'cotisations', component: ListeCotisations },
+    { path: 'membres/:id', loadComponent: () => import('./features/espace-gie/pages/membres/pages/fiche-membre/fiche-membre').then(m => m.FicheMembre) },
+    { path: 'bureau', loadComponent: () => import('./features/espace-gie/pages/bureau/bureau').then(m => m.Bureau) },
+    { path: 'cotisations', loadComponent: () => import('./features/espace-gie/pages/cotisations/pages/liste-cotisation/liste-cotisation').then(m => m.ListeCotisations) },
     {
       path: 'cotisations/session-cotisation',
-      component: SessionCotisation,
+      loadComponent: () => import('./features/espace-gie/pages/cotisations/pages/session-cotisation/session-cotisation').then(m => m.SessionCotisation),
       canActivate: [roleGuard],
       data: { roles: ['tresorier'] }
     },
-    { path: 'cotisations/payer/:id', component: PayerCotisation },
+    { path: 'cotisations/payer/:id', loadComponent: () => import('./features/espace-gie/pages/cotisations/pages/payer-cotisation/payer-cotisation').then(m => m.PayerCotisation) },
 
     // ── Prêts ──
-    { path: 'prets', component: ListePrets },
-    { path: 'prets/demande', component: DemandePret },
-    { path: 'prets/regles', component: ReglesPret },
+    { path: 'prets', loadComponent: () => import('./features/espace-gie/pages/prets/pages/liste-prets/liste-prets').then(m => m.ListePrets) },
+    { path: 'prets/demande', loadComponent: () => import('./features/espace-gie/pages/prets/pages/demande-pret/demande-pret').then(m => m.DemandePret) },
+    { path: 'prets/regles', loadComponent: () => import('./features/espace-gie/pages/prets/pages/regles-pret/regles-pret').then(m => m.ReglesPret) },
     {
       path: 'prets/demandes-a-traiter',
-      component: DemandesATraiter,
+      loadComponent: () => import('./features/espace-gie/pages/prets/pages/demandes-a-traiter/demandes-a-traiter').then(m => m.DemandesATraiter),
       canActivate: [roleGuard],
       data: { roles: ['president'] }
     },
-    { path: 'prets/:id', component: DetailPret },
+    { path: 'prets/:id', loadComponent: () => import('./features/espace-gie/pages/prets/pages/detail-pret/detail-pret').then(m => m.DetailPret) },
 
     // ── Activités ──
-    { path: 'activites', component: ListeActivites },
+    { path: 'activites', loadComponent: () => import('./features/espace-gie/pages/activites/pages/liste-activites/liste-activites').then(m => m.ListeActivites) },
     {
       path: 'activites/planifier',
-      component: PlanifierActivite,
+      loadComponent: () => import('./features/espace-gie/pages/activites/pages/planifier-activite/planifier-activite').then(m => m.PlanifierActivite),
       canActivate: [roleGuard],
       data: { roles: ['president', 'secretaire'] }
     },
-    { path: 'activites/:id', component: DetailActivite },
-    { path: 'activites/:id/presences', component: PresencesActivite },
+    { path: 'activites/:id', loadComponent: () => import('./features/espace-gie/pages/activites/pages/detail-activite/detail-activite').then(m => m.DetailActivite) },
+    { path: 'activites/:id/presences', loadComponent: () => import('./features/espace-gie/pages/activites/pages/presences-activite/presences-activite').then(m => m.PresencesActivite) },
 
     // le diagnostic
 
-    {path: 'diagnostic', component: Diagnostic},
+    {path: 'diagnostic', loadComponent: () => import('./features/espace-gie/pages/diagnostic/diagnostic').then(m => m.Diagnostic)},
 
-    // ── Rapports ── la génération se fait depuis une fenêtre du tableau de bord
-    { path: 'rapports', redirectTo: '/mon-espace/dashboard-president' },
     // ── Paiement PayDunya retour ──
 
 
 
-    { path: 'profil-membre', component: ProfilMembre }
+    { path: 'profil-membre', loadComponent: () => import('./features/espace-gie/pages/profil-membre/profil-membre').then(m => m.ProfilMembre) }
 
   ]
 },
-{ path: 'paiement/retour', component: RetourPaiement },
-{ path: 'mon-espace/dashboard-president', component: DashboardPresident, canActivate: [authGuard] },
+{ path: 'paiement/retour', loadComponent: () => import('./features/espace-gie/pages/paiement/retour-paiement').then(m => m.RetourPaiement), canActivate: [authGuard] },
+{ path: 'paiement/annule', loadComponent: () => import('./features/espace-gie/pages/paiement/annulation-paiement').then(m => m.AnnulationPaiement), canActivate: [authGuard] },
+{ path: 'mon-espace/dashboard-president', loadComponent: () => import('./features/espace-gie/pages/dashboard-president/dashboard-president').then(m => m.DashboardPresident), canActivate: [authGuard] },
 ];

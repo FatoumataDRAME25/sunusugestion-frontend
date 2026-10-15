@@ -161,7 +161,6 @@
         <div class="flex items-center justify-between mb-8">
           <div>
             <h3 class="text-[#1E3A5F] text-xl font-bold leading-8">Gérez les membres de votre organisation.</h3>
-            <!-- <p class="text-[#1A1D23]/50 text-sm mt-1">Gérez les membres de votre GIE.</p> -->
           </div>
           @if (['president', 'secretaire'].includes(authService.currentUser()?.role ?? '')) {
             <div class="flex items-center gap-3">
@@ -382,7 +381,7 @@
   [contentStyle]="{ overflow: 'auto', padding: '0', 'max-height': '80vh' }"
   header="Importer des membres">
   <div class="modal-importer-content">
-    <app-importer-membre></app-importer-membre>
+    <app-importer-membre [dansModale]="true" (annuler)="fermerModalImporter()"></app-importer-membre>
   </div>
 </p-dialog>
 

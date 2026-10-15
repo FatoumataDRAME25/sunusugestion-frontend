@@ -34,7 +34,6 @@ export class AjouterMembre {
 
   modalSuccesVisible = signal(false);
 
-  // 🚀 METTEZ À JOUR VOTRE ADRESSE NGROK ICI LORSQU'ELLE CHANGE
   private urlNgrok = environment.URL_PUBLIQUE;
 
   rolesDisponibles: { label: string; value: RoleMembre }[] = [
@@ -101,7 +100,7 @@ export class AjouterMembre {
           `https://wa.me/${numTel}?text=${encodeURIComponent(message)}`;
 
         // 7. Ouvrir WhatsApp dans un nouvel onglet
-        window.open(lienWhatsApp, '_blank');
+        window.open(lienWhatsApp, '_blank', 'noopener');
 
         // 8. Afficher le modal de succès
         this.modalSuccesVisible.set(true);

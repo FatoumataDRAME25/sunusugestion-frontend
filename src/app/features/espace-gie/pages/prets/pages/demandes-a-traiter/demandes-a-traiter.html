@@ -267,7 +267,7 @@
   <!-- Mobile : bottom sheet -->
   <div class="fixed inset-0 z-50 flex items-end lg:items-center justify-center bg-black/50"
        (click)="modalApprouverVisible.set(false)">
-    <div class="bg-white rounded-t-2xl lg:rounded-2xl w-full lg:max-w-md p-6"
+    <div class="bg-white rounded-t-2xl lg:rounded-2xl w-full lg:max-w-[448px] p-6"
          (click)="$event.stopPropagation()">
       <div class="w-10 h-1 bg-[#1E3A5F]/20 rounded-full mx-auto mb-5 lg:hidden"></div>
       <h2 class="font-bold text-lg text-[#1E3A5F] mb-1">Approuver la demande</h2>
@@ -316,7 +316,7 @@
 @if (modalDecaisserVisible() && pretADecaisser()) {
   <div class="fixed inset-0 z-50 flex items-end lg:items-center justify-center bg-black/50"
        (click)="modalDecaisserVisible.set(false)">
-    <div class="bg-white rounded-t-2xl lg:rounded-2xl w-full lg:max-w-md p-6"
+    <div class="bg-white rounded-t-2xl lg:rounded-2xl w-full lg:max-w-[448px] p-6"
          (click)="$event.stopPropagation()">
       <div class="w-10 h-1 bg-[#1E3A5F]/20 rounded-full mx-auto mb-5 lg:hidden"></div>
 

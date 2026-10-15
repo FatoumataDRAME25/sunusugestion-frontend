@@ -1,8 +1,6 @@
 import { ApplicationConfig, LOCALE_ID, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
 import{providePrimeNG} from 'primeng/config';
-//import Aura from '@primeuix/themes/aura';
 import { SunugestionPreset } from './theme/sunugestion-preset';
 
 import { routes } from './app.routes';
@@ -16,7 +14,6 @@ export const appConfig: ApplicationConfig = {
     { provide: LOCALE_ID, useValue: 'fr-SN' },
     provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor])),
-    provideAnimationsAsync(),
     providePrimeNG({
       theme: {
         preset : SunugestionPreset,

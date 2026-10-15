@@ -1,7 +1,10 @@
 <router-outlet />
 
 @if (showAssistant()) {
-  <app-assistant-chatbot />
+  <!-- Téléchargé seulement quand l'assistant doit s'afficher (espace du groupement) -->
+  @defer {
+    <app-assistant-chatbot />
+  }
 }
 
 
