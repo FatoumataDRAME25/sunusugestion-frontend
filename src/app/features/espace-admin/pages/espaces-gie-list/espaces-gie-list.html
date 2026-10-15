@@ -15,6 +15,12 @@
     </div>
   }
 
+  @if (erreurAbonnement()) {
+    <div class="mb-lg rounded-lg border border-red-200 bg-red-50 p-md text-sm text-red-700" role="alert">
+      {{ erreurAbonnement() }}
+    </div>
+  }
+
   <!-- Barre de recherche et filtres -->
   <div class="bg-white rounded-lg p-lg mb-lg flex gap-md">
     <p-iconfield class="flex-1">
@@ -56,6 +62,8 @@
           <th>Région</th>
           <th>Type Organisation</th>
           <th>Membres</th>
+          <th>Abonnement</th>
+          <th>Prix / mois</th>
           <th>Statut</th>
           <th>Actions</th>
         </tr>
@@ -83,6 +91,24 @@
             </span>
           </td>
           <td>
+            @if (abonnements()[gie.id]; as ab) {
+              <button type="button" (click)="ouvrirDetail(gie.id)" class="flex flex-col items-start gap-1 text-left cursor-pointer" title="Voir l'abonnement">
+                <span class="px-2 py-[2px] rounded-full text-xs font-bold" [class]="classeEtat(ab.abonnement.etat)">
+                  {{ libellesEtats[ab.abonnement.etat] }}
+                </span>
+                <span class="text-xs text-anthracite/50">jusqu'au {{ ab.abonnement.dateFin | date:'dd/MM/yyyy' }}</span>
+              </button>
+            } @else {
+              <span class="text-xs text-anthracite/40">—</span>
+            }
+          </td>
+          <td>
+            @if (abonnements()[gie.id]; as ab) {
+              {{ ab.montantMensuel | number:'1.0-0' }} F
+              <span class="block text-xs text-anthracite/50">{{ ab.membresActifs }} actifs</span>
+            }
+          </td>
+          <td>
             <p-tag
               [severity]="gie.statut === 'actif' ? 'success' : 'danger'"
               [value]="gie.statut === 'actif' ? 'Actif' : 'Inactif'"
@@ -102,3 +128,57 @@
     </p-table>
   </div>
 </div>
+
+<!-- Abonnement d'une instance : situation et historique des paiements -->
+<p-dialog
+  [visible]="detailVisible()"
+  (visibleChange)="detailVisible.set($event)"
+  [modal]="true"
+  [dismissableMask]="true"
+  [draggable]="false"
+  [style]="{ width: '640px', 'max-width': '95vw' }"
+  header="Abonnement"
+>
+  @if (instanceDetail(); as d) {
+    <div class="flex flex-col gap-md">
+      <div class="flex flex-wrap items-center justify-between gap-md">
+        <div>
+          <p class="font-semibold text-anthracite">{{ d.nom }}</p>
+          <p class="text-xs text-anthracite/50">{{ d.membresActifs }} membres actifs · {{ d.montantMensuel | number:'1.0-0' }} FCFA / mois</p>
+        </div>
+        <span class="px-3 py-1 rounded-full text-xs font-bold" [class]="classeEtat(d.abonnement.etat)">
+          {{ libellesEtats[d.abonnement.etat] }}
+        </span>
+      </div>
+
+      <p class="text-sm text-anthracite/70">
+        {{ d.abonnement.statut === 'essai' ? "Essai gratuit" : "Période payée" }}
+        du {{ d.abonnement.dateDebut | date:'dd/MM/yyyy' }} au {{ d.abonnement.dateFin | date:'dd/MM/yyyy' }}.
+        Lecture seule à partir du {{ d.abonnement.dateLectureSeule | date:'dd/MM/yyyy' }} sans paiement.
+      </p>
+
+      <div>
+        <p class="text-xs font-bold uppercase text-anthracite/40 mb-xs">Paiements</p>
+        @if (d.abonnement.paiements?.length) {
+          @for (p of d.abonnement.paiements; track p.id) {
+            <div class="flex flex-wrap justify-between gap-sm border-b border-anthracite/5 py-sm text-sm">
+              <span>{{ p.dateCreation | date:'dd/MM/yyyy' }} · {{ libellesModes[p.modePaiement] }}@if (p.initiePar) { · {{ p.initiePar }} }</span>
+              <span>{{ +p.montant | number:'1.0-0' }} F · {{ p.statut === 'valide' ? 'validé' : p.statut === 'echoue' ? 'échoué' : 'en attente' }}</span>
+            </div>
+          }
+        } @else {
+          <p class="text-sm text-anthracite/50">Aucun paiement pour le moment.</p>
+        }
+      </div>
+
+      <button
+        type="button"
+        (click)="confirmerPaiementManuel(d)"
+        [disabled]="enregistrementEnCours()"
+        class="self-start rounded-lg border border-bleu-nuit/30 px-md py-sm text-sm font-semibold text-bleu-nuit disabled:opacity-50"
+      >
+        Enregistrer un paiement reçu
+      </button>
+    </div>
+  }
+</p-dialog>

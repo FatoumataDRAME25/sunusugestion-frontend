@@ -8,9 +8,10 @@ import { DatePipe, NgClass } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Navbar } from '../../../../shared/ui/navbar/navbar';
 import { GieSidebar } from '../../../../shared/ui/gie-sidebar/gie-sidebar';
+import { CarteAbonnement } from './carte-abonnement/carte-abonnement';
 
 @Component({
-  imports: [BottomNav, ReactiveFormsModule, RouterLink, DatePipe, InputTextModule, NgClass, Navbar, GieSidebar],
+  imports: [BottomNav, ReactiveFormsModule, RouterLink, DatePipe, InputTextModule, NgClass, Navbar, GieSidebar, CarteAbonnement],
   selector: 'app-imformations-gie',
   styleUrl: './imformations-gie.css',
   templateUrl: './imformations-gie.html',

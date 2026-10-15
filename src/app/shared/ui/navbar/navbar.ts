@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationItem, NotificationService } from '../../../core/services/notification.service';
+import { AbonnementService } from '../../../core/services/abonnement.service';
 
 @Component({
   imports: [DatePipe, RouterLink],
@@ -44,10 +45,22 @@ export class Navbar implements OnInit {
     general: 'pi-bell',
   };
 
+  // ── Abonnement du groupement (bandeau d'alerte) ────────────
+  protected abonnementService = inject(AbonnementService);
+
+  bandeauAbonnement = computed(() => {
+    const role = this.utilisateur()?.role;
+    return this.abonnementService.messageBandeau(
+      this.abonnementService.abonnement(),
+      role === 'president' || role === 'tresorier'
+    );
+  });
+
   ngOnInit(): void {
     // Chaque page a sa barre du haut : les notifications sont donc
     // rechargées à chaque changement de page, sans minuteur.
     this.notificationService.rafraichir();
+    this.abonnementService.rafraichir();
   }
 
   ouvrirNotifications(): void {

@@ -33,6 +33,21 @@
   </div>
 </header>
 
+<!-- BANDEAU D'ABONNEMENT (fin d'essai proche, délai de grâce, lecture seule) -->
+@if (bandeauAbonnement(); as bandeau) {
+  <div
+    class="lg:fixed lg:top-20 lg:left-[264px] lg:right-0 z-30 px-4 py-2 lg:px-10 text-sm flex items-center gap-2"
+    [class]="bandeau.grave ? 'bg-[#C1654A] text-white' : 'bg-[#E8A020]/15 text-[#7A4E0A]'"
+    role="status"
+  >
+    <i class="pi" [class]="bandeau.grave ? 'pi-exclamation-triangle' : 'pi-info-circle'"></i>
+    <span class="flex-1">{{ bandeau.texte }}</span>
+    @if (utilisateur()?.role === 'president' || utilisateur()?.role === 'tresorier') {
+      <a routerLink="/mon-espace/informations-gie" class="font-semibold underline whitespace-nowrap">Renouveler</a>
+    }
+  </div>
+}
+
 <!-- TOPBAR MOBILE -->
 <header class="flex lg:hidden h-16 px-4 bg-white items-center justify-between sticky top-0 z-40 shadow-sm">
   <a routerLink="/mon-espace/dashboard-president" aria-label="Tableau de bord">

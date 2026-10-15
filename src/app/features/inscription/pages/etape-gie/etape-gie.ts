@@ -1,5 +1,7 @@
 
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { DecimalPipe } from '@angular/common';
 import { FormsModule, NgForm, NgModel } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -8,6 +10,7 @@ import { SelectModule } from 'primeng/select';
 
 import { InscriptionService } from '../../services/inscription.service';
 import { TypeGie } from '../../models/inscription.model';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-etape-gie',
@@ -16,7 +19,8 @@ import { TypeGie } from '../../models/inscription.model';
     FormsModule,
     ButtonModule,
     InputTextModule,
-    SelectModule
+    SelectModule,
+    DecimalPipe
   ],
   templateUrl: './etape-gie.html'
 })
@@ -24,6 +28,22 @@ export class EtapeGie {
 
   protected service = inject(InscriptionService);
   private router = inject(Router);
+  private http = inject(HttpClient);
+
+  // Rappel de l'abonnement : même grille que la page d'accueil et la facturation
+  essai = signal<{ dureeEssaiJours: number; prixMinimum: number } | null>(null);
+
+  constructor() {
+    this.http.get<{ dureeEssaiJours: number; paliers: { montant: number }[] }>(
+      `${environment.API_URL}abonnements/grille/`
+    ).subscribe({
+      next: (g) => this.essai.set({
+        dureeEssaiJours: g.dureeEssaiJours,
+        prixMinimum: g.paliers[0]?.montant ?? 0,
+      }),
+      error: () => {}   // la mention garde un texte générique
+    });
+  }
 
   nom = '';
   region: string | null = null;

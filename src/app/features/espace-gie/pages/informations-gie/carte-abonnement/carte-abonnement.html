@@ -1,0 +1,138 @@
+@if (estGestionnaire() && service.abonnement(); as a) {
+  <section class="rounded-2xl bg-white p-5 shadow-sm flex flex-col gap-5">
+
+    <!-- En-tête -->
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h2 class="text-lg font-bold text-[#1E3A5F]">Abonnement</h2>
+        <p class="text-xs text-[#1A1D23]/50">Formule Premium, toutes fonctionnalités incluses</p>
+      </div>
+      <span class="px-3 py-1 rounded-full text-xs font-bold" [class]="classeEtat(a.etat)">
+        {{ libellesEtats[a.etat] }}
+      </span>
+    </div>
+
+    <!-- Situation -->
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div class="rounded-xl bg-[#F7F8FA] p-4">
+        <p class="text-xs font-bold uppercase tracking-wide text-[#1A1D23]/40">
+          {{ a.statut === 'essai' ? "Fin de l'essai" : "Payé jusqu'au" }}
+        </p>
+        <p class="mt-1 text-base font-bold text-[#1E3A5F]">{{ a.dateFin | date:'dd/MM/yyyy' }}</p>
+        <p class="text-xs text-[#1A1D23]/50">
+          @if (a.joursRestants > 0) { encore {{ a.joursRestants }} jour(s) }
+          @else if (a.joursRestants === 0) { dernier jour }
+          @else { échéance dépassée }
+        </p>
+      </div>
+
+      <div class="rounded-xl bg-[#F7F8FA] p-4">
+        <p class="text-xs font-bold uppercase tracking-wide text-[#1A1D23]/40">Membres actifs</p>
+        <p class="mt-1 text-base font-bold text-[#1E3A5F]">{{ a.membresActifs }}</p>
+        @if (a.tarif?.dansTolerance) {
+          <p class="text-xs text-[#2E7D5B]">Dans la marge de tolérance</p>
+        }
+      </div>
+
+      <div class="rounded-xl bg-[#F7F8FA] p-4">
+        <p class="text-xs font-bold uppercase tracking-wide text-[#1A1D23]/40">Prix mensuel</p>
+        <p class="mt-1 text-base font-bold text-[#1E3A5F]">{{ a.tarif?.montant | number:'1.0-0' }} FCFA</p>
+        @if (a.tarif?.membresAvantPalierSuivant; as reste) {
+          <p class="text-xs text-[#1A1D23]/50">
+            {{ a.tarif?.montantPalierSuivant | number:'1.0-0' }} FCFA à partir de {{ (a.membresActifs ?? 0) + reste }} membres
+          </p>
+        }
+      </div>
+    </div>
+
+    @if (a.etat === 'lecture_seule') {
+      <p class="rounded-xl border border-[#C1654A]/20 bg-[#C1654A]/5 p-3 text-sm text-[#C1654A]">
+        Le groupement est en lecture seule : les données restent consultables, mais aucune nouvelle
+        opération n'est possible jusqu'au paiement.
+      </p>
+    } @else if (a.etat === 'grace') {
+      <p class="rounded-xl border border-[#E8A020]/30 bg-[#E8A020]/10 p-3 text-sm text-[#B7791F]">
+        L'abonnement a expiré. Sans paiement, le groupement passera en lecture seule le
+        {{ a.dateLectureSeule | date:'dd/MM/yyyy' }}.
+      </p>
+    }
+
+    <!-- Paiement -->
+    <div class="flex flex-col gap-3 border-t border-[#1E3A5F]/5 pt-4">
+      <p class="text-sm text-[#4A5568]">
+        Renouveler pour <strong>{{ a.tarif?.montant | number:'1.0-0' }} FCFA</strong> :
+        du {{ a.prochainePeriode?.debut | date:'dd/MM/yyyy' }} au {{ a.prochainePeriode?.fin | date:'dd/MM/yyyy' }}.
+      </p>
+
+      <div class="flex flex-col gap-2 sm:flex-row">
+        <button
+          type="button"
+          (click)="payer('wave')"
+          [disabled]="paiementEnCours() !== null"
+          class="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-[#1E3A5F] px-5 py-3 text-sm font-semibold text-white disabled:opacity-60"
+        >
+          @if (paiementEnCours() === 'wave') { <i class="pi pi-spin pi-spinner"></i> }
+          Payer avec Wave
+        </button>
+        <button
+          type="button"
+          (click)="payer('orange_money')"
+          [disabled]="paiementEnCours() !== null"
+          class="flex-1 inline-flex items-center justify-center gap-2 rounded-xl border border-[#1E3A5F]/20 bg-white px-5 py-3 text-sm font-semibold text-[#1E3A5F] disabled:opacity-60"
+        >
+          @if (paiementEnCours() === 'orange_money') { <i class="pi pi-spin pi-spinner"></i> }
+          Payer avec Orange Money
+        </button>
+      </div>
+
+      @if (erreur()) {
+        <p class="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700" role="alert">{{ erreur() }}</p>
+      }
+    </div>
+
+    <!-- Grille tarifaire -->
+    @if (a.grille; as grille) {
+      <details class="text-sm">
+        <summary class="cursor-pointer font-semibold text-[#1E3A5F]">Voir la grille tarifaire</summary>
+        <ul class="mt-2 flex flex-col gap-1 text-[#4A5568]">
+          @for (p of grille.paliers; track p.membresMin) {
+            <li class="flex justify-between">
+              <span>
+                @if (p.membresMax === null) { Plus de {{ p.membresMin - 1 }} membres }
+                @else if (p.membresMin === 1) { Jusqu'à {{ p.membresMax }} membres }
+                @else { De {{ p.membresMin }} à {{ p.membresMax }} membres }
+              </span>
+              <span class="font-semibold">{{ p.montant | number:'1.0-0' }} FCFA / mois</span>
+            </li>
+          }
+        </ul>
+        <p class="mt-2 text-xs text-[#1A1D23]/50">
+          Tolérance de {{ grille.tolerance }} membres au-dessus de chaque palier.
+          Le prix est calculé sur les membres actifs au moment du renouvellement.
+        </p>
+      </details>
+    }
+
+    <!-- Historique -->
+    @if (a.paiements?.length) {
+      <div class="flex flex-col gap-2">
+        <p class="text-xs font-bold uppercase tracking-wide text-[#1A1D23]/40">Derniers paiements</p>
+        @for (p of a.paiements; track p.id) {
+          <div class="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-[#F7F8FA] px-4 py-3 text-sm">
+            <span class="text-[#1E3A5F] font-medium">{{ p.dateCreation | date:'dd/MM/yyyy' }} · {{ libellesModes[p.modePaiement] }}</span>
+            <span class="text-[#1A1D23]/60">
+              {{ +p.montant | number:'1.0-0' }} FCFA ·
+              @if (p.statut === 'valide') {
+                <span class="text-[#2E7D5B] font-semibold">validé</span>
+              } @else if (p.statut === 'echoue') {
+                <span class="text-[#C1654A] font-semibold">échoué</span>
+              } @else {
+                <span class="font-semibold">en attente</span>
+              }
+            </span>
+          </div>
+        }
+      </div>
+    }
+  </section>
+}

@@ -170,6 +170,16 @@
         </p>
       </div>
 
+      <!-- ABONNEMENT -->
+      <p class="text-sm text-anthracite/70 text-center">
+        @if (essai(); as e) {
+          {{ e.dureeEssaiJours }} jours d'essai gratuit, puis à partir de {{ e.prixMinimum | number:'1.0-0' }} FCFA par mois selon le nombre de membres.
+        } @else {
+          Essai gratuit, puis abonnement mensuel selon le nombre de membres.
+        }
+        <a routerLink="/" fragment="tarification" class="font-semibold text-bleu-nuit underline">Voir les tarifs</a>
+      </p>
+
       <!-- BOUTON -->
       <p-button
         type="submit"
