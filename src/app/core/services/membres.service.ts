@@ -26,9 +26,6 @@ export class MembresService {
   private ocrService = inject(OcrService);
   private readonly BASE_URL = environment.API_URL;
 
-  // Résultat brut OCR (utilisé pour affichage du texte brut si besoin)
-  ocrResultBrut = signal<ProcessDocumentResponse | null>(null);
-
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
 
@@ -58,7 +55,7 @@ filtreStatut = signal<'actif' | 'inactif' | 'en_attente' | null>(null);
     this.errorMessage.set(null);
 
     return this.http.post<any>(`${this.BASE_URL}membres/membres/ajouter/`, donnees).pipe(
-      tap((reponse) => {
+      tap(() => {
         // On enregistre simplement les infos pour le modal de succès
         this.dernierMembreAjoute.set({ prenom: donnees.prenom, nom: donnees.nom });
         this.isLoading.set(false);
@@ -339,9 +336,6 @@ analyserImage(fichier: File): Observable<ProcessDocumentResponse> {
 
   return this.ocrService.processDocument(fichier).pipe(
     tap((reponse: ProcessDocumentResponse) => {
-      // Stocker le résultat brut OCR
-      this.ocrResultBrut.set(reponse);
-
       // Mapper PersonExtraite[] → MembreExcel[] avec statut valide/erreur
       const membres: MembreExcel[] = reponse.persons.map((p: PersonExtraite) => {
         const aErreurs = p['erreurs'] && p['erreurs'].length > 0;

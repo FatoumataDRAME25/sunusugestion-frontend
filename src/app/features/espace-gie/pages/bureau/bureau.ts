@@ -93,7 +93,8 @@ export class Bureau implements OnInit {
       : this.libellesFonctions[poste.cle];
   }
 
-  // Membres pouvant recevoir le poste : comptes actifs, hors titulaire actuel
+  // Membres pouvant recevoir le poste : comptes actifs, hors titulaire actuel.
+  // Les fonctions adjointes sont réservées aux membres simples.
   candidats = computed(() => {
     const poste = this.posteEnEdition();
     if (!poste) return [];
@@ -105,6 +106,7 @@ export class Bureau implements OnInit {
       m.statut === 'actif'
       && m.id !== titulaire?.id
       && !(poste.type === 'role' && poste.cle === 'president' && m.id === moi)
+      && !(poste.type === 'fonction' && m.role !== 'membre')
     );
   });
 

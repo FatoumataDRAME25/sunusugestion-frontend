@@ -79,7 +79,7 @@ export class ProfilMembre {
       `${this.BASE_URL}membres/membres/${userId}/`,
       this.formInfos.value
     ).subscribe({
-      next: (reponse: any) => {
+      next: () => {
         // Met à jour le signal currentUser avec les nouvelles infos
         this.authService.updateProfil({
           email: this.formInfos.value.email

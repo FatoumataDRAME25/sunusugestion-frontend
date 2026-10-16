@@ -50,15 +50,41 @@
               </div>
             </div>
 
+            <!-- Règles de prêt pas encore définies -->
+            @if (service.reglesAbsentes()) {
+              <div class="bg-or-clair/40 border border-or-senegal/30 rounded-xl p-md mb-lg flex flex-col gap-sm">
+                <p class="text-sm font-semibold text-anthracite">
+                  <i class="pi pi-info-circle text-or-senegal mr-xs"></i>
+                  Les règles de prêt ne sont pas encore définies.
+                </p>
+                @if (estPresident()) {
+                  <p class="text-xs text-anthracite/60">Les membres ne peuvent pas demander de prêt tant qu'elles ne le sont pas.</p>
+                  <a routerLink="/mon-espace/prets/regles"
+                    class="self-start bg-bleu-nuit text-blanc-lait font-semibold rounded-lg px-md py-sm text-sm">
+                    Définir maintenant
+                  </a>
+                } @else {
+                  <p class="text-xs text-anthracite/60">Les prêts seront disponibles dès que le président aura défini les règles.</p>
+                }
+              </div>
+            }
+
             <!-- Bouton demander un prêt -->
             @if (peutDemanderPret()) {
-              <a
-                routerLink="/mon-espace/prets/demande"
-                class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm mb-lg"
-              >
-                <i class="pi pi-plus"></i>
-                Demander un prêt
-              </a>
+              @if (service.reglesAbsentes()) {
+                <div class="w-full bg-anthracite/10 text-anthracite/50 font-semibold rounded-xl py-md flex items-center justify-center gap-sm mb-lg">
+                  <i class="pi pi-plus"></i>
+                  Demander un prêt
+                </div>
+              } @else {
+                <a
+                  routerLink="/mon-espace/prets/demande"
+                  class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm mb-lg"
+                >
+                  <i class="pi pi-plus"></i>
+                  Demander un prêt
+                </a>
+              }
             }
 
             <!-- Bouton demandes à traiter -->
@@ -71,6 +97,15 @@
                 Demandes à traiter
               </a>
             }
+
+            <!-- Règles de prêt : consultables par tous, modifiables par le président -->
+            <a
+              routerLink="/mon-espace/prets/regles"
+              class="w-full bg-white border border-anthracite/20 text-anthracite font-semibold rounded-xl py-md flex items-center justify-center gap-sm mb-lg"
+            >
+              <i class="pi pi-sliders-h"></i>
+              Règles de prêt
+            </a>
 
             <!-- Recherche -->
             <div class="flex items-center gap-sm bg-white rounded-xl px-md py-sm shadow-sm mb-md">
@@ -191,6 +226,14 @@
           </div>
 
           <div class="flex items-center gap-3">
+            <a
+              routerLink="/mon-espace/prets/regles"
+              class="flex items-center gap-2 border border-[#1E3A5F]/20 text-[#1E3A5F] font-semibold rounded-xl px-5 py-[10px] text-sm hover:bg-[#1E3A5F]/5"
+            >
+              <i class="pi pi-sliders-h"></i>
+              Règles de prêt
+            </a>
+
             @if (estPresident()) {
               <a
                 routerLink="/mon-espace/prets/demandes-a-traiter"
@@ -205,7 +248,9 @@
               <button
                 type="button"
                 (click)="ouvrirModalDemande()"
-                class="flex items-center gap-2 bg-[#1E3A5F] text-white font-semibold rounded-xl px-5 py-[10px] text-sm"
+                [disabled]="service.reglesAbsentes()"
+                [title]="service.reglesAbsentes() ? 'Les règles de prêt ne sont pas encore définies' : ''"
+                class="flex items-center gap-2 bg-[#1E3A5F] text-white font-semibold rounded-xl px-5 py-[10px] text-sm disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <i class="pi pi-plus"></i>
                 Demander un prêt
@@ -213,6 +258,31 @@
             }
           </div>
         </div>
+
+        <!-- Règles de prêt pas encore définies -->
+        @if (service.reglesAbsentes()) {
+          <div class="mb-6 flex items-center justify-between gap-4 rounded-2xl border border-[#E8A020]/30 bg-[#E8A020]/10 px-5 py-4">
+            <div>
+              <p class="text-sm font-semibold text-[#1E3A5F]">
+                <i class="pi pi-info-circle text-[#B7791F] mr-1"></i>
+                Les règles de prêt ne sont pas encore définies.
+              </p>
+              <p class="text-xs text-[#1A1D23]/60 mt-1">
+                @if (estPresident()) {
+                  Les membres ne peuvent pas demander de prêt tant qu'elles ne le sont pas.
+                } @else {
+                  Les prêts seront disponibles dès que le président aura défini les règles.
+                }
+              </p>
+            </div>
+            @if (estPresident()) {
+              <a routerLink="/mon-espace/prets/regles"
+                class="shrink-0 bg-[#1E3A5F] text-white font-semibold rounded-xl px-5 py-[10px] text-sm">
+                Définir maintenant
+              </a>
+            }
+          </div>
+        }
 
         <!-- Statistiques -->
         <div class="grid grid-cols-4 gap-4 mb-8">

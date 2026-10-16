@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { OcrResult, ProcessDocumentResponse } from '../models/ocr.model';
+import { ProcessDocumentResponse } from '../models/ocr.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -29,16 +29,6 @@ export class OcrService {
     return null;
   }
 
-  /** OCR brut — retourne uniquement le texte extrait */
-  extractText(file: File): Observable<OcrResult> {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    return this.http
-      .post<OcrResult>(`${this.OCR_BASE_URL}/api/ocr`, formData)
-      .pipe(catchError(this.gererErreur));
-  }
-
   /** OCR + validation des champs membres via n8n */
   processDocument(file: File): Observable<ProcessDocumentResponse> {
     const formData = new FormData();
@@ -46,13 +36,6 @@ export class OcrService {
 
     return this.http
       .post<ProcessDocumentResponse>(`${this.OCR_BASE_URL}/api/process-document`, formData)
-      .pipe(catchError(this.gererErreur));
-  }
-
-  /** Vérifie que le service OCR est disponible */
-  healthCheck(): Observable<{ status: string }> {
-    return this.http
-      .get<{ status: string }>(`${this.OCR_BASE_URL}/ocr/health`)
       .pipe(catchError(this.gererErreur));
   }
 

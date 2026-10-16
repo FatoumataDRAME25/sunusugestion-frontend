@@ -99,7 +99,7 @@ private demarrerCompteARebours(secondes: number): void {
           this.router.navigate(['/mon-espace/dashboard-president']);
         }
       },
-      error: (err) => {
+      error: () => {
         const secondes = this.authService.secondesVerrouillage();
 
         if (secondes !== null) {

@@ -99,14 +99,14 @@
               <p class="text-xs text-anthracite/50">Cliquer pour changer</p>
             } @else {
               <p class="font-semibold text-anthracite text-center">Sélectionnez votre fichier</p>
-              <p class="text-xs text-anthracite/50 text-center">Formats acceptés : .xlsx, .xls</p>
+              <p class="text-xs text-anthracite/50 text-center">Format accepté : .xlsx</p>
             }
             <button type="button"
               class="bg-bleu-nuit text-blanc-lait font-semibold rounded-xl px-xl py-md text-sm pointer-events-none">
               Choisir un fichier
             </button>
           </label>
-          <input id="fichier-excel" type="file" accept=".xlsx,.xls"
+          <input id="fichier-excel" type="file" accept=".xlsx"
             (change)="onFichierExcelChange($event)" class="hidden" />
         }
 

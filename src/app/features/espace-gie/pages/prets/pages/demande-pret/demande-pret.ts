@@ -24,7 +24,8 @@ export class DemandePret implements OnInit {
 
   ngOnInit(): void {
     this.service.errorMessage.set(null);
-    this.service.chargerRegle().subscribe();
+    // Un 404 signifie « aucune règle » : il alimente service.reglesAbsentes()
+    this.service.chargerRegle().subscribe({ error: () => {} });
   }
 
   envoyer(): void {

@@ -1,8 +1,8 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Abonnement, InstanceAdmin, InstanceAdminDetail, PaiementAbonnement } from '../models/abonnement.model';
+import { Abonnement, InstanceAdmin, InstanceAdminDetail } from '../models/abonnement.model';
 
 export const LIBELLES_ETATS: Record<string, string> = {
   essai: 'Essai gratuit',
@@ -52,10 +52,6 @@ export class AbonnementService {
   }
 
   /** Statut d'un paiement (page de retour PayDunya). */
-  getPaiement(id: number | string): Observable<PaiementAbonnement> {
-    return this.http.get<PaiementAbonnement>(`${this.BASE_URL}abonnements/paiements/${id}/`);
-  }
-
   // ─── Administration ───────────────────────────────────────
 
   getInstances(): Observable<InstanceAdmin[]> {

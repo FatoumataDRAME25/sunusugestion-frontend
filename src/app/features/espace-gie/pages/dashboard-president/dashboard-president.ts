@@ -59,6 +59,9 @@ export class DashboardPresident implements OnInit {
   peutGenererRapport = computed(() => this.estPresident() || this.estTresorier());
   rapportOuvert = signal(false);
 
+  // Nouveau groupement : rappelle au président de définir les règles de prêt
+  reglesPretAbsentes = computed(() => this.estPresident() && this.pretService.reglesAbsentes());
+
   // ── Stats membres (via EspaceGieService) ──────────────────
   membresActifs = computed(() => this.espaceGieService.stats().nombreMembres);
 
@@ -126,6 +129,10 @@ export class DashboardPresident implements OnInit {
     this.pretService.chargerPrets().subscribe({
       error: (err) => console.error('[Dashboard] erreur prêts:', err)
     });
+    if (this.estPresident()) {
+      // Un 404 signifie « aucune règle » : il alimente reglesAbsentes()
+      this.pretService.chargerRegle().subscribe({ error: () => {} });
+    }
 
     // Sessions cotisations + cotisations de la session active (pour retards trésorier)
     this.cotisationService.getSessions().subscribe({

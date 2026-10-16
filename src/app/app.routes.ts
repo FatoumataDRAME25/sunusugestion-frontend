@@ -37,7 +37,7 @@ export const routes: Routes = [
   canActivate: [authGuard],
   children: [
 
-    // L'ancienne page d'accueil de l'espace est remplacée par le tableau de bord :
+   
     // tous les liens vers /mon-espace y mènent
     { path: '', pathMatch: 'full', redirectTo: '/mon-espace/dashboard-president' },
     { path: 'informations-gie', loadComponent: () => import('./features/espace-gie/pages/informations-gie/imformations-gie').then(m => m.InformationsGie) },

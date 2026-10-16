@@ -33,13 +33,20 @@ export class ReglesPret implements OnInit {
 
   ngOnInit(): void {
     this.service.errorMessage.set(null);
+    // Sans règle, seul le président voit le formulaire de création ;
+    // les autres membres voient « Aucune règle configurée ».
+    const sansRegle = () => this.mode.set(this.estPresident() ? 'creation' : 'vue');
+
     this.service.chargerRegle().subscribe({
       next: () => {
-        // Si règle existe → vue, sinon → création
-        this.mode.set(this.service.regle() ? 'vue' : 'creation');
+        if (this.service.regle()) {
+          this.mode.set('vue');
+        } else {
+          sansRegle();
+        }
         this._remplirFormulaire();
       },
-      error: () => this.mode.set('creation')
+      error: () => sansRegle()
     });
   }
 

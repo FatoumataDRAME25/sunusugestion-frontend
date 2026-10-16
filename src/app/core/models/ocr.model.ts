@@ -1,8 +1,3 @@
-export interface OcrResult {
-  rawText: string;
-  confidenceScores?: number[];
-}
-
 export interface PersonExtraite {
   prenom?: string;
   nom?: string;

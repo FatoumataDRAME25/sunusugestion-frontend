@@ -144,11 +144,6 @@ export class AuthService {
     this.currentUser.set(null);
   }
 
-  // MÉTHODES ESSENTIELLES POUR L'INTERCEPTEUR de recuperer les tokens
-  getAccessToken(): string | null {
-    return localStorage.getItem(this.STORAGE_KEY_ACCESS);
-  }
-
   getRefreshToken(): string | null {
     return localStorage.getItem(this.STORAGE_KEY_REFRESH);
   }

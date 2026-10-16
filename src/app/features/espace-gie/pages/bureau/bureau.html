@@ -183,7 +183,11 @@
             }
           </select>
           @if (candidats().length === 0) {
-            <p class="text-xs text-[#1A1D23]/50">Aucun membre actif disponible.</p>
+            <p class="text-xs text-[#1A1D23]/50">
+              {{ posteEnEdition()?.type === 'fonction'
+                ? 'Aucun membre simple actif disponible.'
+                : 'Aucun membre actif disponible.' }}
+            </p>
           }
         </div>
 

@@ -53,7 +53,8 @@ export class ImporterMembre implements OnInit {
 
   modalSuccesVisible = signal(false);
 
-  readonly rolesDisponibles = ['president', 'tresorier', 'secretaire', 'membre'];
+  // La présidence se transmet par passation, jamais à l'import
+  readonly rolesDisponibles = ['tresorier', 'secretaire', 'membre'];
 
   // URL de base pour les liens d'activation (même valeur que ajouter-membre.ts)
   private readonly urlNgrok = environment.URL_PUBLIQUE;
@@ -171,7 +172,7 @@ export class ImporterMembre implements OnInit {
       erreurs.push('Format invalide — doit commencer par 70, 71, 75, 76, 77 ou 78');
     }
     if (!this.rolesDisponibles.includes(edite.role ?? '')) {
-      erreurs.push('Rôle invalide — valeurs autorisées : president, tresorier, secretaire, membre');
+      erreurs.push('Rôle invalide — valeurs autorisées : tresorier, secretaire, membre');
     }
 
     // Met à jour le membre dans le signal avec le nouveau statut

@@ -104,7 +104,8 @@ export class ListePrets implements OnInit {
 
   ngOnInit(): void {
     this.service.chargerPrets().subscribe();
-    this.service.chargerRegle().subscribe();
+    // Un 404 signifie « aucune règle » : il alimente service.reglesAbsentes()
+    this.service.chargerRegle().subscribe({ error: () => {} });
   }
 
   badgeClass(statut: StatutPret): string {

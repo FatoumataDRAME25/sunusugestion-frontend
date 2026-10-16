@@ -6,7 +6,6 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InitialesPipe } from '../../../../../../shared/pipes/initiales-pipe';
 import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
 import { CotisationService } from '../../../../../../core/services/cotisation.service';
-import { MembresService } from '../../../../../../core/services/membres.service';
 import { AuthService } from '../../../../../../core/services/auth.service';
 import { Cotisation } from '../../../../../../core/models/cotisation.model';
 import { DialogModule } from 'primeng/dialog';
@@ -37,7 +36,6 @@ export class ListeCotisations implements OnInit {
   protected authService = inject(AuthService);
   private router = inject(Router);
   private fb = inject(FormBuilder);
-  private membresService = inject(MembresService);
 
   // true si l'utilisateur connecté est trésorier
   estTresorier = computed(() => this.authService.currentUser()?.role === 'tresorier');

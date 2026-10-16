@@ -54,6 +54,25 @@
         }
       </div>
 
+      <!-- Règles de prêt pas encore définies (président) -->
+      @if (reglesPretAbsentes()) {
+        <div class="flex flex-col gap-3 rounded-2xl border border-[#E8A020]/30 bg-[#E8A020]/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p class="text-sm font-semibold text-[#1E3A5F]">
+              <i class="pi pi-info-circle text-[#B7791F] mr-1"></i>
+              Les règles de prêt ne sont pas encore définies.
+            </p>
+            <p class="text-xs text-[#1A1D23]/60 mt-1">
+              Les membres ne pourront pas demander de prêt tant que vous ne les aurez pas définies.
+            </p>
+          </div>
+          <a routerLink="/mon-espace/prets/regles"
+            class="shrink-0 self-start sm:self-auto bg-[#1E3A5F] text-white font-semibold rounded-xl px-5 py-[10px] text-sm">
+            Définir maintenant
+          </a>
+        </div>
+      }
+
       <!-- CARTES STATS DESKTOP -->
       <div class="hidden lg:grid gap-6"
            [class.grid-cols-5]="voitIndicateursPrets()"

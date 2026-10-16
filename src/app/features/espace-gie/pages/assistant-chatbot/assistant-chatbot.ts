@@ -150,6 +150,9 @@ export class AssistantChatbot {
           messageErreur =
             erreur?.error?.detail ||
             'Le service IA est momentanément indisponible. Réessayez plus tard.';
+        } else if (erreur?.status === 429) {
+          messageErreur =
+            'Vous avez atteint la limite de 20 questions par heure. Réessayez un peu plus tard.';
         } else if (erreur?.status === 0) {
           messageErreur =
             'Impossible de joindre le serveur. Vérifiez votre connexion.';

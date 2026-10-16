@@ -25,6 +25,9 @@ export class PretService {
   prets = signal<Pret[]>([]);
   pretSelectionne = signal<Pret | null>(null);
   regle = signal<ReglePret | null>(null);
+  // Vrai seulement quand le serveur a confirmé qu'aucune règle n'existe
+  // (évite d'afficher le bandeau pendant le chargement)
+  reglesAbsentes = signal(false);
 
   // Stats calculées localement depuis la liste
   statsEnAttente = signal(0);
@@ -168,6 +171,7 @@ export class PretService {
     return this.http.get<ReglePret>(`${this.BASE_URL}prets/regles/`).pipe(
       tap((regle) => {
         this.regle.set(regle);
+        this.reglesAbsentes.set(false);
         this.isLoading.set(false);
       }),
       catchError((err) => {
@@ -175,6 +179,7 @@ export class PretService {
         // 404 = pas encore de règle configurée
         if (err.status === 404) {
           this.regle.set(null);
+          this.reglesAbsentes.set(true);
         } else {
           this.errorMessage.set(err?.error?.detail ?? 'Erreur lors du chargement des règles.');
         }
@@ -190,6 +195,7 @@ export class PretService {
     return this.http.post<ReglePret>(`${this.BASE_URL}prets/regles/`, body).pipe(
       tap((regle) => {
         this.regle.set(regle);
+        this.reglesAbsentes.set(false);
         this.isLoading.set(false);
       }),
       catchError((err) => {

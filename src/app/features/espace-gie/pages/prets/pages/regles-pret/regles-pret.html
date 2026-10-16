@@ -67,6 +67,9 @@
               } @else {
                 <div class="bg-white rounded-xl p-lg shadow-sm text-center">
                   <p class="text-anthracite/60 text-sm mb-md">Aucune règle configurée.</p>
+                  @if (!estPresident()) {
+                    <p class="text-anthracite/50 text-xs">Les prêts seront disponibles dès que le président aura défini les règles.</p>
+                  }
                   @if (estPresident()) {
                     <button (click)="mode.set('creation')"
                       class="bg-bleu-nuit text-blanc-lait font-semibold rounded-xl px-lg py-md text-sm">
@@ -195,6 +198,9 @@
                 <div class="bg-white/60 rounded-2xl p-8 outline outline-1 outline-white/50 text-center">
                   <i class="pi pi-sliders-h text-[#1E3A5F]/20 text-4xl mb-3 block"></i>
                   <p class="text-[#1A1D23]/50 mb-4">Aucune règle configurée pour ce GIE.</p>
+                  @if (!estPresident()) {
+                    <p class="text-[#1A1D23]/40 text-sm">Les prêts seront disponibles dès que le président aura défini les règles.</p>
+                  }
                   @if (estPresident()) {
                     <button (click)="mode.set('creation')"
                       class="bg-[#1E3A5F] text-white font-semibold rounded-xl px-6 py-3 text-sm">
