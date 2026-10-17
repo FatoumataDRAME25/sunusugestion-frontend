@@ -18,7 +18,8 @@ export interface InfosGie {
   code: string;
   dateCreation: string;
   statut: 'actif' | 'inactif';
-  logo?: string;
+  // Adresse relative (/media/gie/logos/…), null sans logo
+  logo?: string | null;
 }
 
 export interface ModifierGieRequest {
@@ -26,4 +27,6 @@ export interface ModifierGieRequest {
   region?: string;
   typeGie?: string;
   telephone?: string;
+  // Seule valeur acceptée en JSON : null retire le logo (envoi d'un fichier : FormData)
+  logo?: null;
 }

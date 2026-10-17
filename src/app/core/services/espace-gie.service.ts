@@ -1,4 +1,4 @@
-import { Injectable, signal, inject } from '@angular/core';
+import { Injectable, signal, inject, WritableSignal } from '@angular/core';
 import { StatsGie } from '../models/espace-gie.model';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
@@ -14,6 +14,7 @@ export class EspaceGieService {
 
   isLoading = signal(false);
   isSaving = signal(false);
+  isSavingLogo = signal(false);
   errorMessage = signal<string | null>(null);
 
   infosGie = signal<InfosGie | null>(null);
@@ -61,16 +62,31 @@ export class EspaceGieService {
   }
 
   modifierInfos(donnees: ModifierGieRequest): Observable<InfosGie> {
-    this.isSaving.set(true);
+    return this.envoyerModification(donnees, this.isSaving);
+  }
+
+  // Fichier envoyé en multipart : le serveur le vérifie et le réencode
+  modifierLogo(fichier: File): Observable<InfosGie> {
+    const formData = new FormData();
+    formData.append('logo', fichier);
+    return this.envoyerModification(formData, this.isSavingLogo);
+  }
+
+  retirerLogo(): Observable<InfosGie> {
+    return this.envoyerModification({ logo: null }, this.isSavingLogo);
+  }
+
+  private envoyerModification(corps: ModifierGieRequest | FormData, enCours: WritableSignal<boolean>): Observable<InfosGie> {
+    enCours.set(true);
     this.errorMessage.set(null);
 
-    return this.http.patch<InfosGie>(`${this.BASE_URL}gie/infos/`, donnees).pipe(
+    return this.http.patch<InfosGie>(`${this.BASE_URL}gie/infos/`, corps).pipe(
       tap((reponse) => {
         this.infosGie.set(reponse);
-        this.isSaving.set(false);
+        enCours.set(false);
       }),
       catchError((err) => {
-        this.isSaving.set(false);
+        enCours.set(false);
         // Message du champ refusé (nom, téléphone…) si Django en renvoie un
         const corps = typeof err?.error === 'object' && err.error ? err.error : {};
         const erreurChamp = Object.values(corps).flat().find(m => typeof m === 'string');

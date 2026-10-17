@@ -1,4 +1,13 @@
 <div class="relative flex bg-[#F7F8FA] lg:bg-fond-desktop min-h-screen">
+  <!-- Sélecteur de logo, commun aux affichages ordinateur et mobile -->
+  <input
+    #champLogo
+    type="file"
+    class="hidden"
+    [accept]="typesLogo.join(',')"
+    (change)="choisirLogo($event)"
+  />
+
   <!-- ═══════════════════════════════════════════
        SIDEBAR DESKTOP
   ═══════════════════════════════════════════ -->
@@ -63,7 +72,7 @@
                     <img
                       [src]="gieService.infosGie()?.logo"
                       alt="Logo du GIE"
-                      class="w-24 h-24 rounded-2xl object-cover"
+                      class="w-24 h-24 rounded-2xl object-contain bg-white"
                     />
                   } @else {
                     <div
@@ -76,15 +85,34 @@
                   @if (estPresident) {
                     <button
                       type="button"
-                      class="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-bleu-nuit flex items-center justify-center"
+                      (click)="champLogo.click()"
+                      [disabled]="gieService.isSavingLogo()"
+                      [attr.aria-label]="gieService.infosGie()?.logo ? 'Changer le logo' : 'Ajouter un logo'"
+                      class="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-bleu-nuit flex items-center justify-center disabled:opacity-60"
                     >
-                      <i class="pi pi-camera text-blanc-lait text-xs"></i>
+                      <i
+                        class="pi text-blanc-lait text-xs"
+                        [ngClass]="gieService.isSavingLogo() ? 'pi-spin pi-spinner' : 'pi-camera'"
+                      ></i>
                     </button>
                   }
                 </div>
 
                 @if (estPresident) {
-                  <p class="text-sm text-anthracite/60">Modifier le logo</p>
+                  <p class="text-sm text-anthracite/60 text-center">
+                    {{ gieService.infosGie()?.logo ? 'Changer le logo' : 'Ajouter un logo' }}
+                    · JPEG, PNG ou WebP, 2 Mo max.
+                  </p>
+                  @if (gieService.infosGie()?.logo) {
+                    <button
+                      type="button"
+                      (click)="retirerLogo()"
+                      [disabled]="gieService.isSavingLogo()"
+                      class="text-sm text-rouge-alerte hover:underline disabled:opacity-50"
+                    >
+                      Retirer le logo
+                    </button>
+                  }
                 }
 
                 <h2 class="text-lg font-bold text-anthracite text-center">
@@ -293,7 +321,7 @@
                     <img
                       [src]="gieService.infosGie()?.logo"
                       alt="Logo du GIE"
-                      class="w-28 h-28 rounded-2xl object-cover"
+                      class="w-28 h-28 rounded-2xl object-contain bg-white"
                     />
                   } @else {
                     <div
@@ -306,15 +334,34 @@
                   @if (estPresident) {
                     <button
                       type="button"
-                      class="absolute -bottom-2 -right-2 w-9 h-9 rounded-full bg-bleu-nuit flex items-center justify-center"
+                      (click)="champLogo.click()"
+                      [disabled]="gieService.isSavingLogo()"
+                      [attr.aria-label]="gieService.infosGie()?.logo ? 'Changer le logo' : 'Ajouter un logo'"
+                      class="absolute -bottom-2 -right-2 w-9 h-9 rounded-full bg-bleu-nuit flex items-center justify-center disabled:opacity-60"
                     >
-                      <i class="pi pi-camera text-blanc-lait text-sm"></i>
+                      <i
+                        class="pi text-blanc-lait text-sm"
+                        [ngClass]="gieService.isSavingLogo() ? 'pi-spin pi-spinner' : 'pi-camera'"
+                      ></i>
                     </button>
                   }
                 </div>
 
                 @if (estPresident) {
-                  <p class="text-sm text-anthracite/60">Modifier le logo</p>
+                  <p class="text-sm text-anthracite/60 text-center">
+                    {{ gieService.infosGie()?.logo ? 'Changer le logo' : 'Ajouter un logo' }}
+                    · JPEG, PNG ou WebP, 2 Mo max.
+                  </p>
+                  @if (gieService.infosGie()?.logo) {
+                    <button
+                      type="button"
+                      (click)="retirerLogo()"
+                      [disabled]="gieService.isSavingLogo()"
+                      class="text-sm text-rouge-alerte hover:underline disabled:opacity-50"
+                    >
+                      Retirer le logo
+                    </button>
+                  }
                 }
 
                 <h2 class="text-xl font-bold text-anthracite">

@@ -36,6 +36,10 @@ export class InformationsGie {
     description: ['']
   });
 
+  // Mêmes limites que le serveur, vérifiées avant l'envoi
+  readonly typesLogo = ['image/jpeg', 'image/png', 'image/webp'];
+  private readonly tailleMaxLogo = 2 * 1024 * 1024;
+
   // Mêmes types d'organisation que ceux proposés à l'inscription
   readonly typesOrganisation = [
     { label: 'Association', value: 'association' },
@@ -71,10 +75,42 @@ export class InformationsGie {
 
     this.gieService.modifierInfos({ nom, region, typeGie, telephone }).subscribe({
       next: () => {
-        this.succes.set(true);
         this.form.markAsPristine();
-        setTimeout(() => this.succes.set(false), 3000);
+        this.afficherSucces();
       }
     });
+  }
+
+  choisirLogo(evenement: Event): void {
+    const champ = evenement.target as HTMLInputElement;
+    const fichier = champ.files?.[0];
+    champ.value = ''; // permet de choisir à nouveau le même fichier
+    if (!fichier) return;
+
+    if (!this.typesLogo.includes(fichier.type)) {
+      this.gieService.errorMessage.set('Le logo doit être une image JPEG, PNG ou WebP.');
+      return;
+    }
+    if (fichier.size > this.tailleMaxLogo) {
+      this.gieService.errorMessage.set('Le logo ne doit pas dépasser 2 Mo.');
+      return;
+    }
+
+    this.gieService.modifierLogo(fichier).subscribe({
+      next: () => this.afficherSucces(),
+      error: () => {} // message affiché par le service
+    });
+  }
+
+  retirerLogo(): void {
+    this.gieService.retirerLogo().subscribe({
+      next: () => this.afficherSucces(),
+      error: () => {}
+    });
+  }
+
+  private afficherSucces(): void {
+    this.succes.set(true);
+    setTimeout(() => this.succes.set(false), 3000);
   }
 }
