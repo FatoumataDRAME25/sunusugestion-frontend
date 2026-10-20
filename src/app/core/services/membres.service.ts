@@ -4,7 +4,11 @@ import { catchError, Observable, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   AjouterMembreRequest,
+  FonctionBureau,
   Membre,
+  ReponseActionMembre,
+  ReponseCotisationsMembre,
+  RoleMembre,
   MembreExcel,
   MembreImporte,
   ReponseAnalyseExcel,
@@ -22,14 +26,11 @@ export class MembresService {
   private ocrService = inject(OcrService);
   private readonly BASE_URL = environment.API_URL;
 
-  // Résultat brut OCR (utilisé pour affichage du texte brut si besoin)
-  ocrResultBrut = signal<ProcessDocumentResponse | null>(null);
-
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
 
 
-  // Signals à ajouter dans la classe
+  // Liste des membres et filtres
 membres = signal<Membre[]>([]);
 statsMembres = signal<{ total: number; actifs: number; inactifs: number; enAttente: number } | null>(null);
 termeRecherche = signal('');
@@ -54,13 +55,12 @@ filtreStatut = signal<'actif' | 'inactif' | 'en_attente' | null>(null);
     this.errorMessage.set(null);
 
     return this.http.post<any>(`${this.BASE_URL}membres/membres/ajouter/`, donnees).pipe(
-      tap((reponse) => {
+      tap(() => {
         // On enregistre simplement les infos pour le modal de succès
         this.dernierMembreAjoute.set({ prenom: donnees.prenom, nom: donnees.nom });
         this.isLoading.set(false);
-        // 🚀 La simulation sous forme d'alerte a été retirée d'ici.
-        // C'est maintenant le composant Angular qui interceptera la "reponse"
-        // contenant le vrai token_invitation.
+        // Le composant utilise le jeton d'invitation de la réponse pour
+        // préparer le message d'invitation envoyé au membre.
       }),
       catchError((err) => {
         this.isLoading.set(false);
@@ -122,26 +122,18 @@ filtreStatut = signal<'actif' | 'inactif' | 'en_attente' | null>(null);
         role: donnees.role
       }));
 
-  console.log('Body envoyé:', { membresValides });
-
   return this.http.post<ReponseImport>(
     `${this.BASE_URL}membres/membres/importer/`,
     { membres:membresValides }
   ).pipe(
     tap((reponse) => {
-      console.log('Réponse import complète:', reponse);
-      const nb =
-        reponse.membresImportes?.length ??
-        (reponse as any).membres_importes?.length ??
-        (reponse as any).count ??
-        membresValides.length;
+      const nb = reponse.membresImportes?.length ?? membresValides.length;
       this.nombreMembresImportes.set(nb);
       this.membresImportesAvecToken.set(reponse.membresImportes ?? []);
       this.isLoading.set(false);
     }),
     catchError((err) => {
-      console.log('Erreur import complète:', err);
-      console.log('Erreur import body:', err.error);
+      console.error("Erreur lors de l'import des membres", err);
       this.isLoading.set(false);
       this.errorMessage.set(
         err?.error?.erreur ??
@@ -176,6 +168,133 @@ membresFiltres = computed(() => {
   });
 });
 
+// ─── Fiche membre et actions du président ──────────────────────────────────
+
+/** Détail d'un membre du GIE. GET /api/membres/membres/<id>/ */
+getMembre(id: number): Observable<Membre> {
+  return this.http.get<Membre>(`${this.BASE_URL}membres/membres/${id}/`);
+}
+
+/** Cotisations d'un membre du GIE. GET /api/membres/membres/<id>/cotisations/ */
+getCotisationsMembre(id: number): Observable<ReponseCotisationsMembre> {
+  return this.http.get<ReponseCotisationsMembre>(
+    `${this.BASE_URL}membres/membres/${id}/cotisations/`
+  );
+}
+
+/** Suspend (désactive) ou réactive le compte d'un membre. Président uniquement. */
+changerStatutCompte(membre: Membre): Observable<ReponseActionMembre> {
+  const action = membre.statut === 'actif' ? 'suspendre' : 'reactiver';
+  return this.http.patch<ReponseActionMembre>(
+    `${this.BASE_URL}membres/membres/${membre.id}/${action}/`, {}
+  ).pipe(tap((reponse) => this.mettreAJourMembre(reponse.membre)));
+}
+
+/**
+ * Change le rôle d'un membre. Pour transmettre la présidence, indiquer
+ * le nouveau rôle du président actuel (roleAncienPresident).
+ */
+modifierRole(id: number, role: RoleMembre, roleAncienPresident?: RoleMembre): Observable<ReponseActionMembre> {
+  const corps: Record<string, string> = { role };
+  if (roleAncienPresident) {
+    corps['roleAncienPresident'] = roleAncienPresident;
+  }
+  return this.http.patch<ReponseActionMembre>(
+    `${this.BASE_URL}membres/membres/${id}/modifier-role/`, corps
+  ).pipe(tap((reponse) => {
+    this.mettreAJourMembre(reponse.membre);
+    if (reponse.ancienPresident) {
+      this.mettreAJourMembre(reponse.ancienPresident);
+    }
+  }));
+}
+
+/** Attribue ou retire (valeur vide) une fonction d'adjoint. Président uniquement. */
+modifierFonction(id: number, fonction: FonctionBureau | ''): Observable<ReponseActionMembre> {
+  return this.http.patch<ReponseActionMembre>(
+    `${this.BASE_URL}membres/membres/${id}/modifier-fonction/`,
+    { fonctionBureau: fonction }
+  ).pipe(tap((reponse) => this.mettreAJourMembre(reponse.membre)));
+}
+
+// Adresse publique des liens d'invitation (environment.URL_PUBLIQUE)
+private readonly URL_ACTIVATION = environment.URL_PUBLIQUE;
+
+/** Renvoyer l'invitation : réservé au président et au secrétaire. */
+peutRenvoyerInvitation(membre: Membre, utilisateur: { role: string } | null): boolean {
+  return membre.statut === 'en_attente'
+    && (utilisateur?.role === 'president' || utilisateur?.role === 'secretaire');
+}
+
+/**
+ * Génère un nouveau lien d'invitation (valable 72 h, l'ancien ne fonctionne
+ * plus) et ouvre WhatsApp avec le message, comme lors de l'ajout d'un membre.
+ * POST /api/membres/membres/<id>/renvoyer-invitation/
+ */
+renvoyerInvitation(membre: Membre): Observable<ReponseActionMembre> {
+  return this.http.post<ReponseActionMembre>(
+    `${this.BASE_URL}membres/membres/${membre.id}/renvoyer-invitation/`, {}
+  ).pipe(tap((reponse) => {
+    this.mettreAJourMembre(reponse.membre);
+    if (reponse.tokenInvitation) {
+      this.ouvrirWhatsAppInvitation(reponse.membre, reponse.tokenInvitation);
+    }
+  }));
+}
+
+private ouvrirWhatsAppInvitation(membre: Membre, token: string): void {
+  let numero = membre.telephone.replace(/\s+/g, '');
+  if (!numero.startsWith('221')) {
+    numero = '221' + numero;
+  }
+
+  const lien = `${this.URL_ACTIVATION}/activation?token=${token}`;
+  const message =
+    `Bonjour ${membre.prenom},\n\n` +
+    `Voici votre nouveau lien pour activer votre compte SunuGestion ` +
+    `et choisir votre code PIN (valable 72 heures) : ${lien}`;
+
+  window.open(`https://wa.me/${numero}?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
+}
+
+/** Le bouton Activer / Désactiver n'est affiché qu'au président. */
+voitBoutonStatut(utilisateur: { role: string } | null): boolean {
+  return utilisateur?.role === 'president';
+}
+
+/**
+ * Raison pour laquelle le président ne peut pas activer / désactiver ce
+ * compte (mêmes règles que le backend), ou null si l'action est possible.
+ */
+raisonStatutImpossible(membre: Membre, utilisateur: { id: number } | null): string | null {
+  if (membre.id === utilisateur?.id) {
+    return 'Vous ne pouvez pas désactiver votre propre compte.';
+  }
+  if (membre.role === 'tresorier') {
+    return 'Le trésorier ne peut pas être désactivé. Changez d\'abord son rôle.';
+  }
+  if (membre.statut === 'en_attente') {
+    return 'Ce compte n\'a jamais été activé par le membre.';
+  }
+  return null;
+}
+
+peutChangerStatut(membre: Membre, utilisateur: { id: number; role: string } | null): boolean {
+  return this.voitBoutonStatut(utilisateur)
+    && this.raisonStatutImpossible(membre, utilisateur) === null;
+}
+
+/** Message d'erreur lisible renvoyé par l'API des membres. */
+messageErreur(err: any, defaut: string): string {
+  return err?.error?.erreur ?? err?.error?.detail ?? defaut;
+}
+
+private mettreAJourMembre(membre: Membre): void {
+  this.membres.update((liste) =>
+    liste.map((m) => (m.id === membre.id ? { ...m, ...membre } : m))
+  );
+}
+
 // Méthode pour charger la liste
 chargerMembres(): Observable<ReponseMembres> {
   this.isLoading.set(true);
@@ -183,7 +302,6 @@ chargerMembres(): Observable<ReponseMembres> {
 
   return this.http.get<ReponseMembres>(`${this.BASE_URL}membres/membres/`).pipe(
     tap((reponse) => {
-      console.log('Stats reçues:', reponse);
       this.membres.set(reponse.membres);
       this.statsMembres.set({
         total: reponse.total,
@@ -218,9 +336,6 @@ analyserImage(fichier: File): Observable<ProcessDocumentResponse> {
 
   return this.ocrService.processDocument(fichier).pipe(
     tap((reponse: ProcessDocumentResponse) => {
-      // Stocker le résultat brut OCR
-      this.ocrResultBrut.set(reponse);
-
       // Mapper PersonExtraite[] → MembreExcel[] avec statut valide/erreur
       const membres: MembreExcel[] = reponse.persons.map((p: PersonExtraite) => {
         const aErreurs = p['erreurs'] && p['erreurs'].length > 0;

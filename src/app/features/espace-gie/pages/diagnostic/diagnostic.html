@@ -1,0 +1,382 @@
+<div class="min-h-screen bg-[#F7F8FA] p-4 md:p-8">
+
+  <!-- En-tête -->
+  <div class="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-[#1A1D23] md:text-3xl">
+        Diagnostic financier
+      </h1>
+
+      <p class="mt-2 text-sm text-[#4A5568] md:text-base">
+        Comprends la santé financière de ton organisation et découvre les actions à privilégier.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      (click)="chargerDiagnostic()"
+      [disabled]="chargement()"
+      class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#1E3A5F] px-5 py-3 font-medium text-white transition hover:bg-[#2B507D] disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      <i class="pi pi-refresh" [class.animate-spin]="chargement()"></i>
+      {{ chargement() ? 'Actualisation...' : 'Actualiser' }}
+    </button>
+  </div>
+
+  <!-- Chargement -->
+  @if (chargement() && !diagnostic()) {
+    <div class="rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm">
+      <i class="pi pi-spin pi-spinner mb-3 text-3xl text-[#1E3A5F]"></i>
+
+      <p class="font-medium text-[#1A1D23]">
+        Analyse des données financières...
+      </p>
+
+      <p class="mt-2 text-sm text-[#4A5568]">
+        Nous récupérons les indicateurs de ton organisation.
+      </p>
+    </div>
+  }
+
+  <!-- Erreur -->
+  @if (erreur()) {
+    <div class="mb-6 rounded-xl border border-red-200 bg-red-50 p-4">
+      <div class="flex items-start gap-3">
+        <i class="pi pi-exclamation-circle mt-1 text-red-600"></i>
+
+        <div class="flex-1">
+          <p class="font-semibold text-red-800">
+            Impossible de charger le diagnostic
+          </p>
+
+          <p class="mt-1 text-sm text-red-700">
+            {{ erreur() }}
+          </p>
+
+          <button
+            type="button"
+            (click)="chargerDiagnostic()"
+            class="mt-3 font-semibold text-red-800 underline"
+          >
+            Réessayer
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Contenu du diagnostic -->
+  @if (diagnostic(); as resultat) {
+
+    <!-- Date d'analyse -->
+    <div class="mb-6 flex items-center gap-2 text-sm text-[#4A5568]">
+      <i class="pi pi-calendar"></i>
+
+      <span>
+        Analyse du
+        {{ resultat.indicateurs.dateAnalyse | date:'dd/MM/yyyy' }}
+      </span>
+    </div>
+
+    <!-- Indicateurs des cotisations -->
+    <section class="mb-8">
+      <h2 class="mb-4 text-xl font-bold text-[#1A1D23]">
+        Cotisations
+      </h2>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+
+        <article class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+          <div class="mb-4 flex items-center justify-between">
+            <span class="text-sm text-[#4A5568]">Cotisations payées</span>
+            <i class="pi pi-check-circle text-xl text-[#2E7D5B]"></i>
+          </div>
+
+          <p class="text-3xl font-bold text-[#1A1D23]">
+            {{ resultat.indicateurs.cotisations.nombrePayees }}
+          </p>
+
+          <p class="mt-2 text-xs text-[#4A5568]">
+            Nombre de cotisations réglées
+          </p>
+        </article>
+
+        <article class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+          <div class="mb-4 flex items-center justify-between">
+            <span class="text-sm text-[#4A5568]">En cours</span>
+            <i class="pi pi-clock text-xl text-[#3B6EA5]"></i>
+          </div>
+
+          <p class="text-3xl font-bold text-[#1A1D23]">
+            {{ resultat.indicateurs.cotisations.nombreEnCours }}
+          </p>
+
+          <p class="mt-2 text-xs text-[#4A5568]">
+            Cotisations en attente de règlement
+          </p>
+        </article>
+
+        <article class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+          <div class="mb-4 flex items-center justify-between">
+            <span class="text-sm text-[#4A5568]">En retard</span>
+            <i class="pi pi-exclamation-triangle text-xl text-[#C1654A]"></i>
+          </div>
+
+          <p class="text-3xl font-bold text-[#C1654A]">
+            {{ resultat.indicateurs.cotisations.nombreEnRetard }}
+          </p>
+
+          <p class="mt-2 text-xs text-[#4A5568]">
+            Cotisations en retard
+          </p>
+        </article>
+
+        <article class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+          <div class="mb-4 flex items-center justify-between">
+            <span class="text-sm text-[#4A5568]">Montant encaissé</span>
+            <i class="pi pi-wallet text-xl text-[#2E7D5B]"></i>
+          </div>
+
+          <p class="text-2xl font-bold text-[#2E7D5B]">
+            {{ resultat.indicateurs.cotisations.montantPaye | number:'1.0-0' }}
+            <span class="text-sm font-medium">FCFA</span>
+          </p>
+
+          <p class="mt-2 text-xs text-[#4A5568]">
+            Total des cotisations payées
+          </p>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- Indicateurs des prêts -->
+    <section class="mb-8">
+      <h2 class="mb-4 text-xl font-bold text-[#1A1D23]">
+        Prêts
+      </h2>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+
+        <article class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+          <p class="text-sm text-[#4A5568]">Prêts en cours</p>
+
+          <p class="mt-3 text-3xl font-bold text-[#3B6EA5]">
+            {{ resultat.indicateurs.prets.nombreEnCours }}
+          </p>
+
+          <p class="mt-2 text-sm text-[#4A5568]">
+            {{ resultat.indicateurs.prets.montantEnCours | number:'1.0-0' }} FCFA
+          </p>
+        </article>
+
+        <article class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+          <p class="text-sm text-[#4A5568]">Prêts en retard</p>
+
+          <p class="mt-3 text-3xl font-bold text-[#C1654A]">
+            {{ resultat.indicateurs.prets.nombreEnRetard }}
+          </p>
+
+          <p class="mt-2 text-sm text-[#4A5568]">
+            {{ resultat.indicateurs.prets.montantEnRetard | number:'1.0-0' }} FCFA
+          </p>
+        </article>
+
+        <article class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+          <p class="text-sm text-[#4A5568]">Prêts remboursés</p>
+
+          <p class="mt-3 text-3xl font-bold text-[#2E7D5B]">
+            {{ resultat.indicateurs.prets.nombreRembourses }}
+          </p>
+
+          <p class="mt-2 text-sm text-[#4A5568]">
+            {{ resultat.indicateurs.prets.montantRembourse | number:'1.0-0' }} FCFA
+          </p>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- Trésorerie -->
+    <section class="mb-8">
+      <h2 class="mb-4 text-xl font-bold text-[#1A1D23]">
+        Trésorerie
+      </h2>
+
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+
+        <article class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+          <p class="text-sm text-[#4A5568]">Total des entrées</p>
+
+          <p class="mt-3 text-2xl font-bold text-[#2E7D5B]">
+            {{ resultat.indicateurs.tresorerie.totalEntrees | number:'1.0-0' }}
+            <span class="text-sm font-medium">FCFA</span>
+          </p>
+        </article>
+
+        <article class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+          <p class="text-sm text-[#4A5568]">Total des sorties</p>
+
+          <p class="mt-3 text-2xl font-bold text-[#C1654A]">
+            {{ resultat.indicateurs.tresorerie.totalSorties | number:'1.0-0' }}
+            <span class="text-sm font-medium">FCFA</span>
+          </p>
+        </article>
+
+        <article class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+          <p class="text-sm text-[#4A5568]">Solde disponible</p>
+
+          <p
+            class="mt-3 text-2xl font-bold"
+            [class.text-[#2E7D5B]]="resultat.indicateurs.tresorerie.solde >= 0"
+            [class.text-[#C1654A]]="resultat.indicateurs.tresorerie.solde < 0"
+          >
+            {{ resultat.indicateurs.tresorerie.solde | number:'1.0-0' }}
+            <span class="text-sm font-medium">FCFA</span>
+          </p>
+
+          <p class="mt-2 text-xs text-[#4A5568]">
+            Différence entre les entrées et les sorties
+          </p>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- Analyse IA -->
+    <section class="mb-8">
+      <div class="mb-4">
+        <h2 class="text-xl font-bold text-[#1A1D23]">
+          Analyse intelligente
+        </h2>
+
+        <p class="mt-1 text-sm text-[#4A5568]">
+          Une analyse de la situation financière et des actions à envisager.
+        </p>
+      </div>
+
+      @if (resultat.intelligenceArtificielle.disponible &&
+           resultat.intelligenceArtificielle.analyse; as analyse) {
+
+        <!-- Résumé IA -->
+        <article class="mb-5 rounded-2xl border border-blue-100 bg-white p-5 shadow-sm md:p-6">
+          <div class="mb-3 flex items-center gap-3">
+            <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50">
+              <i class="pi pi-sparkles text-xl text-[#3B6EA5]"></i>
+            </div>
+
+            <h3 class="font-bold text-[#1A1D23]">
+              Synthèse financière
+            </h3>
+          </div>
+
+          <p class="leading-7 text-[#4A5568]">
+            {{ analyse.resume }}
+          </p>
+        </article>
+
+        <!-- Risques -->
+        <article class="mb-5 rounded-2xl border border-orange-100 bg-white p-5 shadow-sm md:p-6">
+          <div class="mb-4 flex items-center gap-3">
+            <i class="pi pi-exclamation-triangle text-xl text-[#C1654A]"></i>
+
+            <h3 class="font-bold text-[#1A1D23]">
+              Points de vigilance
+            </h3>
+          </div>
+
+          @if (analyse.risques.length > 0) {
+            <ul class="space-y-3">
+              @for (risque of (typeof analyse.risques === 'string'
+                ? [analyse.risques]
+                : analyse.risques); track $index) {
+                <li class="flex items-start gap-3 text-sm leading-6 text-[#4A5568]">
+                  <i class="pi pi-angle-right mt-1 text-[#C1654A]"></i>
+                  <span>{{ risque }}</span>
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="text-sm text-[#4A5568]">
+              Aucun risque particulier n'a été signalé par l'analyse.
+            </p>
+          }
+        </article>
+
+        <!-- Recommandations -->
+        <article class="rounded-2xl border border-green-100 bg-white p-5 shadow-sm md:p-6">
+          <div class="mb-4 flex items-center gap-3">
+            <i class="pi pi-lightbulb text-xl text-[#2E7D5B]"></i>
+
+            <h3 class="font-bold text-[#1A1D23]">
+              Recommandations
+            </h3>
+          </div>
+
+          @if (analyse.recommandations.length > 0) {
+            <div class="space-y-4">
+              @for (recommandation of analyse.recommandations; track $index) {
+                <div class="rounded-xl bg-[#F7F8FA] p-4">
+
+                  @if (typeof recommandation === 'string') {
+                    <p class="text-sm leading-6 text-[#4A5568]">
+                      {{ recommandation }}
+                    </p>
+                  } @else {
+                    <h4 class="font-semibold text-[#1A1D23]">
+                      {{ recommandation.probleme }}
+                    </h4>
+
+                    <p class="mt-2 text-sm leading-6 text-[#4A5568]">
+                      <span class="font-semibold text-[#2E7D5B]">Action :</span>
+                      {{ recommandation.action }}
+                    </p>
+
+                    <p class="mt-2 text-sm leading-6 text-[#4A5568]">
+                      <span class="font-semibold">Objectif :</span>
+                      {{ recommandation.objectif }}
+                    </p>
+                  }
+
+                </div>
+              }
+            </div>
+          } @else {
+            <p class="text-sm text-[#4A5568]">
+              Aucune recommandation disponible pour le moment.
+            </p>
+          }
+        </article>
+
+      } @else {
+        <!-- IA indisponible -->
+        <article class="rounded-2xl border border-amber-200 bg-amber-50 p-5">
+          <div class="flex items-start gap-3">
+            <i class="pi pi-info-circle mt-1 text-xl text-amber-700"></i>
+
+            <div>
+              <h3 class="font-semibold text-amber-900">
+                Analyse IA temporairement indisponible
+              </h3>
+
+              <p class="mt-2 text-sm leading-6 text-amber-800">
+                {{ resultat.intelligenceArtificielle.message ||
+                   'Les indicateurs financiers sont disponibles, mais l’analyse intelligente ne peut pas être affichée pour le moment.' }}
+              </p>
+            </div>
+          </div>
+        </article>
+      }
+
+    </section>
+
+    <!-- Actualisation en cours -->
+    @if (chargement()) {
+      <p class="mb-4 text-center text-sm text-[#4A5568]">
+        Actualisation des données en cours...
+      </p>
+    }
+
+  }
+
+</div>

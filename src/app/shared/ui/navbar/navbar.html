@@ -1,99 +1,181 @@
-<!-- Header global -->
-<header class="fixed top-0 left-0 right-0 z-50 bg-bleu-nuit flex items-center justify-between px-lg py-md shadow-sm">
-
-  <!-- Logo -->
-  <a routerLink="/mon-espace">
-    <img src="images/logo-sunugestion-fond-bleu.png" alt="SunuGestion" class="h-8" />
-  </a>
-
-  <!-- Bouton menu ⋮ -->
-  <button (click)="toggleMenu()" class="text-blanc-lait p-xs rounded-lg">
-    <i class="pi pi-ellipsis-v text-xl"></i>
-  </button>
+<!-- TOPBAR DESKTOP -->
+<header class="h-20 px-10 bg-white/70 border-b border-white/30 backdrop-blur-[10px] hidden lg:flex items-center justify-between fixed top-0 left-[264px] right-0 z-40">
+  <h1 class="text-[#1E3A5F] text-2xl font-bold leading-8">{{ titre }}</h1>
+  <div class="flex items-center gap-8">
+    <!-- Actions -->
+    <div class="flex items-center gap-4">
+      <!-- Notif -->
+      <button
+        type="button"
+        (click)="ouvrirNotifications()"
+        aria-label="Notifications"
+        class="relative w-10 h-10 flex items-center justify-center rounded-full cursor-pointer transition hover:bg-[#1E3A5F]/5"
+      >
+        <i class="pi pi-bell text-[#1E3A5F]/60 text-lg"></i>
+        @if (notificationService.nonLues() > 0) {
+          <span class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-[#C1654A] rounded-full border-2 border-white text-white text-[10px] font-bold leading-none flex items-center justify-center">
+            {{ notificationService.nonLues() > 99 ? '99+' : notificationService.nonLues() }}
+          </span>
+        }
+      </button>
+      <div class="w-px h-8 bg-[#1E3A5F]/10"></div>
+      <!-- Profil -->
+      <a routerLink="/mon-espace/profil-membre" title="Mon profil" class="flex items-center gap-3 cursor-pointer">
+        <div class="flex flex-col items-end">
+          <span class="text-[#1E3A5F] text-sm font-bold leading-5">{{ nomComplet() }}</span>
+          <span class="text-[#2E7D5B] text-[10px] font-bold uppercase tracking-[0.5px]">{{ utilisateur()?.role }}</span>
+        </div>
+        <div class="w-10 h-10 rounded-full bg-[#2E7D5B]/20 flex items-center justify-center border-2 border-white shadow-sm">
+          <span class="text-[#2E7D5B] text-sm font-bold">{{ initiales() }}</span>
+        </div>
+      </a>
+    </div>
+  </div>
 </header>
 
-<!-- Overlay cliquable pour fermer -->
-@if (menuOuvert()) {
-  <div class="fixed inset-0 z-40" (click)="fermerMenu()"></div>
-
-  <!-- Dropdown menu -->
-  <div class="fixed top-14 right-lg z-50 bg-white rounded-xl shadow-xl w-56 overflow-hidden border border-anthracite/10">
-
-    <div class="px-md py-sm border-b border-anthracite/10">
-      <p class="text-xs text-anthracite/40 uppercase font-semibold">Modules</p>
-    </div>
-
-    <!-- Cotisations -->
-    <button (click)="ouvrirModule('cotisations', '/mon-espace/cotisations')"
-      class="flex items-center gap-md px-md py-md text-sm text-anthracite hover:bg-gris-fond w-full text-left">
-      <div class="w-8 h-8 rounded-lg bg-vert-clair flex items-center justify-center shrink-0">
-        <i class="pi pi-wallet text-vert-foret text-sm"></i>
-      </div>
-      <span class="flex-1">Cotisations</span>
-      @if (notifService.badges().cotisations.count > 0) {
-        <span class="min-w-5 h-5 px-xs rounded-full bg-rouge-alerte text-blanc-lait text-xs font-bold flex items-center justify-center">
-          {{ notifService.badges().cotisations.count }}
-        </span>
-      }
-    </button>
-
-    <!-- Prêts -->
-    <button (click)="ouvrirModule('prets', '/mon-espace/prets')"
-      class="flex items-center gap-md px-md py-md text-sm text-anthracite hover:bg-gris-fond w-full text-left">
-      <div class="w-8 h-8 rounded-lg bg-or-clair flex items-center justify-center shrink-0">
-        <i class="pi pi-credit-card text-or-senegal text-sm"></i>
-      </div>
-      <span class="flex-1">Prêts</span>
-      @if (notifService.badges().prets.count > 0) {
-        <span class="min-w-5 h-5 px-xs rounded-full bg-rouge-alerte text-blanc-lait text-xs font-bold flex items-center justify-center">
-          {{ notifService.badges().prets.count }}
-        </span>
-      }
-    </button>
-
-    <!-- Règles de prêt (pas de badge) -->
-    @if (estPresident()) {
-      <a routerLink="/mon-espace/prets/regles" (click)="fermerMenu()"
-        class="flex items-center gap-md px-md py-md text-sm text-anthracite hover:bg-gris-fond">
-        <div class="w-8 h-8 rounded-lg bg-or-clair/50 flex items-center justify-center shrink-0">
-          <i class="pi pi-cog text-or-senegal text-sm"></i>
-        </div>
-        <span class="flex-1">Règles de prêt</span>
-      </a>
+<!-- BANDEAU D'ABONNEMENT (fin d'essai proche, délai de grâce, lecture seule) -->
+@if (bandeauAbonnement(); as bandeau) {
+  <div
+    class="lg:fixed lg:top-20 lg:left-[264px] lg:right-0 z-30 px-4 py-2 lg:px-10 text-sm flex items-center gap-2"
+    [class]="bandeau.grave ? 'bg-[#C1654A] text-white' : 'bg-[#E8A020]/15 text-[#7A4E0A]'"
+    role="status"
+  >
+    <i class="pi" [class]="bandeau.grave ? 'pi-exclamation-triangle' : 'pi-info-circle'"></i>
+    <span class="flex-1">{{ bandeau.texte }}</span>
+    @if (utilisateur()?.role === 'president' || utilisateur()?.role === 'tresorier') {
+      <a routerLink="/mon-espace/informations-gie" class="font-semibold underline whitespace-nowrap">Renouveler</a>
     }
-
-    <!-- Activités -->
-    <button (click)="ouvrirModule('activites', '/mon-espace/activites')"
-      class="flex items-center gap-md px-md py-md text-sm text-anthracite hover:bg-gris-fond w-full text-left">
-      <div class="w-8 h-8 rounded-lg bg-bleu-clair flex items-center justify-center shrink-0">
-        <i class="pi pi-calendar text-bleu-nuit text-sm"></i>
-      </div>
-      <span class="flex-1">Activités</span>
-      @if (notifService.badges().activites.count > 0) {
-        <span class="min-w-5 h-5 px-xs rounded-full bg-rouge-alerte text-blanc-lait text-xs font-bold flex items-center justify-center">
-          {{ notifService.badges().activites.count }}
-        </span>
-      }
-    </button>
-
-    <!-- Rapports (pas de badge) -->
-    <a routerLink="/mon-espace/rapports" (click)="fermerMenu()"
-      class="flex items-center gap-md px-md py-md text-sm text-anthracite hover:bg-gris-fond border-b border-anthracite/10">
-      <div class="w-8 h-8 rounded-lg bg-rouge-clair flex items-center justify-center shrink-0">
-        <i class="pi pi-file-pdf text-rouge-alerte text-sm"></i>
-      </div>
-      <span class="flex-1">Rapports</span>
-    </a>
-
-    <!-- Déconnexion -->
-    <button (click)="deconnecter()"
-      class="flex items-center gap-md px-md py-md text-sm text-rouge-alerte w-full hover:bg-rouge-clair/30">
-      <i class="pi pi-sign-out text-sm"></i>
-      Se déconnecter
-    </button>
-
   </div>
 }
 
-<!-- Spacer pour compenser le header fixe -->
-<div class="h-14"></div>
+<!-- TOPBAR MOBILE -->
+<header class="flex lg:hidden h-16 px-4 bg-white items-center justify-between sticky top-0 z-40 shadow-sm">
+  <a routerLink="/mon-espace/dashboard-president" aria-label="Tableau de bord">
+    <img src="images/logo-sunu-gestion.png" alt="SunuGestion" class="h-7 w-auto" />
+  </a>
+  <div class="flex items-center gap-3">
+    <button
+      type="button"
+      (click)="ouvrirNotifications()"
+      aria-label="Notifications"
+      class="relative w-9 h-9 flex items-center justify-center"
+    >
+      <i class="pi pi-bell text-[#1E3A5F] text-lg"></i>
+      @if (notificationService.nonLues() > 0) {
+        <span class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-[#C1654A] rounded-full border-2 border-white text-white text-[10px] font-bold leading-none flex items-center justify-center">
+          {{ notificationService.nonLues() > 99 ? '99+' : notificationService.nonLues() }}
+        </span>
+      }
+    </button>
+    <a routerLink="/mon-espace/profil-membre" aria-label="Mon profil"
+      class="w-9 h-9 rounded-full bg-[#2E7D5B]/20 flex items-center justify-center border-2 border-white shadow-sm">
+      <span class="text-[#2E7D5B] text-xs font-bold">{{ initiales() }}</span>
+    </a>
+  </div>
+</header>
+
+<!-- ════════════════════════════════════════
+     MODAL : liste des notifications
+     (placé hors des barres : leur effet de flou
+      empêcherait un affichage plein écran)
+════════════════════════════════════════ -->
+@if (notificationsOuvertes()) {
+  <div
+    class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4"
+    (click)="fermerNotifications()"
+  >
+    <div
+      class="w-full max-w-[520px] max-h-[85vh] flex flex-col rounded-2xl bg-white shadow-2xl"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="notifications-titre"
+      (click)="$event.stopPropagation()"
+    >
+
+      <!-- En-tête -->
+      <div class="flex items-center justify-between gap-4 px-5 py-4 border-b border-[#1E3A5F]/10">
+        <div>
+          <h2 id="notifications-titre" class="text-lg font-bold text-[#1E3A5F]">Notifications</h2>
+          <p class="text-xs text-[#1A1D23]/50">
+            @if (notificationService.nonLues() > 0) {
+              {{ notificationService.nonLues() }} non lue(s)
+            } @else {
+              Tout est lu
+            }
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          @if (notificationService.nonLues() > 0) {
+            <button
+              type="button"
+              (click)="notificationService.toutMarquerCommeLu()"
+              class="text-xs font-semibold text-[#2E7D5B] px-3 py-2 rounded-lg hover:bg-[#2E7D5B]/10"
+            >
+              Tout marquer comme lu
+            </button>
+          }
+          <button
+            type="button"
+            (click)="fermerNotifications()"
+            aria-label="Fermer"
+            class="flex h-9 w-9 items-center justify-center rounded-full text-[#1A1D23]/50 hover:bg-[#1E3A5F]/5"
+          >
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Contenu -->
+      <div class="flex-1 overflow-y-auto">
+
+        @if (notificationService.erreur()) {
+          <div class="m-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700" role="alert">
+            {{ notificationService.erreur() }}
+          </div>
+        }
+
+        @if (notificationService.chargement() && notificationService.notifications().length === 0) {
+          <div class="py-12 text-center text-[#1A1D23]/50">
+            <i class="pi pi-spin pi-spinner text-2xl"></i>
+          </div>
+        }
+
+        @if (!notificationService.chargement() && !notificationService.erreur() && notificationService.notifications().length === 0) {
+          <div class="py-12 px-6 text-center">
+            <i class="pi pi-bell-slash text-3xl text-[#1E3A5F]/20"></i>
+            <p class="mt-3 text-sm font-semibold text-[#1A1D23]/50">Aucune notification pour le moment.</p>
+          </div>
+        }
+
+        @for (notification of notificationService.notifications(); track notification.id) {
+          <button
+            type="button"
+            (click)="ouvrirNotification(notification)"
+            class="w-full flex items-start gap-3 px-5 py-4 text-left border-b border-[#1E3A5F]/5 cursor-pointer transition hover:bg-[#1E3A5F]/5"
+            [class]="notification.lue ? 'bg-white' : 'bg-[#2E7D5B]/5'"
+          >
+            <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#1E3A5F]/10">
+              <i class="pi text-[#1E3A5F]" [class]="iconesModules[notification.module] || 'pi-bell'"></i>
+            </span>
+
+            <span class="flex-1 min-w-0">
+              <span class="flex items-center gap-2">
+                <span
+                  class="text-sm text-[#1E3A5F] truncate"
+                  [class]="notification.lue ? 'font-medium' : 'font-bold'"
+                >{{ notification.titre }}</span>
+                @if (!notification.lue) {
+                  <span class="h-2 w-2 flex-shrink-0 rounded-full bg-[#C1654A]" aria-label="Non lue"></span>
+                }
+              </span>
+              <span class="mt-1 block text-sm text-[#4A5568]">{{ notification.message }}</span>
+              <span class="mt-1 block text-xs text-[#1A1D23]/40">{{ notification.dateCreation | date:'dd/MM/yyyy HH:mm' }}</span>
+            </span>
+          </button>
+        }
+      </div>
+
+    </div>
+  </div>
+}

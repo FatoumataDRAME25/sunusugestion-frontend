@@ -11,6 +11,7 @@ import { BottomNav } from '../../../../shared/ui/bottom-nav/bottom-nav';
 import { Navbar } from '../../../../shared/ui/navbar/navbar';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
+import { GieSidebar } from '../../../../shared/ui/gie-sidebar/gie-sidebar';
 
 @Component({
   selector: 'app-profil-membre',
@@ -23,8 +24,9 @@ import { environment } from '../../../../../environments/environment';
     InputIconModule,
     InitialesPipe,
     BottomNav,
-    Navbar
-  ],
+    Navbar,
+    GieSidebar
+],
   styleUrl: './profil-membre.css',
   templateUrl: './profil-membre.html',
 })
@@ -46,8 +48,8 @@ export class ProfilMembre {
   securityExpanded = signal(false);
 
   // Formulaire infos personnelles
+  // Le téléphone est l'identifiant de connexion : il n'est pas modifiable
   formInfos: FormGroup = this.fb.group({
-    telephone: [this.authService.currentUser()?.telephone ?? '', Validators.required],
     email:     [this.authService.currentUser()?.email ?? '']
   });
 
@@ -58,7 +60,6 @@ export class ProfilMembre {
     confirmationPin: ['', Validators.required]
   });
 
-  get telephone()       { return this.formInfos.get('telephone')!; }
   get pinActuel()       { return this.formPin.get('pinActuel')!; }
   get nouveauPin()      { return this.formPin.get('nouveauPin')!; }
   get confirmationPin() { return this.formPin.get('confirmationPin')!; }
@@ -78,10 +79,9 @@ export class ProfilMembre {
       `${this.BASE_URL}membres/membres/${userId}/`,
       this.formInfos.value
     ).subscribe({
-      next: (reponse: any) => {
+      next: () => {
         // Met à jour le signal currentUser avec les nouvelles infos
         this.authService.updateProfil({
-          telephone: this.formInfos.value.telephone,
           email: this.formInfos.value.email
         });
         this.isSaving.set(false);

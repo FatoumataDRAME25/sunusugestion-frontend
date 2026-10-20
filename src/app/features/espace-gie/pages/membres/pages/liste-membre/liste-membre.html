@@ -1,157 +1,402 @@
-<app-navbar />
+<div class="relative flex bg-[#F7F8FA] lg:bg-fond-desktop min-h-screen">
+  <app-gie-sidebar></app-gie-sidebar>
+  <div class="flex-1 ml-0 lg:ml-[264px] min-w-0 flex flex-col">
+    <app-navbar titre="Membres"></app-navbar>
 
-<div class="min-h-screen bg-gris-fond pb-20">
+    <main class="pb-24 lg:pb-8 lg:pt-20">
 
-  <!-- En-tête -->
-  <div class="p-lg">
-    <h1 class="font-bold text-2xl text-anthracite mb-xs">Membres</h1>
-    <p class="text-sm text-anthracite/60 mb-lg">Gérez les membres de votre GIE.</p>
+      <!-- ════════════════════════════════════════
+           CONTENU MOBILE (caché sur desktop)
+      ════════════════════════════════════════ -->
+      <div class="lg:hidden">
+        <div class="min-h-screen bg-gris-fond pb-20">
 
-    <!-- Boutons d'action — visibles uniquement pour président et secrétaire -->
-    @if (['president', 'secretaire'].includes(authService.currentUser()?.role ?? '')) {
-      <div class="flex flex-col gap-sm mb-lg">
-        <a routerLink="/mon-espace/membres/ajouter"
-          class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm">
-          <i class="pi pi-plus"></i>
-          Ajouter un membre
-        </a>
-        <a routerLink="/mon-espace/membres/importer"
-          class="w-full border border-bleu-nuit/30 text-bleu-nuit font-semibold rounded-xl py-md flex items-center justify-center gap-sm bg-white">
-          <i class="pi pi-file-excel"></i>
-          Importer fichier excel ou image
-        </a>
-      </div>
-    }
-  </div>
+          <!-- En-tête -->
+          <div class="p-lg">
+            <h1 class="font-bold text-2xl text-anthracite mb-xs">Membres</h1>
+            <p class="text-sm text-anthracite/60 mb-lg">Gérez les membres de votre organisation</p>
 
-  <!-- Statistiques -->
-  <div class="mx-lg bg-white rounded-xl p-lg shadow-sm flex justify-around mb-lg">
-    <div class="text-center">
-      <p class="text-xs text-anthracite/50 uppercase">Total</p>
-      <p class="text-2xl font-bold text-anthracite">{{ service.statsMembres()?.total ?? '—' }}</p>
-    </div>
-    <div class="w-px bg-anthracite/10"></div>
-    <div class="text-center">
-      <p class="text-xs text-anthracite/40 uppercase">Actifs</p>
-      <p class="text-2xl font-bold text-anthracite">{{ service.statsMembres()?.actifs ?? '—' }}</p>
-    </div>
-    <div class="w-px bg-anthracite/10"></div>
-    <div class="text-center">
-      <p class="text-xs text-anthracite/40 uppercase">Inactifs</p>
-      <p class="text-2xl font-bold text-anthracite">{{ service.statsMembres()?.inactifs ?? '—' }}</p>
-    </div>
-    <div class="w-px bg-anthracite/10"></div>
-    <div class="text-center">
-      <p class="text-xs text-anthracite/40 uppercase">En attente</p>
-      <p class="text-2xl font-bold text-anthracite">{{ service.statsMembres()?.enAttente ?? '—' }}</p>
-    </div>
-  </div>
+            @if (['president', 'secretaire'].includes(authService.currentUser()?.role ?? '')) {
+              <div class="flex flex-col gap-sm mb-lg">
+                <a routerLink="/mon-espace/membres/ajouter"
+                  class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm">
+                  <i class="pi pi-plus"></i>
+                  Ajouter un membre
+                </a>
+                <a routerLink="/mon-espace/membres/importer"
+                  class="w-full border border-bleu-nuit/30 text-bleu-nuit font-semibold rounded-xl py-md flex items-center justify-center gap-sm bg-white">
+                  <i class="pi pi-file-excel"></i>
+                  Importer fichier excel ou image
+                </a>
+              </div>
+            }
+          </div>
 
-  <div class="mx-lg flex flex-col gap-md">
+          <!-- Statistiques -->
+          <div class="mx-lg bg-white rounded-xl p-lg shadow-sm flex justify-around mb-lg">
+            <div class="text-center">
+              <p class="text-xs text-anthracite/50 uppercase">Total</p>
+              <p class="text-2xl font-bold text-anthracite">{{ service.statsMembres()?.total ?? '—' }}</p>
+            </div>
+            <div class="w-px bg-anthracite/10"></div>
+            <div class="text-center">
+              <p class="text-xs text-anthracite/40 uppercase">Actifs</p>
+              <p class="text-2xl font-bold text-anthracite">{{ service.statsMembres()?.actifs ?? '—' }}</p>
+            </div>
+            <div class="w-px bg-anthracite/10"></div>
+            <div class="text-center">
+              <p class="text-xs text-anthracite/40 uppercase">Inactifs</p>
+              <p class="text-2xl font-bold text-anthracite">{{ service.statsMembres()?.inactifs ?? '—' }}</p>
+            </div>
+            <div class="w-px bg-anthracite/10"></div>
+            <div class="text-center">
+              <p class="text-xs text-anthracite/40 uppercase">En attente</p>
+              <p class="text-2xl font-bold text-anthracite">{{ service.statsMembres()?.enAttente ?? '—' }}</p>
+            </div>
+          </div>
 
-    <!-- Barre de recherche -->
-    <div class="flex items-center gap-sm bg-white border border-anthracite/10 rounded-xl px-md py-sm shadow-sm">
-      <i class="pi pi-search text-anthracite/40"></i>
-      <input
-        type="text"
-        [ngModel]="service.termeRecherche()"
-        (ngModelChange)="service.termeRecherche.set($event)"
-        placeholder="Rechercher un membre..."
-        class="flex-1 bg-transparent outline-none text-sm text-anthracite placeholder:text-anthracite/40"
-      />
-    </div>
+          <div class="mx-lg flex flex-col gap-md">
 
-    <!-- Filtre statut -->
-    <div class="flex justify-between items-center">
-      <p class="text-sm font-semibold text-anthracite">Liste des membres</p>
-
-      <div class="relative">
-        <button
-          class="flex items-center gap-sm text-sm text-anthracite/70 bg-white rounded-lg px-md py-sm shadow-sm"
-          onclick="this.nextElementSibling.classList.toggle('hidden')"
-        >
-          <i class="pi pi-sliders-h"></i>
-          Statut : {{ statutActuel }}
-        </button>
-        <div class="hidden absolute right-0 top-full mt-xs bg-white rounded-xl shadow-lg z-10 min-w-32 overflow-hidden">
-          @for (option of optionsStatut; track option.label) {
-            <button
-              (click)="changerStatut(option.value, option.label)"
-              class="w-full text-left px-md py-sm text-sm text-anthracite hover:bg-gris-fond"
-            >
-              {{ option.label }}
-            </button>
-          }
-        </div>
-      </div>
-    </div>
-
-    <!-- Loading -->
-    @if (service.isLoading()) {
-      <div class="flex justify-center py-2xl">
-        <i class="pi pi-spin pi-spinner text-2xl text-bleu-nuit"></i>
-      </div>
-    }
-
-    <!-- Liste -->
-    @if (!service.isLoading()) {
-      <div class="flex flex-col gap-sm">
-
-    @if (service.membresFiltres().length === 0) {
-      <div class="flex flex-col items-center justify-center py-2xl text-center">
-
-        <p class="font-semibold text-anthracite/60">Aucun membre trouvé</p>
-        @if (service.termeRecherche() || service.filtreStatut()) {
-          <p class="text-sm text-anthracite/40 mt-xs">Essayez de modifier vos filtres</p>
-        } @else {
-          <p class="text-sm text-anthracite/40 mt-xs">Commencez par ajouter un membre</p>
-          <a routerLink="/mon-espace/membres/ajouter/"
-            class="mt-lg bg-bleu-nuit text-blanc-lait font-semibold rounded-xl px-xl py-md text-sm flex items-center gap-sm">
-            <i class="pi pi-plus"></i>
-            Ajouter un membre
-          </a>
-        }
-      </div>
-    } @else {
-      @for (membre of service.membresFiltres(); track membre.id) {
-        <div class="bg-white rounded-xl p-md shadow-sm flex items-center gap-md">
-          <!-- Avatar -->
-
-            <div class="w-12 h-12 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-bleu-nuit shrink-0">
-              {{ (membre.prenom + ' ' + membre.nom) | initiales }}
+            <!-- Barre de recherche -->
+            <div class="flex items-center gap-sm bg-white border border-anthracite/10 rounded-xl px-md py-sm shadow-sm">
+              <i class="pi pi-search text-anthracite/40"></i>
+              <input
+                type="text"
+                [ngModel]="service.termeRecherche()"
+                (ngModelChange)="service.termeRecherche.set($event)"
+                placeholder="Rechercher un membre..."
+                class="flex-1 bg-transparent outline-none text-sm text-anthracite placeholder:text-anthracite/40"
+              />
             </div>
 
-          <!-- Infos -->
-          <div class="flex-1 min-w-0">
-            <p class="font-semibold text-anthracite truncate">{{ membre.prenom }} {{ membre.nom }}</p>
-            <p class="text-xs text-anthracite/50">{{ membre.telephone }}</p>
-            <div class="mt-xs">
-              <span [class]="
-                membre.statut === 'actif'     ? 'inline-flex items-center gap-xs text-xs text-vert-foret' :
-                membre.statut === 'inactif'   ? 'inline-flex items-center gap-xs text-xs text-rouge-alerte' :
-                                                'inline-flex items-center gap-xs text-xs text-anthracite/40'">
-                <span [class]="
-                  membre.statut === 'actif'   ? 'w-2 h-2 rounded-full bg-vert-foret inline-block' :
-                  membre.statut === 'inactif' ? 'w-2 h-2 rounded-full bg-rouge-alerte inline-block' :
-                                                'w-2 h-2 rounded-full bg-anthracite/30 inline-block'"></span>
-                {{ membre.statut === 'actif' ? 'Actif' : membre.statut === 'inactif' ? 'Inactif' : 'En attente' }}
-              </span>
+            <!-- Filtre statut -->
+            <div class="flex justify-between items-center">
+              <p class="text-sm font-semibold text-anthracite">Liste des membres</p>
+              <div class="relative">
+                <button
+                  class="flex items-center gap-sm text-sm text-anthracite/70 bg-white rounded-lg px-md py-sm shadow-sm"
+                  onclick="this.nextElementSibling.classList.toggle('hidden')"
+                >
+                  <i class="pi pi-sliders-h"></i>
+                  Statut : {{ statutActuel }}
+                </button>
+                <div class="hidden absolute right-0 top-full mt-xs bg-white rounded-xl shadow-lg z-10 min-w-32 overflow-hidden">
+                  @for (option of optionsStatut; track option.label) {
+                    <button
+                      (click)="changerStatut(option.value, option.label)"
+                      class="w-full text-left px-md py-sm text-sm text-anthracite hover:bg-gris-fond"
+                    >
+                      {{ option.label }}
+                    </button>
+                  }
+                </div>
+              </div>
             </div>
+
+            <!-- Loading -->
+            @if (service.isLoading()) {
+              <div class="flex justify-center py-2xl">
+                <i class="pi pi-spin pi-spinner text-2xl text-bleu-nuit"></i>
+              </div>
+            }
+
+            <!-- Liste cartes mobile -->
+            @if (!service.isLoading()) {
+              <div class="flex flex-col gap-sm">
+                @if (service.membresFiltres().length === 0) {
+                  <div class="flex flex-col items-center justify-center py-2xl text-center">
+                    <p class="font-semibold text-anthracite/60">Aucun membre trouvé</p>
+                    @if (service.termeRecherche() || service.filtreStatut()) {
+                      <p class="text-sm text-anthracite/40 mt-xs">Essayez de modifier vos filtres</p>
+                    } @else {
+                      <p class="text-sm text-anthracite/40 mt-xs">Commencez par ajouter un membre</p>
+                      <a routerLink="/mon-espace/membres/ajouter/"
+                        class="mt-lg bg-bleu-nuit text-blanc-lait font-semibold rounded-xl px-xl py-md text-sm flex items-center gap-sm">
+                        <i class="pi pi-plus"></i>
+                        Ajouter un membre
+                      </a>
+                    }
+                  </div>
+                } @else {
+                  @for (membre of service.membresFiltres(); track membre.id) {
+                    <a [routerLink]="['/mon-espace/membres', membre.id]" class="bg-white rounded-xl p-md shadow-sm flex items-center gap-md">
+                      <div class="w-12 h-12 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-bleu-nuit shrink-0">
+                        {{ (membre.prenom + ' ' + membre.nom) | initiales }}
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <p class="font-semibold text-anthracite truncate">{{ membre.prenom }} {{ membre.nom }}</p>
+                        <p class="text-xs text-anthracite/50">{{ membre.telephone }} · {{ libellesRoles[membre.role] }}</p>
+                        <div class="mt-xs">
+                          <span [class]="
+                            membre.statut === 'actif'   ? 'inline-flex items-center gap-xs text-xs text-vert-foret' :
+                            membre.statut === 'inactif' ? 'inline-flex items-center gap-xs text-xs text-rouge-alerte' :
+                                                          'inline-flex items-center gap-xs text-xs text-anthracite/40'">
+                            <span [class]="
+                              membre.statut === 'actif'   ? 'w-2 h-2 rounded-full bg-vert-foret inline-block' :
+                              membre.statut === 'inactif' ? 'w-2 h-2 rounded-full bg-rouge-alerte inline-block' :
+                                                            'w-2 h-2 rounded-full bg-anthracite/30 inline-block'"></span>
+                            {{ membre.statut === 'actif' ? 'Actif' : membre.statut === 'inactif' ? 'Inactif' : 'En attente' }}
+                          </span>
+                        </div>
+                      </div>
+                      <span class="text-anthracite/30 px-sm">
+                        <i class="pi pi-chevron-right"></i>
+                      </span>
+                    </a>
+                  }
+                }
+              </div>
+            }
 
           </div>
-          <!-- Menu action -->
-        <button class="text-anthracite/30 px-sm">
-          <i class="pi pi-chevron-right"></i>
-        </button>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════
+           CONTENU DESKTOP (caché sur mobile)
+      ════════════════════════════════════════ -->
+      <div class="hidden lg:block p-10">
+
+        <!-- En-tête desktop -->
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <h3 class="text-[#1E3A5F] text-xl font-bold leading-8">Gérez les membres de votre organisation.</h3>
+          </div>
+          @if (['president', 'secretaire'].includes(authService.currentUser()?.role ?? '')) {
+            <div class="flex items-center gap-3">
+              <button (click)="ouvrirModalAjouter()"
+                class="flex items-center gap-2 bg-[#1E3A5F] text-white font-semibold rounded-xl px-5 py-[10px] text-sm">
+                <i class="pi pi-plus"></i>
+                Ajouter un membre
+              </button>
+              <button (click)="ouvrirModalImporter()"
+                class="flex items-center gap-2 border border-[#1E3A5F]/20 text-[#1E3A5F] font-semibold rounded-xl px-5 py-[10px] text-sm bg-white">
+                <i class="pi pi-file-excel"></i>
+                Importer des membres
+              </button>
+            </div>
+          }
+        </div>
+
+        <!-- Stats desktop -->
+        <div class="grid grid-cols-4 gap-4 mb-8">
+          <div class="bg-white/60 rounded-2xl p-5 outline outline-1 outline-white/50 backdrop-blur-[8px]">
+            <p class="text-[#1A1D23]/50 text-xs uppercase tracking-wide">Total</p>
+            <p class="text-[#1E3A5F] text-2xl font-bold mt-1">{{ service.statsMembres()?.total ?? '—' }}</p>
+          </div>
+          <div class="bg-white/60 rounded-2xl p-5 outline outline-1 outline-white/50 backdrop-blur-[8px]">
+            <p class="text-[#1A1D23]/50 text-xs uppercase tracking-wide">Actifs</p>
+            <p class="text-[#2E7D5B] text-2xl font-bold mt-1">{{ service.statsMembres()?.actifs ?? '—' }}</p>
+          </div>
+          <div class="bg-white/60 rounded-2xl p-5 outline outline-1 outline-white/50 backdrop-blur-[8px]">
+            <p class="text-[#1A1D23]/50 text-xs uppercase tracking-wide">Inactifs</p>
+            <p class="text-[#C1654A] text-2xl font-bold mt-1">{{ service.statsMembres()?.inactifs ?? '—' }}</p>
+          </div>
+          <div class="bg-white/60 rounded-2xl p-5 outline outline-1 outline-white/50 backdrop-blur-[8px]">
+            <p class="text-[#1A1D23]/50 text-xs uppercase tracking-wide">En attente</p>
+            <p class="text-[#1E3A5F] text-2xl font-bold mt-1">{{ service.statsMembres()?.enAttente ?? '—' }}</p>
+          </div>
+        </div>
+
+        <!-- Tableau -->
+        <div class="bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col gap-0 overflow-hidden">
+
+          <!-- Barre recherche + badges filtre -->
+          <div class="flex items-center gap-4 px-8 py-5 border-b border-[#1E3A5F]/5">
+            <!-- Recherche — prend tout l'espace restant -->
+            <div class="flex items-center gap-2 bg-[#1E3A5F]/5 rounded-full px-4 py-4 min-w-0 flex-1">
+              <i class="pi pi-search text-[#1E3A5F]/40 text-sm flex-shrink-0"></i>
+              <input
+                type="text"
+                [ngModel]="service.termeRecherche()"
+                (ngModelChange)="service.termeRecherche.set($event); pageCourante.set(1)"
+                placeholder="Rechercher un membre..."
+                class="bg-transparent outline-none text-sm text-[#1E3A5F] placeholder:text-[#1E3A5F]/40 min-w-0 w-full"
+              />
+            </div>
+            <!-- Badges filtre statut — taille fixe, ne rétrécissent pas -->
+            <div class="flex items-center gap-2 flex-shrink-0">
+              @for (option of optionsStatut; track option.label) {
+                <button
+                  (click)="changerStatut(option.value, option.label)"
+                  class="px-4 py-4 rounded-full text-xs font-bold transition-all whitespace-nowrap"
+                  [class]="statutActuel === option.label
+                    ? 'bg-[#1E3A5F] text-white'
+                    : 'bg-[#1E3A5F]/5 text-[#1E3A5F]/60 hover:bg-[#1E3A5F]/10'">
+                  {{ option.label }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- En-tête colonnes -->
+          <div class="grid grid-cols-[2fr_1.3fr_1fr_1fr_170px] px-8 py-4 border-b border-[#1E3A5F]/5">
+            <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Prénom & Nom</span>
+            <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Téléphone</span>
+            <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Rôle</span>
+            <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Statut</span>
+            <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Action</span>
+          </div>
+
+          <!-- Loading -->
+          @if (service.isLoading()) {
+            <div class="flex justify-center py-16">
+              <i class="pi pi-spin pi-spinner text-2xl text-[#1E3A5F]"></i>
+            </div>
+          }
+
+          <!-- Lignes -->
+          @if (!service.isLoading()) {
+            @if (service.membresFiltres().length === 0) {
+              <div class="flex flex-col items-center justify-center py-16 text-center">
+                <p class="text-[#1A1D23]/40 font-semibold">Aucun membre trouvé</p>
+                @if (!service.termeRecherche() && !service.filtreStatut()) {
+                  <a routerLink="/mon-espace/membres/ajouter"
+                    class="mt-4 bg-[#1E3A5F] text-white font-semibold rounded-xl px-6 py-3 text-sm flex items-center gap-2">
+                    <i class="pi pi-plus"></i>
+                    Ajouter un membre
+                  </a>
+                }
+              </div>
+            } @else {
+              @for (membre of membresPagines(); track membre.id; let last = $last) {
+                <div class="grid grid-cols-[2fr_1.3fr_1fr_1fr_170px] px-8 py-[18px] items-center border-t border-[#1E3A5F]/5">
+                  <!-- Prénom & Nom -->
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-[#1E3A5F]/10 flex items-center justify-center flex-shrink-0">
+                      <span class="text-[#1E3A5F] text-xs font-bold">{{ (membre.prenom + ' ' + membre.nom) | initiales }}</span>
+                    </div>
+                    <span class="text-[#1E3A5F] text-sm font-medium">{{ membre.prenom }} {{ membre.nom }}</span>
+                  </div>
+                  <!-- Téléphone -->
+                  <span class="text-[#1A1D23]/60 text-sm">{{ membre.telephone }}</span>
+                  <!-- Rôle -->
+                  <span class="text-[#1E3A5F] text-sm">{{ libellesRoles[membre.role] }}</span>
+                  <!-- Statut -->
+                  <span class="w-fit inline-flex items-center px-2 py-[3px] rounded-full text-[10px] font-bold"
+                        [class]="membre.statut === 'actif'   ? 'bg-[#2E7D5B]/10 text-[#2E7D5B]' :
+                                 membre.statut === 'inactif' ? 'bg-[#C1654A]/10 text-[#C1654A]' :
+                                                               'bg-[#1E3A5F]/10 text-[#1E3A5F]/60'">
+                    {{ membre.statut === 'actif' ? 'Actif' : membre.statut === 'inactif' ? 'Inactif' : 'En attente' }}
+                  </span>
+                  <!-- Action -->
+                  <div class="flex items-center justify-end gap-3">
+                    @if (voitBoutonStatut()) {
+                      @let raison = raisonStatutImpossible(membre);
+                      <!-- Enveloppe : un bouton désactivé n'affiche pas d'info-bulle -->
+                      <span [attr.title]="raison" [class.cursor-not-allowed]="raison">
+                        <button
+                          type="button"
+                          (click)="demanderChangementStatut(membre)"
+                          [disabled]="raison !== null"
+                          [attr.aria-label]="raison ?? null"
+                          class="text-xs font-bold px-3 py-[6px] rounded-lg border disabled:pointer-events-none disabled:border-[#1A1D23]/10 disabled:text-[#1A1D23]/30"
+                          [class]="membre.statut === 'actif'
+                            ? 'border-[#C1654A]/30 text-[#C1654A]'
+                            : 'border-[#2E7D5B]/30 text-[#2E7D5B]'"
+                        >
+                          {{ membre.statut === 'inactif' ? 'Activer' : 'Désactiver' }}
+                        </button>
+                      </span>
+                    }
+                    <a [routerLink]="['/mon-espace/membres', membre.id]" class="text-[#2E7D5B] text-xs font-bold cursor-pointer">Voir plus</a>
+                  </div>
+                </div>
+              }
+            }
+          }
+
+          <!-- Pagination -->
+          @if (!service.isLoading() && service.membresFiltres().length > 0) {
+            <div class="flex items-center justify-between px-8 py-4 border-t border-[#1E3A5F]/5">
+              <p class="text-[#1A1D23]/40 text-sm">
+                {{ (pageCourante() - 1) * 10 + 1 }}–{{ finPage() }} sur {{ service.membresFiltres().length }} membres
+              </p>
+              <div class="flex items-center gap-2">
+                <!-- Précédent -->
+                <button (click)="changerPage(pageCourante() - 1)"
+                        [disabled]="pageCourante() === 1"
+                        class="w-8 h-8 rounded-lg flex items-center justify-center text-[#1E3A5F]/60 hover:bg-[#1E3A5F]/5 disabled:opacity-30 disabled:cursor-not-allowed">
+                  <i class="pi pi-chevron-left text-xs"></i>
+                </button>
+                <!-- Numéros de page -->
+                @for (page of pages(); track page) {
+                  <button (click)="changerPage(page)"
+                          class="w-8 h-8 rounded-lg text-xs font-bold transition-all"
+                          [class]="pageCourante() === page
+                            ? 'bg-[#1E3A5F] text-white'
+                            : 'text-[#1E3A5F]/60 hover:bg-[#1E3A5F]/5'">
+                    {{ page }}
+                  </button>
+                }
+                <!-- Suivant -->
+                <button (click)="changerPage(pageCourante() + 1)"
+                        [disabled]="pageCourante() === totalPages()"
+                        class="w-8 h-8 rounded-lg flex items-center justify-center text-[#1E3A5F]/60 hover:bg-[#1E3A5F]/5 disabled:opacity-30 disabled:cursor-not-allowed">
+                  <i class="pi pi-chevron-right text-xs"></i>
+                </button>
+              </div>
+            </div>
+          }
 
         </div>
-      }
-    }
       </div>
-    }
 
+    </main>
+    <app-bottom-nav></app-bottom-nav>
   </div>
-
 </div>
 
-<app-bottom-nav />
+<!-- ════════════════════════════════════════
+     MODAL DESKTOP : Ajouter un membre
+════════════════════════════════════════ -->
+<p-dialog
+  [(visible)]="modalAjouterVisible"
+  [modal]="true"
+  [dismissableMask]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  (onHide)="fermerModalAjouter()"
+  [style]="{ width: '560px' }"
+  [contentStyle]="{ overflow: 'visible', padding: '0' }"
+  header="Ajouter un membre">
+  <div class="modal-ajouter-content">
+    <app-ajouter-membre></app-ajouter-membre>
+  </div>
+</p-dialog>
+
+<!-- ════════════════════════════════════════
+     MODAL DESKTOP : Importer des membres
+════════════════════════════════════════ -->
+<p-dialog
+  [(visible)]="modalImporterVisible"
+  [modal]="true"
+  [dismissableMask]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  (onHide)="fermerModalImporter()"
+  [style]="{ width: '680px' }"
+  [contentStyle]="{ overflow: 'auto', padding: '0', 'max-height': '80vh' }"
+  header="Importer des membres">
+  <div class="modal-importer-content">
+    <app-importer-membre [dansModale]="true" (annuler)="fermerModalImporter()"></app-importer-membre>
+  </div>
+</p-dialog>
+
+<!-- Confirmation Activer / Désactiver (président) -->
+@if (membreACharger(); as m) {
+  <app-confirmation-modal
+    [titre]="m.statut === 'actif' ? 'Désactiver ce compte ?' : 'Réactiver ce compte ?'"
+    [message]="m.statut === 'actif'
+      ? m.prenom + ' ' + m.nom + ' ne pourra plus se connecter ni utiliser l\'application jusqu\'à sa réactivation.'
+      : m.prenom + ' ' + m.nom + ' pourra de nouveau se connecter.'"
+    [libelleConfirmer]="m.statut === 'actif' ? 'Désactiver' : 'Réactiver'"
+    [danger]="m.statut === 'actif'"
+    [enCours]="changementEnCours()"
+    [erreur]="erreurChangement()"
+    (confirmer)="confirmerChangementStatut()"
+    (annuler)="membreACharger.set(null)"
+  ></app-confirmation-modal>
+}

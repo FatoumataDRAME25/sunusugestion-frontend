@@ -6,12 +6,13 @@ import { PretService } from '../../../../../../core/services/pret.service';
 import { AuthService } from '../../../../../../core/services/auth.service';
 import { Navbar } from '../../../../../../shared/ui/navbar/navbar';
 import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
+import { GieSidebar } from '../../../../../../shared/ui/gie-sidebar/gie-sidebar';
 import { Pret, ModePaiement } from '../../../../../../core/models/pret.model';
 
 @Component({
   selector: 'app-demandes-a-traiter',
   templateUrl: './demandes-a-traiter.html',
-  imports: [RouterLink, DecimalPipe, DatePipe, FormsModule, Navbar, BottomNav],
+  imports: [RouterLink, DecimalPipe, DatePipe, FormsModule, Navbar, BottomNav, GieSidebar],
 })
 export class DemandesATraiter implements OnInit {
 

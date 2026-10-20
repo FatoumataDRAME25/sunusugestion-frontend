@@ -1,0 +1,26 @@
+<app-navbar />
+
+<div class="min-h-screen bg-gris-fond flex flex-col items-center justify-center px-lg text-center pb-24">
+  <div class="w-full max-w-[420px] flex flex-col items-center gap-xl">
+
+    <div class="w-20 h-20 rounded-full bg-or-clair flex items-center justify-center">
+      <i class="pi pi-times-circle text-or-senegal text-3xl"></i>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-xl text-anthracite mb-sm">Paiement annulé</h2>
+      <p class="text-sm text-anthracite/60">
+        Vous avez annulé le paiement. Aucun montant n'a été débité.<br>
+        Vous pourrez le relancer à tout moment.
+      </p>
+    </div>
+
+    <button (click)="retour()"
+      class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md">
+      Retour
+    </button>
+
+  </div>
+</div>
+
+<app-bottom-nav />

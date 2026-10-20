@@ -10,7 +10,12 @@ export const adminGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  if (!authService.isAuthenticated()) {
+  // Un utilisateur mémorisé ne suffit pas : sans jeton de renouvellement,
+  // toutes les requêtes partiraient sans authentification.
+  if (!authService.isAuthenticated() || !authService.getRefreshToken()) {
+    if (authService.isAuthenticated()) {
+      authService.logout();   // session à moitié effacée
+    }
     return router.createUrlTree(['/login']);
   }
 

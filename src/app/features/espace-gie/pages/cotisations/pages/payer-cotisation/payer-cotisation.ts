@@ -5,6 +5,7 @@ import { CotisationService } from '../../../../../../core/services/cotisation.se
 import { AuthService } from '../../../../../../core/services/auth.service';
 import { Navbar } from '../../../../../../shared/ui/navbar/navbar';
 import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
+import { GieSidebar } from '../../../../../../shared/ui/gie-sidebar/gie-sidebar';
 import { InitialesPipe } from '../../../../../../shared/pipes/initiales-pipe';
 import { Cotisation } from '../../../../../../core/models/cotisation.model';
 import { DialogModule } from 'primeng/dialog';
@@ -14,7 +15,7 @@ type ModePaiementCotisation = 'especes' | 'wave' | 'orange_money';
 @Component({
   selector: 'app-payer-cotisation',
   templateUrl: './payer-cotisation.html',
-  imports: [DecimalPipe, InitialesPipe, Navbar, BottomNav, DialogModule],
+  imports: [DecimalPipe, InitialesPipe, Navbar, BottomNav, GieSidebar, DialogModule],
 })
 export class PayerCotisation implements OnInit {
 

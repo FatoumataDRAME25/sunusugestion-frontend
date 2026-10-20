@@ -1,45 +1,116 @@
-
-<div class="min-h-screen bg-blanc-lait p-lg">
-  <div class="max-w-full mx-auto">
-
+<div class="min-h-screen bg-blanc-lait p-lg md:flex md:items-center md:justify-center md:py-12">
+  <div class="max-w-full mx-auto md:w-full md:max-w-[560px] md:bg-white md:rounded-3xl md:shadow-sm md:p-10">
     <div class="flex items-center gap-md mb-xl">
-      <button routerLink="/sunugestion-vitrine" class="text-anthracite">
+      <button type="button" routerLink="/" class="text-anthracite" aria-label="Retour à l'accueil">
         <i class="pi pi-chevron-left"></i>
       </button>
+
       <span class="bg-bleu-clair text-bleu-nuit text-xs font-medium px-md py-xs rounded-full">
         Étape 1 sur 3
       </span>
     </div>
 
     <h1 class="font-sans font-semibold text-2xl text-anthracite mb-xs">Créez votre organisation</h1>
-    <p class="text-sm text-anthracite/60 mb-xl">Renseignez les informations de votre organisation.</p>
+
+    <p class="text-sm text-anthracite/60 mb-xl">
+      Renseignez les informations de votre organisation.
+    </p>
 
     @if (service.errorMessage()) {
-      <p class="text-sm text-rouge-alerte mb-lg">{{ service.errorMessage() }}</p>
+      <p class="text-sm text-rouge-alerte mb-lg">
+        {{ service.errorMessage() }}
+      </p>
     }
 
     <div class="flex flex-col items-center mb-xl">
-      <div class="w-20 h-20 rounded-full border-2 border-dashed border-anthracite/20 flex flex-col items-center justify-center text-anthracite/40">
+      <div
+        class="w-20 h-20 rounded-full border-2 border-dashed border-anthracite/20 flex flex-col items-center justify-center text-anthracite/40"
+      >
         <i class="pi pi-camera mb-xs"></i>
-        <span class="text-xs">Ajouter<br>le logo</span>
+        <span class="text-xs"> Ajouter<br />le logo </span>
       </div>
     </div>
 
-    <form (ngSubmit)="continuer()" class="flex flex-col gap-lg">
-
+    <form #form="ngForm" (ngSubmit)="continuer(form)" class="flex flex-col gap-lg">
+      <!-- NOM -->
       <div>
-        <label class="block text-sm font-medium text-anthracite mb-sm">Nom de l'organisation</label>
-        <input type="text" pInputText [(ngModel)]="nom" name="nom" placeholder="Exemple : Association And Defar" class="w-full" required />
+        <label for="nom" class="block text-sm font-medium text-anthracite mb-sm">
+          Nom de l'organisation
+        </label>
+
+        <input
+          id="nom"
+          type="text"
+          pInputText
+          [(ngModel)]="nom"
+          name="nom"
+          placeholder="Exemple : Association And Defar"
+          class="w-full"
+          required
+          minlength="2"
+          pattern=".*\S.*"
+          #nomField="ngModel"
+
+          (ngModelChange)="validerNom($event, nomField)"
+        />
+
+        @if (nomField.invalid && (nomField.dirty || nomField.touched)) {
+
+          @if (nomField.errors?.['required']) {
+            <small class="text-red-500">
+              Le nom de l'organisation est obligatoire.
+            </small>
+          }
+
+          @if (nomField.errors?.['minlength']) {
+            <small class="text-red-500">
+              Le nom doit contenir au moins 2 caractères.
+            </small>
+          }
+
+          @if (nomField.errors?.['pattern']) {
+            <small class="text-red-500">
+              Le nom ne peut pas contenir uniquement des espaces.
+            </small>
+          }
+
+          @if (nomField.errors?.['repetition']) {
+            <small class="text-red-500">
+              La même lettre ne peut pas être répétée trois fois de suite.
+            </small>
+          }
+
+        }
       </div>
 
+      <!-- RÉGION -->
       <div>
-        <label class="block text-sm font-medium text-anthracite mb-sm">Région</label>
-        <p-select [options]="regions" [(ngModel)]="region" name="region" placeholder="Sélectionnez votre région" class="w-full" required />
-      </div>
+        <label for="region" class="block text-sm font-medium text-anthracite mb-sm"> Région </label>
 
-      <div>
-        <label class="block text-sm font-medium text-anthracite mb-sm">Type d'organisation</label>
         <p-select
+          inputId="region"
+          [options]="regions"
+          [(ngModel)]="region"
+          name="region"
+          placeholder="Sélectionnez votre région"
+          class="w-full"
+          required
+          #regionField="ngModel"
+        />
+
+        @if (regionField.invalid && (regionField.touched || form.submitted)) {
+          <p class="text-sm text-rouge-alerte mt-xs">Veuillez sélectionner une région.</p>
+        }
+      </div>
+
+      <!-- TYPE -->
+      <div>
+        <label for="secteur" class="block text-sm font-medium text-anthracite mb-sm">
+          Type d'organisation
+        </label>
+
+        <p-select
+          inputId="secteur"
           [options]="organisation"
           [(ngModel)]="secteur"
           name="secteur"
@@ -48,23 +119,75 @@
           placeholder="Choisir un type d'organisation"
           class="w-full"
           required
+          #secteurField="ngModel"
         />
+
+        @if (secteurField.invalid && (secteurField.touched || form.submitted)) {
+          <p class="text-sm text-rouge-alerte mt-xs">
+            Veuillez sélectionner un type d'organisation.
+          </p>
+        }
       </div>
 
+      <!-- TÉLÉPHONE -->
       <div>
-        <label class="block text-sm font-medium text-anthracite mb-sm">Numéro de téléphone de l'organisation</label>
+        <label for="telephone" class="block text-sm font-medium text-anthracite mb-sm">
+          Numéro de téléphone de l'organisation
+        </label>
+
         <div class="flex gap-sm">
-          <span class="bg-white border border-anthracite/10 rounded-md px-md flex items-center">+221</span>
-          <input type="text" pInputText [(ngModel)]="telephone" name="telephone" placeholder="77 000 00 00" class="w-full" />
+          <span class="bg-white border border-anthracite/10 rounded-md px-md flex items-center">
+            +221
+          </span>
+
+          <input
+            id="telephone"
+            type="tel"
+            pInputText
+            [(ngModel)]="telephone"
+            name="telephone"
+            placeholder="77 000 00 00"
+            class="w-full"
+            pattern="^(70|75|76|77|78)[0-9]{7}$"
+            #telephoneField="ngModel"
+          />
         </div>
+
+        @if (telephoneField.invalid && (telephoneField.touched || form.submitted)) {
+          <p class="text-sm text-rouge-alerte mt-xs">
+            Entrez un numéro sénégalais valide de 9 chiffres.
+          </p>
+        }
       </div>
 
+      <!-- INFORMATION -->
       <div class="bg-bleu-clair text-bleu-nuit text-sm rounded-md p-md flex gap-sm">
         <i class="pi pi-info-circle mt-xs"></i>
-        <p>Votre espace sera privé. Seuls les membres autorisés pourront accéder aux informations de votre organisation.</p>
+
+        <p>
+          Votre espace sera privé. Seuls les membres autorisés pourront accéder aux informations de
+          votre organisation.
+        </p>
       </div>
 
-      <p-button type="submit" label="Créer mon espace GIE" styleClass="w-full" [loading]="service.isLoading()" />
+      <!-- ABONNEMENT -->
+      <p class="text-sm text-anthracite/70 text-center">
+        @if (essai(); as e) {
+          {{ e.dureeEssaiJours }} jours d'essai gratuit, puis à partir de {{ e.prixMinimum | number:'1.0-0' }} FCFA par mois selon le nombre de membres.
+        } @else {
+          Essai gratuit, puis abonnement mensuel selon le nombre de membres.
+        }
+        <a routerLink="/" fragment="tarification" class="font-semibold text-bleu-nuit underline">Voir les tarifs</a>
+      </p>
+
+      <!-- BOUTON -->
+      <p-button
+        type="submit"
+        label="Continuer"
+        styleClass="w-full"
+        [loading]="service.isLoading()"
+        [disabled]="form.invalid || service.isLoading()"
+      />
     </form>
   </div>
 </div>

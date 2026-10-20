@@ -47,6 +47,18 @@ export class RetourPaiement implements OnInit {
   }
 
   private _verifierStatut(type: string, id: string): void {
+    if (type === 'abonnement') {
+      // Le backend interroge PayDunya si le paiement est encore en attente
+      this.http.get<any>(`${this.BASE_URL}abonnements/paiements/${id}/`).subscribe({
+        next: (paiement) => {
+          const s = paiement?.statut ?? '';
+          this.statut.set(s === 'valide' ? 'confirme' : s === 'en_attente' ? 'en_attente' : 'echoue');
+        },
+        error: () => this.statut.set('erreur')
+      });
+      return;
+    }
+
     const url = type === 'cotisation'
       ? `${this.BASE_URL}cotisations/${id}/`
       : `${this.BASE_URL}prets/${id}/`;
@@ -69,7 +81,9 @@ export class RetourPaiement implements OnInit {
   retour(): void {
     const type = this.module();
     const id   = this.objetId();
-    if (type === 'cotisation') {
+    if (type === 'abonnement') {
+      this.router.navigate(['/mon-espace/informations-gie']);
+    } else if (type === 'cotisation') {
       this.router.navigate(['/mon-espace/cotisations']);
     } else if (type === 'pret' && id) {
       this.router.navigate(['/mon-espace/prets', id]);

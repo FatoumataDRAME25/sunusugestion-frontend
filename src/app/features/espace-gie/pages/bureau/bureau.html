@@ -1,0 +1,257 @@
+<div class="relative flex bg-[#F7F8FA] lg:bg-fond-desktop min-h-screen">
+  <app-gie-sidebar></app-gie-sidebar>
+  <div class="flex-1 ml-0 lg:ml-[264px] min-w-0 flex flex-col">
+    <app-navbar titre="Bureau"></app-navbar>
+
+    <main class="pb-24 lg:pb-8 lg:pt-20">
+      <div class="p-4 lg:p-10 flex flex-col gap-8">
+
+        <div>
+          <h1 class="text-2xl font-bold text-[#1E3A5F] lg:hidden">Bureau</h1>
+          <h3 class="hidden lg:block text-[#1E3A5F] text-xl font-bold leading-8">Composition du bureau de votre organisation.</h3>
+          <p class="mt-1 text-sm text-[#1A1D23]/50">
+            @if (estPresident()) {
+              En tant que président, vous pouvez attribuer ou libérer les postes du bureau.
+            } @else {
+              Seul le président peut modifier la composition du bureau.
+            }
+          </p>
+        </div>
+
+        @if (succes()) {
+          <div class="rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-[#2E7D5B]" role="status">
+            {{ succes() }}
+          </div>
+        }
+
+        @if (erreurChargement()) {
+          <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700" role="alert">
+            {{ erreurChargement() }}
+          </div>
+        }
+
+        @if (chargement()) {
+          <div class="flex justify-center py-16">
+            <i class="pi pi-spin pi-spinner text-2xl text-[#1E3A5F]"></i>
+          </div>
+        } @else {
+
+          <!-- ── Membres du bureau (rôles) ── -->
+          <section class="flex flex-col gap-4">
+            <div>
+              <h2 class="text-lg font-bold text-[#1E3A5F]">Membres du bureau</h2>
+              <p class="text-xs text-[#1A1D23]/50">Ces postes donnent les droits de gestion correspondants.</p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+              @for (poste of postesTitulaires; track poste.cle) {
+                <ng-container *ngTemplateOutlet="carte; context: { poste: { type: 'role', cle: poste.cle }, icone: poste.icone }"></ng-container>
+              }
+            </div>
+          </section>
+
+          <!-- ── Adjoints (fonctions) ── -->
+          <section class="flex flex-col gap-4">
+            <div>
+              <h2 class="text-lg font-bold text-[#1E3A5F]">Adjoints</h2>
+              <p class="text-xs text-[#1A1D23]/50">Titres sans droit supplémentaire : un adjoint garde les droits de son rôle.</p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+              @for (poste of postesAdjoints; track poste.cle) {
+                <ng-container *ngTemplateOutlet="carte; context: { poste: { type: 'fonction', cle: poste.cle }, icone: poste.icone }"></ng-container>
+              }
+            </div>
+          </section>
+        }
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Carte d'un poste -->
+<ng-template #carte let-poste="poste" let-icone="icone">
+  <article class="flex flex-col gap-4 rounded-2xl bg-white p-5 shadow-sm">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-[#1E3A5F]/10 flex items-center justify-center">
+        <i class="pi text-[#1E3A5F]" [class]="icone"></i>
+      </div>
+      <p class="text-xs font-bold uppercase tracking-wide text-[#1A1D23]/50">{{ libelle(poste) }}</p>
+    </div>
+
+    @if (titulaire(poste); as t) {
+      <a [routerLink]="['/mon-espace/membres', t.id]" class="flex items-center gap-3 min-w-0">
+        <div class="w-11 h-11 rounded-full bg-[#2E7D5B]/15 flex items-center justify-center flex-shrink-0">
+          <span class="text-[#2E7D5B] text-sm font-bold">{{ (t.prenom + ' ' + t.nom) | initiales }}</span>
+        </div>
+        <div class="min-w-0">
+          <p class="font-semibold text-[#1E3A5F] truncate">{{ t.prenom }} {{ t.nom }}</p>
+          <p class="text-xs text-[#1A1D23]/50">{{ t.telephone }}</p>
+        </div>
+      </a>
+    } @else {
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-full border-2 border-dashed border-[#1E3A5F]/20 flex items-center justify-center flex-shrink-0">
+          <i class="pi pi-user text-[#1E3A5F]/30"></i>
+        </div>
+        <p class="text-sm font-semibold text-[#1A1D23]/40">Poste vacant</p>
+      </div>
+    }
+
+    @if (estPresident()) {
+      <div class="mt-auto flex gap-2">
+        <button
+          type="button"
+          (click)="ouvrirEdition(poste)"
+          class="flex-1 flex items-center justify-center gap-2 border border-[#1E3A5F]/20 text-[#1E3A5F] font-semibold rounded-xl px-4 py-[10px] text-sm bg-white"
+        >
+          <i class="pi" [class]="poste.cle === 'president' ? 'pi-sync' : 'pi-user-edit'"></i>
+          {{ poste.cle === 'president' ? 'Transmettre' : (titulaire(poste) ? 'Changer' : 'Attribuer') }}
+        </button>
+
+        @if (titulaire(poste) && poste.cle !== 'president') {
+          <button
+            type="button"
+            (click)="demanderLiberation(poste)"
+            aria-label="Libérer le poste"
+            title="Libérer le poste"
+            class="flex items-center justify-center border border-[#C1654A]/30 text-[#C1654A] rounded-xl px-4 py-[10px] text-sm bg-white"
+          >
+            <i class="pi pi-user-minus"></i>
+          </button>
+        }
+      </div>
+    }
+  </article>
+</ng-template>
+
+<!-- ── Modal : attribuer un poste ── -->
+@if (posteEnEdition(); as poste) {
+  <div
+    class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4"
+    (click)="fermerEdition()"
+  >
+    <div
+      class="w-full max-w-[480px] max-h-[90vh] overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl"
+      role="dialog"
+      aria-modal="true"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="mb-5 flex items-start justify-between gap-4">
+        <div>
+          <h2 class="text-lg font-bold text-[#1E3A5F]">
+            @if (poste.cle === 'president') {
+              Transmettre la présidence
+            } @else {
+              Poste de {{ libelle(poste).toLowerCase() }}
+            }
+          </h2>
+          @if (titulaire(poste); as t) {
+            @if (poste.cle !== 'president') {
+              <p class="mt-1 text-sm text-[#4A5568]">
+                Actuellement : {{ t.prenom }} {{ t.nom }}. Il ou elle
+                {{ poste.type === 'role' ? 'redeviendra membre.' : 'perdra ce titre.' }}
+              </p>
+            }
+          }
+        </div>
+        <button
+          type="button"
+          (click)="fermerEdition()"
+          [disabled]="enregistrement()"
+          aria-label="Fermer"
+          class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-[#1A1D23]/50 hover:bg-[#1E3A5F]/5"
+        >
+          <i class="pi pi-times"></i>
+        </button>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <div class="flex flex-col gap-2">
+          <label for="bureau-candidat" class="text-xs font-bold text-[#1A1D23]/50 uppercase tracking-wide">
+            {{ poste.cle === 'president' ? 'Nouveau président' : 'Membre' }}
+          </label>
+          <select
+            id="bureau-candidat"
+            [ngModel]="candidatId()"
+            (ngModelChange)="candidatId.set($event)"
+            class="w-full border border-[#1A1D23]/20 rounded-xl px-3 py-3 text-[#1A1D23] bg-white"
+          >
+            <option [ngValue]="null" disabled>Choisir un membre</option>
+            @for (m of candidats(); track m.id) {
+              <option [ngValue]="m.id">{{ m.prenom }} {{ m.nom }} · {{ libellesRoles[m.role] }}</option>
+            }
+          </select>
+          @if (candidats().length === 0) {
+            <p class="text-xs text-[#1A1D23]/50">
+              {{ posteEnEdition()?.type === 'fonction'
+                ? 'Aucun membre simple actif disponible.'
+                : 'Aucun membre actif disponible.' }}
+            </p>
+          }
+        </div>
+
+        @if (poste.cle === 'president') {
+          <div class="flex flex-col gap-2">
+            <label for="bureau-role-ancien" class="text-xs font-bold text-[#1A1D23]/50 uppercase tracking-wide">
+              Votre rôle après la passation
+            </label>
+            <select
+              id="bureau-role-ancien"
+              [ngModel]="roleAncienPresident()"
+              (ngModelChange)="roleAncienPresident.set($event)"
+              class="w-full border border-[#1A1D23]/20 rounded-xl px-3 py-3 text-[#1A1D23] bg-white"
+            >
+              @for (role of rolesApresPassation; track role) {
+                <option [ngValue]="role">{{ libellesRoles[role] }}</option>
+              }
+            </select>
+            <p class="text-xs text-[#C1654A]">
+              Vous perdrez immédiatement les droits du président.
+            </p>
+          </div>
+        }
+
+        @if (erreurEdition()) {
+          <div class="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700" role="alert">
+            {{ erreurEdition() }}
+          </div>
+        }
+
+        <div class="mt-2 flex flex-col-reverse gap-2 sm:flex-row">
+          <button
+            type="button"
+            (click)="fermerEdition()"
+            [disabled]="enregistrement()"
+            class="flex-1 rounded-xl border border-[#1E3A5F]/20 bg-white py-3 text-sm font-semibold text-[#1E3A5F] disabled:opacity-50"
+          >
+            Annuler
+          </button>
+          <button
+            type="button"
+            (click)="enregistrer()"
+            [disabled]="enregistrement() || candidatId() === null"
+            class="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-[#1E3A5F] py-3 text-sm font-semibold text-white disabled:opacity-60"
+          >
+            @if (enregistrement()) { <i class="pi pi-spin pi-spinner"></i> }
+            {{ poste.cle === 'president' ? 'Transmettre' : 'Enregistrer' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ── Confirmation : libérer un poste ── -->
+@if (posteALiberer(); as poste) {
+  <app-confirmation-modal
+    [titre]="'Libérer le poste de ' + libelle(poste).toLowerCase() + ' ?'"
+    [message]="messageLiberation()"
+    libelleConfirmer="Libérer le poste"
+    [danger]="true"
+    [enCours]="liberation()"
+    [erreur]="erreurLiberation()"
+    (confirmer)="confirmerLiberation()"
+    (annuler)="posteALiberer.set(null)"
+  ></app-confirmation-modal>
+}

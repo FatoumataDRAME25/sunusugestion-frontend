@@ -1,3 +1,4 @@
+import { environment } from '../../../../../../../environments/environment';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -33,8 +34,7 @@ export class AjouterMembre {
 
   modalSuccesVisible = signal(false);
 
-  // 🚀 METTEZ À JOUR VOTRE ADRESSE NGROK ICI LORSQU'ELLE CHANGE
-  private urlNgrok = 'https://stitch-freebie-dreamless.ngrok-free.dev';
+  private urlNgrok = environment.URL_PUBLIQUE;
 
   rolesDisponibles: { label: string; value: RoleMembre }[] = [
     { label: 'Trésorier', value: 'tresorier' },
@@ -100,7 +100,7 @@ export class AjouterMembre {
           `https://wa.me/${numTel}?text=${encodeURIComponent(message)}`;
 
         // 7. Ouvrir WhatsApp dans un nouvel onglet
-        window.open(lienWhatsApp, '_blank');
+        window.open(lienWhatsApp, '_blank', 'noopener');
 
         // 8. Afficher le modal de succès
         this.modalSuccesVisible.set(true);
@@ -116,7 +116,11 @@ export class AjouterMembre {
   }
   voirLesMembres(): void {
     this.modalSuccesVisible.set(false);
-    this.router.navigate(['/mon-espace/membres']);
+    // Recharger la liste pour inclure le nouveau membre
+    this.service.chargerMembres().subscribe({
+      next: () => this.router.navigate(['/mon-espace/membres']),
+      error: () => this.router.navigate(['/mon-espace/membres'])
+    });
   }
 
   ajouterUnAutre(): void {

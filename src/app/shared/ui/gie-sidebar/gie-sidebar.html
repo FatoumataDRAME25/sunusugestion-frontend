@@ -1,0 +1,242 @@
+<aside
+  class="w-[264px] min-h-screen bg-[#1E3A5F] backdrop-blur-[10px] hidden lg:flex flex-col fixed left-0 top-0 z-50"
+>
+  <!-- Logo -->
+  <a routerLink="/mon-espace/dashboard-president" class="block p-8" aria-label="Tableau de bord">
+    <img
+      src="images/logo-sunugestion-fond-bleu.png"
+      alt="Logo SunuGestion"
+      class="w-[174px] h-auto"
+    />
+  </a>
+
+  <!-- Navigation -->
+  <nav class="flex-1 px-4 pt-6 flex flex-col gap-2">
+    <!-- Tableau de bord -->
+    <a
+      routerLink="/mon-espace/dashboard-president"
+      routerLinkActive="bg-white/10"
+      [routerLinkActiveOptions]="{ exact: true }"
+      #dashboardRla="routerLinkActive"
+      class="flex items-center gap-3 px-4 py-[14px] rounded-2xl cursor-pointer transition-colors duration-200"
+    >
+      <i
+        class="pi pi-home text-base w-5"
+        [class.text-white]="dashboardRla.isActive"
+        [class.text-white/60]="!dashboardRla.isActive"
+      ></i>
+
+      <span
+        class="text-base font-medium leading-6"
+        [class.text-white]="dashboardRla.isActive"
+        [class.text-white/60]="!dashboardRla.isActive"
+      >
+        Tableau de bord
+      </span>
+    </a>
+
+    <!-- Membres -->
+    <a
+      routerLink="/mon-espace/membres"
+      routerLinkActive="bg-white/10"
+      [routerLinkActiveOptions]="{ exact: true }"
+      #membresRla="routerLinkActive"
+      class="flex items-center gap-3 px-4 py-[14px] rounded-2xl cursor-pointer transition-colors duration-200"
+    >
+      <i
+        class="pi pi-users text-base w-5"
+        [class.text-white]="membresRla.isActive"
+        [class.text-white/60]="!membresRla.isActive"
+      ></i>
+
+      <span
+        class="text-base font-medium leading-6"
+        [class.text-white]="membresRla.isActive"
+        [class.text-white/60]="!membresRla.isActive"
+      >
+        Membres
+      </span>
+    </a>
+
+    <!-- Cotisations -->
+    <a
+      routerLink="/mon-espace/cotisations"
+      routerLinkActive="bg-white/10"
+      [routerLinkActiveOptions]="{ exact: true }"
+      #cotisationsRla="routerLinkActive"
+      class="flex items-center gap-3 px-4 py-[14px] rounded-2xl cursor-pointer transition-colors duration-200"
+    >
+      <i
+        class="pi pi-wallet text-base w-5"
+        [class.text-white]="cotisationsRla.isActive"
+        [class.text-white/60]="!cotisationsRla.isActive"
+      ></i>
+
+      <span
+        class="text-base font-medium leading-6"
+        [class.text-white]="cotisationsRla.isActive"
+        [class.text-white/60]="!cotisationsRla.isActive"
+      >
+        Cotisations
+      </span>
+    </a>
+
+    <!-- Prêts -->
+    <a
+      routerLink="/mon-espace/prets"
+      routerLinkActive="bg-white/10"
+      [routerLinkActiveOptions]="{ exact: true }"
+      #pretsRla="routerLinkActive"
+      class="flex items-center gap-3 px-4 py-[14px] rounded-2xl cursor-pointer transition-colors duration-200"
+    >
+      <i
+        class="pi pi-credit-card text-base w-5"
+        [class.text-white]="pretsRla.isActive"
+        [class.text-white/60]="!pretsRla.isActive"
+      ></i>
+
+      <span
+        class="text-base font-medium leading-6"
+        [class.text-white]="pretsRla.isActive"
+        [class.text-white/60]="!pretsRla.isActive"
+      >
+        Prêts
+      </span>
+    </a>
+
+    <!-- Activités -->
+    <a
+      routerLink="/mon-espace/activites"
+      routerLinkActive="bg-white/10"
+      [routerLinkActiveOptions]="{ exact: true }"
+      #activitesRla="routerLinkActive"
+      class="flex items-center gap-3 px-4 py-[14px] rounded-2xl cursor-pointer transition-colors duration-200"
+    >
+      <i
+        class="pi pi-calendar text-base w-5"
+        [class.text-white]="activitesRla.isActive"
+        [class.text-white/60]="!activitesRla.isActive"
+      ></i>
+
+      <span
+        class="text-base font-medium leading-6"
+        [class.text-white]="activitesRla.isActive"
+        [class.text-white/60]="!activitesRla.isActive"
+      >
+        Activités
+      </span>
+    </a>
+
+    <!-- Finances et opérations -->
+    <a
+      routerLink="/mon-espace/historiques"
+      routerLinkActive="bg-white/10"
+      [routerLinkActiveOptions]="{ exact: true }"
+      #historiquesRla="routerLinkActive"
+      class="flex items-center gap-3 px-4 py-[14px] rounded-2xl cursor-pointer transition-colors duration-200"
+    >
+      <i
+        class="pi pi-chart-bar text-base w-5"
+        [class.text-white]="historiquesRla.isActive"
+        [class.text-white/60]="!historiquesRla.isActive"
+      ></i>
+
+      <span
+        class="text-base font-medium leading-6"
+        [class.text-white]="historiquesRla.isActive"
+        [class.text-white/60]="!historiquesRla.isActive"
+      >
+        Finances &amp; Opérations
+      </span>
+    </a>
+
+    <!-- Bureau -->
+    <a
+      routerLink="/mon-espace/bureau"
+      routerLinkActive="bg-white/10"
+      [routerLinkActiveOptions]="{ exact: true }"
+      #bureauRla="routerLinkActive"
+      class="flex items-center gap-3 px-4 py-[14px] rounded-2xl cursor-pointer transition-colors duration-200"
+    >
+      <i
+        class="pi pi-sitemap text-base w-5"
+        [class.text-white]="bureauRla.isActive"
+        [class.text-white/60]="!bureauRla.isActive"
+      ></i>
+
+      <span
+        class="text-base font-medium leading-6"
+        [class.text-white]="bureauRla.isActive"
+        [class.text-white/60]="!bureauRla.isActive"
+      >
+        Bureau
+      </span>
+    </a>
+
+    <!-- Paramètres -->
+    <div class="mt-8 px-4">
+      <p class="text-white/30 text-xs font-bold uppercase tracking-[1.2px] mb-4">Paramètres</p>
+
+      <div class="flex flex-col gap-2">
+        <!-- Configuration -->
+        <a
+          routerLink="/mon-espace/informations-gie"
+          routerLinkActive="text-white"
+          [routerLinkActiveOptions]="{ exact: true }"
+          #configurationRla="routerLinkActive"
+          class="flex items-center gap-3 py-2 cursor-pointer"
+        >
+          <i
+            class="pi pi-cog text-sm w-5"
+            [class.text-white]="configurationRla.isActive"
+            [class.text-white/60]="!configurationRla.isActive"
+          ></i>
+
+          <!-- Couleur portée par le texte (comme les autres menus) : évite
+               un passage par le noir quand la barre latérale est recréée -->
+          <span
+            class="text-sm leading-5"
+            [class.text-white]="configurationRla.isActive"
+            [class.text-white/60]="!configurationRla.isActive"
+          > Configuration </span>
+        </a>
+
+        <!-- Mon profil -->
+        <a
+          routerLink="/mon-espace/profil-membre"
+          routerLinkActive="text-white"
+          [routerLinkActiveOptions]="{ exact: true }"
+          #profilRla="routerLinkActive"
+          class="flex items-center gap-3 py-2 cursor-pointer"
+        >
+          <i
+            class="pi pi-user text-sm w-5"
+            [class.text-white]="profilRla.isActive"
+            [class.text-white/60]="!profilRla.isActive"
+          ></i>
+
+          <!-- Couleur portée par le texte (comme les autres menus) : évite
+               un passage par le noir quand la barre latérale est recréée -->
+          <span
+            class="text-sm leading-5"
+            [class.text-white]="profilRla.isActive"
+            [class.text-white/60]="!profilRla.isActive"
+          > Mon profil </span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Déconnexion -->
+  <div class="p-6">
+    <button
+      type="button"
+      (click)="deconnecter()"
+      class="w-full flex items-center gap-3 px-4 py-3 bg-transparent hover:bg-[#3E5776] rounded-2xl cursor-pointer transition-colors duration-200"
+    >
+      <i class="pi pi-sign-out text-white/60 text-base w-5"></i>
+
+      <span class="text-white/60 text-base font-medium leading-6"> Déconnexion </span>
+    </button>
+  </div>
+</aside>

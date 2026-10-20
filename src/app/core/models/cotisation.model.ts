@@ -23,7 +23,6 @@ export interface Cotisation {
 }
 
 
-// ← Ajoute ces deux interfaces
 export interface SessionCotisation {
   id: number;
   libelle: string;

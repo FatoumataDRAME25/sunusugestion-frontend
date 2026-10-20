@@ -6,12 +6,13 @@ import { ActiviteService } from '../../../../../../core/services/activite.servic
 import { AuthService } from '../../../../../../core/services/auth.service';
 import { Navbar } from '../../../../../../shared/ui/navbar/navbar';
 import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
+import { GieSidebar } from '../../../../../../shared/ui/gie-sidebar/gie-sidebar';
 import { TYPES_ACTIVITE } from '../../../../../../core/models/activite.model';
 
 @Component({
   selector: 'app-detail-activite',
   templateUrl: './detail-activite.html',
-  imports: [RouterLink, DatePipe, FormsModule, Navbar, BottomNav],
+  imports: [RouterLink, DatePipe, FormsModule, Navbar, BottomNav, GieSidebar],
 })
 export class DetailActivite implements OnInit {
 

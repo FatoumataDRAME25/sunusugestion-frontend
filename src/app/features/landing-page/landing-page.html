@@ -1,0 +1,923 @@
+<div class="w-full min-h-screen bg-[#F7F8FA] overflow-x-hidden">
+  <!-- =========================================================
+       HERO
+  ========================================================== -->
+  <section class="relative w-full h-[640px] md:h-[960px] overflow-hidden">
+    <!-- Image -->
+    <img
+      src="images/sunugestion.png"
+      alt="Réunion GIE"
+      class="absolute inset-0 w-full h-full object-cover object-top"
+    />
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-black/60"></div>
+
+    <!-- =======================================================
+         NAVBAR DESKTOP
+    ======================================================== -->
+    <nav
+      class="hidden md:flex fixed z-[1000] top-9 left-1/2 -translate-x-1/2 w-[calc(100%-48px)] lg:w-[calc(100%-160px)] max-w-full px-6 lg:px-8 py-5 lg:py-6 bg-white/70 backdrop-blur-[14px] rounded-[30px] items-center justify-between"
+    >
+      <img src="images/logo-sunu-gestion.png" alt="Logo SunuGestion" class="w-40 h-auto shrink-0" />
+
+      <div class="hidden lg:flex items-center gap-8">
+        <a
+          (click)="scrollVers('fonctionnalites')"
+          class="text-[#1E3A5F]/80 text-sm font-medium whitespace-nowrap cursor-pointer"
+        >
+          Fonctionnalités
+        </a>
+
+        <a
+          (click)="scrollVers('comment-ca-marche')"
+          class="text-[#1E3A5F]/80 text-sm font-medium whitespace-nowrap cursor-pointer"
+        >
+          Comment ça marche
+        </a>
+
+        <a
+          (click)="scrollVers('problemes')"
+          class="text-[#1E3A5F]/80 text-sm font-medium whitespace-nowrap cursor-pointer"
+        >
+          Problèmes
+        </a>
+
+        <a
+          (click)="scrollVers('avantages')"
+          class="text-[#1E3A5F]/80 text-sm font-medium whitespace-nowrap cursor-pointer"
+        >
+          Avantages
+        </a>
+
+        <a
+          (click)="scrollVers('tarification')"
+          class="text-[#1E3A5F]/80 text-sm font-medium whitespace-nowrap cursor-pointer"
+        >
+          Tarification
+        </a>
+      </div>
+
+      <div class="flex items-center gap-2 lg:gap-4">
+        <a
+          routerLink="/login"
+          class="px-4 lg:px-5 py-2.5 text-[#1E3A5F] text-sm font-semibold whitespace-nowrap"
+        >
+          Se connecter
+        </a>
+
+        <a
+          routerLink="/inscription/gie"
+          class="px-5 lg:px-6 py-2.5 bg-[#1E3A5F] rounded-2xl text-white text-sm font-semibold whitespace-nowrap"
+        >
+          Créer mon organisation
+        </a>
+      </div>
+    </nav>
+
+    <!-- =======================================================
+         NAVBAR MOBILE
+    ======================================================== -->
+    <nav
+      class="md:hidden absolute z-[1000] top-3 left-4 right-4 h-[60px] px-4 py-2 bg-white/70 backdrop-blur-[14px] border border-white/60 rounded-full flex items-center justify-between"
+    >
+      <img
+        src="images/logo-sunu-gestion.png"
+        alt="Logo SunuGestion"
+        class="w-[158px] h-[35px] object-contain"
+      />
+
+      <button
+        type="button"
+        aria-label="Ouvrir le menu"
+        class="w-10 h-10 flex items-center justify-center text-[#1E3A5F] text-xl"
+        (click)="toggleMenu()"
+      >
+        <i [class]="menuOuvert() ? 'pi pi-times' : 'pi pi-bars'"></i>
+      </button>
+    </nav>
+
+    <!-- =======================================================
+         MENU MOBILE DRAWER
+    ======================================================== -->
+    @if (menuOuvert()) {
+      <div class="md:hidden fixed inset-0 z-[999] bg-black/50" (click)="fermerMenu()"></div>
+
+      <div
+        class="md:hidden fixed top-0 left-0 right-0 z-[1000] bg-white rounded-b-3xl shadow-2xl px-6 pt-6 pb-8 flex flex-col gap-6"
+      >
+        <div class="flex items-center justify-between">
+          <img src="images/logo-sunu-gestion.png" alt="Logo SunuGestion" class="w-[140px] h-auto" />
+
+          <button
+            type="button"
+            (click)="fermerMenu()"
+            class="w-10 h-10 flex items-center justify-center text-[#1E3A5F] text-xl"
+          >
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+
+        <div class="flex flex-col gap-4 border-t border-gray-100 pt-4">
+          <a
+            (click)="scrollVers('fonctionnalites')"
+            class="text-[#1E3A5F] text-base font-semibold py-2 cursor-pointer"
+          >
+            Fonctionnalités
+          </a>
+
+          <a
+            (click)="scrollVers('comment-ca-marche')"
+            class="text-[#1E3A5F] text-base font-semibold py-2 cursor-pointer"
+          >
+            Comment ça marche
+          </a>
+
+          <a
+            (click)="scrollVers('pourquoi')"
+            class="text-[#1E3A5F] text-base font-semibold py-2 cursor-pointer"
+          >
+            Pour qui
+          </a>
+
+          <a
+            (click)="scrollVers('avantages')"
+            class="text-[#1E3A5F] text-base font-semibold py-2 cursor-pointer"
+          >
+            Avantages
+          </a>
+
+          <a
+            (click)="scrollVers('tarification')"
+            class="text-[#1E3A5F] text-base font-semibold py-2 cursor-pointer"
+          >
+            Tarification
+          </a>
+        </div>
+
+        <div class="flex flex-col gap-3 border-t border-gray-100 pt-4">
+          <a
+            routerLink="/login"
+            (click)="fermerMenu()"
+            class="w-full py-3 text-center text-[#1E3A5F] font-semibold border border-[#1E3A5F]/20 rounded-2xl"
+          >
+            Se connecter
+          </a>
+
+          <a
+            routerLink="/inscription/gie"
+            (click)="fermerMenu()"
+            class="w-full py-3 text-center bg-[#1E3A5F] text-white font-semibold rounded-2xl"
+          >
+            Créer mon organisation
+          </a>
+        </div>
+      </div>
+    }
+
+    <!-- =======================================================
+         HERO CONTENT
+    ======================================================== -->
+    <div
+      class="absolute left-6 right-6 top-[217px] md:left-[84px] md:right-auto md:top-[400px] md:w-[800px] flex flex-col items-start"
+    >
+      <h1
+        class="text-white font-bold text-[30px] leading-[37.5px] md:text-[60px] md:leading-[75px]"
+      >
+        <span class="md:hidden">
+          La gestion de votre<br />
+          organisation,<br />
+          simplement.
+        </span>
+
+        <span class="hidden md:inline">
+          Gérez votre organisation,<br />
+          simplement.
+        </span>
+      </h1>
+
+      <p class="mt-4 md:mt-6 text-white/90 text-base leading-[26px] md:text-xl md:leading-[32.5px]">
+        <span class="md:hidden">
+          Digitalisez vos cotisations, gérez vos<br />
+          membres et suivez vos projets en<br />
+          toute transparence.
+        </span>
+
+        <span class="hidden md:inline">
+          Digitalisez vos cotisations, gérez vos membres et suivez vos projets en toute transparence
+          avec l'outil adapté au contexte local.
+        </span>
+      </p>
+
+      <div
+        class="w-full md:w-auto pt-8 md:pt-4 flex flex-col md:flex-row items-center md:items-center gap-3 md:gap-4"
+      >
+        <a
+          routerLink="/inscription/gie"
+          class="w-full md:w-auto px-4 md:px-8 py-4 bg-[#1E3A5F] rounded-2xl text-white text-base md:text-lg leading-6 md:leading-7 font-bold text-center"
+        >
+          <span class="md:hidden">Démarrer gratuitement</span>
+          <span class="hidden md:inline">Créer mon organisation</span>
+        </a>
+
+        <a
+          href="#fonctionnalites"
+          class="w-full md:w-auto px-4 md:px-8 py-4 bg-white/70 border border-white/60 backdrop-blur-[14px] rounded-2xl text-[#1E3A5F] text-base md:text-lg leading-6 md:leading-7 font-bold text-center"
+        >
+          Voir la démo
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       PROBLÈMES
+  ========================================================== -->
+  <section id="problemes" class="w-full px-4 md:px-10 lg:px-20 py-24 md:py-[120px] pb-24 flex flex-col gap-16">
+    <div class="flex flex-col items-center gap-3 md:gap-4 text-center">
+      <h2 class="text-[#1E3A5F] text-2xl leading-8 md:text-4xl md:leading-[45px] font-bold">
+        <span class="md:hidden">Un suivi difficile ?</span>
+
+        <span class="hidden md:inline">
+          Encore difficile de suivre toutes les informations<br />
+          de votre organisation ?
+        </span>
+      </h2>
+
+      <p class="text-[#1A1D23]/60 text-sm leading-[22.75px] md:text-lg md:leading-7">
+        Les méthodes traditionnelles ralentissent votre croissance.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+      <!-- Carte 1 -->
+      <article
+        class="p-6 md:p-8 bg-white rounded-3xl border border-[#F3F4F6] flex flex-row md:flex-col items-start gap-4 md:gap-3"
+      >
+        <div class="w-12 h-12 shrink-0 bg-[#1E3A5F]/10 rounded-xl flex items-center justify-center">
+          <i class="pi pi-book text-[#1E3A5F] text-xl"></i>
+        </div>
+
+        <div class="min-w-0">
+          <h3 class="md:pt-3 text-[#1A1D23] text-base md:text-xl leading-6 md:leading-7 font-bold">
+            Cahiers physiques
+          </h3>
+
+          <p
+            class="mt-1 md:mt-0 text-[#1A1D23]/60 text-sm md:text-base leading-5 md:leading-[26px]"
+          >
+            <span class="md:hidden"> Risques de perte et difficultés de recherche. </span>
+
+            <span class="hidden md:inline">
+              Risques de perte, de dégradation et difficultés de recherche rapide.
+            </span>
+          </p>
+        </div>
+      </article>
+
+      <!-- Carte 2 -->
+      <article
+        class="p-6 md:p-8 bg-white rounded-3xl border border-[#F3F4F6] flex flex-row md:flex-col items-start gap-4 md:gap-3"
+      >
+        <div class="w-12 h-12 shrink-0 bg-[#1E3A5F]/10 rounded-xl flex items-center justify-center">
+          <i class="pi pi-file-excel text-[#1E3A5F] text-xl"></i>
+        </div>
+
+        <div class="min-w-0">
+          <h3 class="md:pt-3 text-[#1A1D23] text-base md:text-xl leading-6 md:leading-7 font-bold">
+            Fichiers Excel
+          </h3>
+
+          <p class="mt-1 text-[#1A1D23]/60 text-sm md:text-base leading-5 md:leading-[26px]">
+            <span class="md:hidden"> Complexes et non collaboratifs sur mobile. </span>
+
+            <span class="hidden md:inline">
+              Souvent complexes, non collaboratifs et difficiles à consulter sur mobile.
+            </span>
+          </p>
+        </div>
+      </article>
+
+      <!-- Carte 3 -->
+      <article
+        class="p-6 md:p-8 bg-white rounded-3xl border border-[#F3F4F6] flex flex-row md:flex-col items-start gap-4 md:gap-3"
+      >
+        <div class="w-12 h-12 shrink-0 bg-[#1E3A5F]/10 rounded-xl flex items-center justify-center">
+          <i class="pi pi-sitemap text-[#1E3A5F] text-xl"></i>
+        </div>
+
+        <div class="min-w-0">
+          <h3 class="md:pt-3 text-[#1A1D23] text-base md:text-xl leading-6 md:leading-7 font-bold">
+            Infos dispersées
+          </h3>
+
+          <p class="mt-1 text-[#1A1D23]/60 text-sm md:text-base leading-5 md:leading-[26px]">
+            <span class="md:hidden"> WhatsApp, appels, papier... c'est partout. </span>
+
+            <span class="hidden md:inline">
+              WhatsApp, appels, papier... L'information est partout et nulle part.
+            </span>
+          </p>
+        </div>
+      </article>
+
+      <!-- Carte 4 -->
+      <article
+        class="p-6 md:p-8 bg-white rounded-3xl border border-[#F3F4F6] flex flex-row md:flex-col items-start gap-4 md:gap-3"
+      >
+        <div class="w-12 h-12 shrink-0 bg-[#1E3A5F]/10 rounded-xl flex items-center justify-center">
+          <i class="pi pi-clock text-[#1E3A5F] text-xl"></i>
+        </div>
+
+        <div class="min-w-0">
+          <h3 class="md:pt-3 text-[#1A1D23] text-base md:text-xl leading-6 md:leading-7 font-bold">
+            Suivi manuel
+          </h3>
+
+          <p class="mt-1 text-[#1A1D23]/60 text-sm md:text-base leading-5 md:leading-[26px]">
+            Le trésorier passe des heures à relancer chaque membre individuellement.
+          </p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       FONCTIONNALITÉS
+  ========================================================== -->
+  <section id="fonctionnalites" class="w-full bg-[#1E3A5F] px-4 py-16 md:px-10 lg:px-20 md:py-24">
+    <div class="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16 lg:items-start">
+
+      <!-- Colonne gauche : présentation et points forts -->
+      <div class="flex flex-col gap-8 md:gap-10">
+        <div class="flex flex-col gap-4">
+          <p class="flex items-center gap-2 text-white/60 text-xs font-bold uppercase tracking-[1.5px]">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#2E7D5B]"></span>
+            Toutes les fonctionnalités
+          </p>
+          <h2 class="text-white text-3xl md:text-5xl font-bold leading-tight">
+            L'outil complet<br />
+            du groupement moderne.
+          </h2>
+        </div>
+
+        <ol class="flex flex-col gap-6 md:gap-8">
+          <li class="flex gap-4">
+            <span class="pt-1 font-mono text-xs text-white/40">01</span>
+            <div class="flex flex-col gap-1">
+              <h3 class="text-white text-lg font-bold leading-7">Simple et mobile</h3>
+              <p class="text-white/60 text-sm leading-6">Pensé pour le téléphone et utilisable par tous les membres, sans formation particulière.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="pt-1 font-mono text-xs text-white/40">02</span>
+            <div class="flex flex-col gap-1">
+              <h3 class="text-white text-lg font-bold leading-7">Traçabilité financière</h3>
+              <p class="text-white/60 text-sm leading-6">Cotisations, prêts et caisse : chaque mouvement est enregistré, en espèces, Wave ou Orange Money.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="pt-1 font-mono text-xs text-white/40">03</span>
+            <div class="flex flex-col gap-1">
+              <h3 class="text-white text-lg font-bold leading-7">Rapports et suivi</h3>
+              <p class="text-white/60 text-sm leading-6">Rapport périodique en PDF et diagnostic de la trésorerie pour préparer vos assemblées.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="pt-1 font-mono text-xs text-white/40">04</span>
+            <div class="flex flex-col gap-1">
+              <h3 class="text-white text-lg font-bold leading-7">Transparence</h3>
+              <p class="text-white/60 text-sm leading-6">Notifications à chaque événement et rôles clairs pour chaque membre du bureau.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Colonne droite : modules de l'application -->
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4">
+        <article class="flex flex-col gap-2 rounded-2xl bg-white p-4 md:p-5 shadow-sm">
+          <i class="pi pi-th-large text-[#1E3A5F] text-xl md:text-2xl"></i>
+          <h3 class="mt-1 text-[#1A1D23] text-sm md:text-base font-bold leading-5">Tableau de bord</h3>
+          <p class="text-[#1A1D23]/60 text-xs md:text-sm leading-5">Vue d'ensemble de la caisse, des prêts et des activités.</p>
+        </article>
+        <article class="flex flex-col gap-2 rounded-2xl bg-white p-4 md:p-5 shadow-sm">
+          <i class="pi pi-users text-[#1E3A5F] text-xl md:text-2xl"></i>
+          <h3 class="mt-1 text-[#1A1D23] text-sm md:text-base font-bold leading-5">Membres</h3>
+          <p class="text-[#1A1D23]/60 text-xs md:text-sm leading-5">Liste des membres, fiches individuelles et invitations.</p>
+        </article>
+        <article class="flex flex-col gap-2 rounded-2xl bg-white p-4 md:p-5 shadow-sm">
+          <i class="pi pi-sitemap text-[#1E3A5F] text-xl md:text-2xl"></i>
+          <h3 class="mt-1 text-[#1A1D23] text-sm md:text-base font-bold leading-5">Bureau</h3>
+          <p class="text-[#1A1D23]/60 text-xs md:text-sm leading-5">Président, trésorier, secrétaire et leurs adjoints.</p>
+        </article>
+        <article class="flex flex-col gap-2 rounded-2xl bg-white p-4 md:p-5 shadow-sm">
+          <i class="pi pi-wallet text-[#1E3A5F] text-xl md:text-2xl"></i>
+          <h3 class="mt-1 text-[#1A1D23] text-sm md:text-base font-bold leading-5">Cotisations</h3>
+          <p class="text-[#1A1D23]/60 text-xs md:text-sm leading-5">Sessions, paiements et suivi des retards.</p>
+        </article>
+        <article class="flex flex-col gap-2 rounded-2xl bg-white p-4 md:p-5 shadow-sm">
+          <i class="pi pi-credit-card text-[#1E3A5F] text-xl md:text-2xl"></i>
+          <h3 class="mt-1 text-[#1A1D23] text-sm md:text-base font-bold leading-5">Prêts</h3>
+          <p class="text-[#1A1D23]/60 text-xs md:text-sm leading-5">Demandes, approbation, décaissement et remboursement.</p>
+        </article>
+        <article class="flex flex-col gap-2 rounded-2xl bg-white p-4 md:p-5 shadow-sm">
+          <i class="pi pi-calendar text-[#1E3A5F] text-xl md:text-2xl"></i>
+          <h3 class="mt-1 text-[#1A1D23] text-sm md:text-base font-bold leading-5">Activités</h3>
+          <p class="text-[#1A1D23]/60 text-xs md:text-sm leading-5">Réunions et événements planifiés, avec comptes rendus.</p>
+        </article>
+        <article class="flex flex-col gap-2 rounded-2xl bg-white p-4 md:p-5 shadow-sm">
+          <i class="pi pi-money-bill text-[#1E3A5F] text-xl md:text-2xl"></i>
+          <h3 class="mt-1 text-[#1A1D23] text-sm md:text-base font-bold leading-5">Caisse</h3>
+          <p class="text-[#1A1D23]/60 text-xs md:text-sm leading-5">Entrées, sorties et solde de la trésorerie.</p>
+        </article>
+        <article class="flex flex-col gap-2 rounded-2xl bg-white p-4 md:p-5 shadow-sm">
+          <i class="pi pi-file-pdf text-[#1E3A5F] text-xl md:text-2xl"></i>
+          <h3 class="mt-1 text-[#1A1D23] text-sm md:text-base font-bold leading-5">Rapports PDF</h3>
+          <p class="text-[#1A1D23]/60 text-xs md:text-sm leading-5">Bilan mensuel, trimestriel ou annuel du groupement.</p>
+        </article>
+        <article class="flex flex-col gap-2 rounded-2xl bg-white p-4 md:p-5 shadow-sm">
+          <i class="pi pi-bell text-[#1E3A5F] text-xl md:text-2xl"></i>
+          <h3 class="mt-1 text-[#1A1D23] text-sm md:text-base font-bold leading-5">Notifications</h3>
+          <p class="text-[#1A1D23]/60 text-xs md:text-sm leading-5">Alertes dans l'application à chaque événement.</p>
+        </article>
+        <article class="flex flex-col gap-2 rounded-2xl bg-white p-4 md:p-5 shadow-sm">
+          <i class="pi pi-chart-line text-[#1E3A5F] text-xl md:text-2xl"></i>
+          <h3 class="mt-1 text-[#1A1D23] text-sm md:text-base font-bold leading-5">Diagnostic</h3>
+          <p class="text-[#1A1D23]/60 text-xs md:text-sm leading-5">Analyse de la trésorerie et recommandations.</p>
+        </article>
+        <article class="flex flex-col gap-2 rounded-2xl bg-white p-4 md:p-5 shadow-sm">
+          <i class="pi pi-file-import text-[#1E3A5F] text-xl md:text-2xl"></i>
+          <h3 class="mt-1 text-[#1A1D23] text-sm md:text-base font-bold leading-5">Import de membres</h3>
+          <p class="text-[#1A1D23]/60 text-xs md:text-sm leading-5">Ajout de membres par fichier Excel ou photo.</p>
+        </article>
+        <article class="flex flex-col gap-2 rounded-2xl bg-white p-4 md:p-5 shadow-sm">
+          <i class="pi pi-lock text-[#1E3A5F] text-xl md:text-2xl"></i>
+          <h3 class="mt-1 text-[#1A1D23] text-sm md:text-base font-bold leading-5">Sécurité</h3>
+          <p class="text-[#1A1D23]/60 text-xs md:text-sm leading-5">Code PIN et accès selon le rôle de chacun.</p>
+        </article>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================
+       COMMENT ÇA MARCHE
+  ========================================================== -->
+  <section
+    id="comment-ca-marche"
+    class="w-full px-4 md:px-10 lg:px-20 py-16 md:py-24 flex flex-col gap-12 md:gap-16"
+  >
+    <div class="flex flex-col items-center gap-3 md:gap-4 text-center">
+      <h2 class="text-[#1E3A5F] text-2xl leading-8 md:text-4xl md:leading-10 font-bold">
+        Comment ça marche ?
+      </h2>
+
+      <p class="text-[#1A1D23]/60 text-sm leading-5 md:text-lg md:leading-7">
+        Digitalisez votre organisation en moins de 10 minutes.
+      </p>
+    </div>
+
+    <div
+      class="flex flex-col md:grid md:grid-cols-3 gap-12 md:gap-12 max-w-[1100px] w-full mx-auto"
+    >
+      <!-- Étape 1 -->
+      <article class="flex flex-col items-center text-center gap-3">
+        <div
+          class="w-16 h-16 bg-[#2E7D5B] rounded-full flex items-center justify-center text-white text-2xl font-bold"
+        >
+          1
+        </div>
+
+        <div
+          class="w-40 h-[260px] md:w-48 md:h-80 p-3 md:p-4 bg-white rounded-[24px] md:rounded-[32px] border-[6px] md:border-[8px] border-[#111827] flex items-center justify-center"
+        >
+          <div
+            class="w-full h-full bg-[#1E3A5F]/10 rounded-2xl flex flex-col items-center justify-center gap-3"
+          >
+            <i class="pi pi-building text-[#1E3A5F] text-3xl md:text-4xl"></i>
+
+            <span class="w-20 h-3 bg-[#1E3A5F]/20 rounded"></span>
+            <span class="w-14 h-3 bg-[#1E3A5F]/20 rounded"></span>
+          </div>
+        </div>
+
+        <h3 class="pt-5 md:pt-7 text-[#1A1D23] text-lg md:text-xl leading-7 font-bold">
+          Créez votre profil
+        </h3>
+
+        <p class="max-w-[280px] text-[#1A1D23]/60 text-sm md:text-base leading-5 md:leading-6">
+          Remplissez les informations de base de votre organisation et ses statuts.
+        </p>
+      </article>
+
+      <!-- Étape 2 -->
+      <article class="flex flex-col items-center text-center gap-3">
+        <div
+          class="w-16 h-16 bg-[#2E7D5B] rounded-full flex items-center justify-center text-white text-2xl font-bold"
+        >
+          2
+        </div>
+
+        <div
+          class="w-40 h-[260px] md:w-48 md:h-80 p-3 md:p-4 bg-white rounded-[24px] md:rounded-[32px] border-[6px] md:border-[8px] border-[#111827] flex items-center justify-center"
+        >
+          <div
+            class="w-full h-full bg-[#2E7D5B]/10 rounded-2xl flex flex-col items-center justify-center gap-3"
+          >
+            <i class="pi pi-users text-[#2E7D5B] text-3xl md:text-4xl"></i>
+
+            <span class="w-20 h-3 bg-[#2E7D5B]/20 rounded"></span>
+            <span class="w-14 h-3 bg-[#2E7D5B]/20 rounded"></span>
+          </div>
+        </div>
+
+        <h3 class="pt-5 md:pt-7 text-[#1A1D23] text-lg md:text-xl leading-7 font-bold">
+          Importez vos membres
+        </h3>
+
+        <p class="max-w-[280px] text-[#1A1D23]/60 text-sm md:text-base leading-5 md:leading-6">
+          Ajoutez manuellement ou via Excel la liste de vos adhérents et leurs rôles.
+        </p>
+      </article>
+
+      <!-- Étape 3 -->
+      <article class="flex flex-col items-center text-center gap-3">
+        <div
+          class="w-16 h-16 bg-[#2E7D5B] rounded-full flex items-center justify-center text-white text-2xl font-bold"
+        >
+          3
+        </div>
+
+        <div
+          class="w-40 h-[260px] md:w-48 md:h-80 p-3 md:p-4 bg-white rounded-[24px] md:rounded-[32px] border-[6px] md:border-[8px] border-[#111827] flex items-center justify-center"
+        >
+          <div
+            class="w-full h-full bg-blue-50 rounded-2xl flex flex-col items-center justify-center gap-3"
+          >
+            <i class="pi pi-check-circle text-blue-500 text-3xl md:text-4xl"></i>
+
+            <span class="w-20 h-3 bg-blue-100 rounded"></span>
+            <span class="w-14 h-3 bg-blue-100 rounded"></span>
+          </div>
+        </div>
+
+        <h3 class="pt-5 md:pt-7 text-[#1A1D23] text-lg md:text-xl leading-7 font-bold">
+          Gérez sereinement
+        </h3>
+
+        <p class="max-w-[280px] text-[#1A1D23]/60 text-sm md:text-base leading-5 md:leading-6">
+          Enregistrez les cotisations et partagez les rapports en un clic.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       POURQUOI SUNUGESTION
+  ========================================================== -->
+  <section
+    id="pourquoi"
+    class="w-full bg-white px-4 md:px-10 lg:px-20 pt-16 md:py-24 pb-28 flex flex-col md:flex-row items-center gap-8 md:gap-20"
+  >
+    <!-- Texte -->
+    <div class="flex-1 w-full flex flex-col gap-8">
+      <h2
+        class="text-[#1E3A5F] text-2xl leading-8 md:text-4xl md:leading-10 font-bold text-center md:text-left"
+      >
+        <span class="md:hidden">Pourquoi SunuGestion ?</span>
+
+        <span class="hidden md:inline">Pourquoi choisir SunuGestion ?</span>
+      </h2>
+
+      <div class="flex flex-col gap-8 md:gap-6">
+        <!-- Sécurité -->
+        <article class="flex items-start gap-4 md:gap-5">
+          <div
+            class="w-12 h-12 shrink-0 bg-[#2E7D5B]/10 rounded-xl flex items-center justify-center"
+          >
+            <i class="pi pi-shield text-[#2E7D5B] text-xl"></i>
+          </div>
+
+          <div>
+            <h3 class="text-[#1A1D23] text-base md:text-xl leading-6 md:leading-7 font-bold">
+              <span class="md:hidden">Sécurité</span>
+              <span class="hidden md:inline">Hautement Sécurisé</span>
+            </h3>
+
+            <p class="mt-1 text-[#1A1D23]/60 text-sm md:text-base leading-5 md:leading-6">
+              <span class="md:hidden">
+                Données cryptées et stockées sur serveurs hautement sécurisés.
+              </span>
+
+              <span class="hidden md:inline">
+                Vos données sont cryptées et stockées sur des serveurs sécurisés 24h/24.
+              </span>
+            </p>
+          </div>
+        </article>
+
+        <!-- Transparence -->
+        <article class="flex items-start gap-4 md:gap-5">
+          <div
+            class="w-12 h-12 shrink-0 bg-[#2E7D5B]/10 rounded-xl flex items-center justify-center"
+          >
+            <i class="pi pi-eye text-[#2E7D5B] text-xl"></i>
+          </div>
+
+          <div>
+            <h3 class="text-[#1A1D23] text-base md:text-xl leading-6 md:leading-7 font-bold">
+              <span class="md:hidden">Transparence</span>
+              <span class="hidden md:inline">Transparence Totale</span>
+            </h3>
+
+            <p class="mt-1 text-[#1A1D23]/60 text-sm md:text-base leading-5 md:leading-6">
+              <span class="md:hidden"> Chaque membre suit ses cotisations en temps réel. </span>
+
+              <span class="hidden md:inline">
+                Chaque membre a un accès direct au suivi de ses propres cotisations.
+              </span>
+            </p>
+          </div>
+        </article>
+
+        <!-- Simplicité -->
+        <article class="flex items-start gap-4 md:gap-5">
+          <div
+            class="w-12 h-12 shrink-0 bg-[#2E7D5B]/10 rounded-xl flex items-center justify-center"
+          >
+            <i class="pi pi-mobile text-[#2E7D5B] text-xl"></i>
+          </div>
+
+          <div>
+            <h3 class="text-[#1A1D23] text-base md:text-xl leading-6 md:leading-7 font-bold">
+              <span class="md:hidden">Simplicité</span>
+              <span class="hidden md:inline">Simplicité d'utilisation</span>
+            </h3>
+
+            <p class="mt-1 text-[#1A1D23]/60 text-sm md:text-base leading-5 md:leading-6">
+              <span class="md:hidden"> Interface intuitive conçue pour tous les profils. </span>
+
+              <span class="hidden md:inline">
+                Interface intuitive conçue pour être utilisée par tous, sans formation technique.
+              </span>
+            </p>
+          </div>
+        </article>
+
+        <!-- Gestion centralisée : desktop uniquement -->
+        <article class="hidden md:flex items-start gap-5">
+          <div
+            class="w-12 h-12 shrink-0 bg-[#2E7D5B]/10 rounded-xl flex items-center justify-center"
+          >
+            <i class="pi pi-th-large text-[#2E7D5B] text-xl"></i>
+          </div>
+
+          <div>
+            <h3 class="text-[#1A1D23] text-xl leading-7 font-bold">Gestion Centralisée</h3>
+
+            <p class="mt-1 text-[#1A1D23]/60 text-base leading-6">
+              Regroupez tous vos documents, listes et comptes au même endroit.
+            </p>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <!-- Image -->
+    <div class="flex-1 w-full relative">
+      <img
+        src="images/sunugestion.png"
+        alt="SunuGestion en action"
+        class="relative z-10 w-full h-[266px] md:h-[500px] object-cover rounded-3xl"
+      />
+    </div>
+  </section>
+
+  <!-- =========================================================
+       CTA
+  ========================================================== -->
+  <!-- =========================================================
+       TARIFICATION
+  ========================================================== -->
+  <section id="tarification" class="w-full px-4 py-16 md:px-10 lg:px-20 md:py-24 flex flex-col items-center gap-10 md:gap-14">
+    <div class="flex flex-col items-center gap-3 md:gap-4 text-center">
+      <h2 class="text-[#1E3A5F] text-2xl leading-8 md:text-4xl md:leading-[45px] font-bold">
+        Un prix simple, selon la taille de votre groupement
+      </h2>
+      <p class="text-[#1A1D23]/60 text-sm md:text-lg leading-6 md:leading-7">
+        Une seule formule, toutes les fonctionnalités incluses.
+      </p>
+    </div>
+
+    @if (grille(); as g) {
+      <!-- Essai gratuit -->
+      <div class="w-full max-w-[960px] rounded-2xl bg-[#1E3A5F] px-6 py-5 md:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+        <div>
+          <p class="text-white text-lg md:text-xl font-bold">{{ g.dureeEssaiJours }} jours d'essai gratuit</p>
+          <p class="text-white/70 text-sm">Sans engagement, toutes les fonctionnalités, dès la création de votre espace.</p>
+        </div>
+        <a
+          routerLink="/inscription/gie"
+          class="shrink-0 px-6 py-3 bg-white rounded-xl text-[#1E3A5F] text-sm md:text-base font-bold no-underline transition hover:bg-gray-100"
+        >
+          Commencer l'essai gratuit
+        </a>
+      </div>
+
+      <!-- Grille mensuelle -->
+      <div class="w-full max-w-[960px] grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        @for (p of g.paliers; track p.membresMin) {
+          <article class="flex flex-col items-center gap-1 rounded-2xl border border-[#1E3A5F]/10 bg-white p-5 md:p-6 text-center shadow-sm">
+            <p class="text-[#1A1D23]/60 text-xs md:text-sm font-semibold">
+              @if (p.membresMax === null) { Plus de {{ p.membresMin - 1 }} membres }
+              @else if (p.membresMin === 1) { Jusqu'à {{ p.membresMax }} membres }
+              @else { {{ p.membresMin }} à {{ p.membresMax }} membres }
+            </p>
+            <p class="mt-2 text-[#1E3A5F] text-2xl md:text-3xl font-bold">{{ p.montant | number:'1.0-0' }}</p>
+            <p class="text-[#1A1D23]/50 text-xs md:text-sm">FCFA / mois</p>
+          </article>
+        }
+      </div>
+
+      <!-- Conditions -->
+      <ul class="w-full max-w-[960px] grid grid-cols-1 md:grid-cols-2 gap-3 text-sm md:text-base text-[#1A1D23]/70">
+        <li class="flex items-start gap-3">
+          <i class="pi pi-check-circle mt-1 text-[#2E7D5B]"></i>
+          <span>Toutes les fonctionnalités incluses, sans option payante.</span>
+        </li>
+        <li class="flex items-start gap-3">
+          <i class="pi pi-users mt-1 text-[#2E7D5B]"></i>
+          <span>Seuls les membres actifs sont comptés, avec une tolérance de {{ g.tolerance }} membres au-dessus de chaque palier.</span>
+        </li>
+        <li class="flex items-start gap-3">
+          <i class="pi pi-wallet mt-1 text-[#2E7D5B]"></i>
+          <span>Paiement mensuel par {{ g.modesPaiement.join(' ou ') }}.</span>
+        </li>
+        <li class="flex items-start gap-3">
+          <i class="pi pi-lock mt-1 text-[#2E7D5B]"></i>
+          <span>Sans paiement, vos données restent consultables : rien n'est supprimé.</span>
+        </li>
+      </ul>
+    } @else if (erreurGrille()) {
+      <p class="text-[#1A1D23]/60 text-sm text-center">
+        Les tarifs ne peuvent pas être affichés pour le moment. Contactez-nous pour les connaître.
+      </p>
+    } @else {
+      <div class="py-8 text-[#1E3A5F]/40">
+        <i class="pi pi-spin pi-spinner text-2xl"></i>
+      </div>
+    }
+  </section>
+
+  <section class="w-full px-4 py-16 md:px-10 lg:px-20 md:py-24">
+    <div
+      class="w-full rounded-3xl md:rounded-[32px] bg-[#2E7D5B] px-6 py-10 md:px-16 lg:px-20 md:py-20 flex flex-col items-center gap-6 md:gap-8 text-center overflow-hidden"
+    >
+      <h2
+        class="max-w-full md:max-w-3xl text-white text-[30px] leading-[36px] md:text-[48px] md:leading-[48px] font-bold"
+      >
+        Prêt à transformer votre gestion ?
+      </h2>
+
+      <p
+        class="max-w-full md:max-w-[672px] text-white/80 text-base leading-6 md:text-xl md:leading-7 font-normal"
+      >
+        Simplifiez la gestion de votre organisation dès aujourd'hui.
+        @if (grille(); as g) {
+          <span class="block mt-2 text-white font-semibold">
+            {{ g.dureeEssaiJours }} jours gratuits, puis à partir de {{ g.paliers[0].montant | number:'1.0-0' }} FCFA par mois.
+          </span>
+        }
+      </p>
+
+      <div
+        class="w-full md:w-auto pt-2 md:pt-4 flex flex-col md:flex-row items-stretch md:items-center gap-4 md:gap-6"
+      >
+        <a
+          routerLink="/inscription/gie"
+          class="w-full md:w-auto px-6 py-4 md:px-10 md:py-5 bg-white rounded-2xl text-[#2E7D5B] text-base md:text-xl leading-6 md:leading-7 font-bold text-center no-underline transition hover:bg-gray-100"
+        >
+          Commencer l'essai gratuit
+        </a>
+
+        <a
+          href="#"
+          class="w-full md:w-auto px-6 py-4 md:px-10 md:py-5 bg-[#2E7D5B] rounded-2xl border-2 border-white/30 text-white text-base md:text-xl leading-6 md:leading-7 font-bold text-center no-underline transition hover:bg-white/10"
+        >
+          Nous contacter
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       FOOTER
+  ========================================================== -->
+  <footer
+    class="w-full bg-white border-t border-[#F3F4F6] px-6 md:px-20 pt-14 md:pt-24 pb-8 md:pb-12"
+  >
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-16 mb-8 md:mb-20">
+      <!-- Brand -->
+      <div class="col-span-2 md:col-span-1 flex flex-col gap-4 md:gap-6">
+        <img
+          src="images/logo-sunu-gestion.png"
+          alt="Logo SunuGestion"
+          class="w-[150px] md:w-40 h-auto"
+        />
+
+        <p class="text-[#1A1D23]/60 text-sm md:text-base leading-[22.75px] md:leading-[26px]">
+          La solution de gestion digitale conçue pour les organisations africaines.
+        </p>
+      </div>
+
+      <!-- Plateforme -->
+      <div class="flex flex-col gap-4 md:gap-6">
+        <h3 class="text-[#1E3A5F] text-base font-bold">Plateforme</h3>
+
+        <div class="flex flex-col gap-4">
+          <a href="#fonctionnalites" class="text-[#1A1D23]/60 text-sm md:text-base">
+            Fonctionnalités
+          </a>
+
+          <a (click)="scrollVers('tarification')" class="text-[#1A1D23]/60 text-sm md:text-base cursor-pointer"> Tarification </a>
+
+          <a href="#" class="text-[#1A1D23]/60 text-sm md:text-base"> Sécurité </a>
+
+          <a href="#" class="hidden md:block text-[#1A1D23]/60 text-base"> Application Mobile </a>
+        </div>
+      </div>
+
+      <!-- Entreprise -->
+      <div class="hidden md:flex flex-col gap-6">
+        <h3 class="text-[#1E3A5F] text-base font-bold">Entreprise</h3>
+
+        <div class="flex flex-col gap-4">
+          <a class="text-[#1A1D23]/60 text-base">À propos</a>
+          <a class="text-[#1A1D23]/60 text-base">Blog</a>
+          <a class="text-[#1A1D23]/60 text-base">Carrières</a>
+          <a class="text-[#1A1D23]/60 text-base">Contact</a>
+        </div>
+      </div>
+
+      <!-- Support -->
+      <div class="flex flex-col gap-4 md:gap-6">
+        <h3 class="text-[#1E3A5F] text-base font-bold">Support</h3>
+
+        <div class="flex flex-col gap-4">
+          <a class="text-[#1A1D23]/60 text-sm md:text-base"> Centre d'aide </a>
+
+          <a class="hidden md:block text-[#1A1D23]/60 text-base"> Documentation </a>
+
+          <a class="hidden md:block text-[#1A1D23]/60 text-base"> Statut </a>
+
+          <a class="text-[#1A1D23]/60 text-sm md:text-base"> FAQ </a>
+
+          <a class="md:hidden text-[#1A1D23]/60 text-sm"> Contact </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Réseaux sociaux -->
+    <!-- <div class="flex gap-4 mb-8 md:mb-8">
+      <button
+        type="button"
+        class="w-10 h-10 rounded-full border border-[#E5E7EB] flex items-center justify-center"
+      >
+        <i class="pi pi-facebook text-[#1E3A5F]/60 text-sm"></i>
+      </button>
+
+      <button
+        type="button"
+        class="w-10 h-10 rounded-full border border-[#E5E7EB] flex items-center justify-center"
+      >
+        <i class="pi pi-twitter text-[#1E3A5F]/60 text-sm"></i>
+      </button>
+
+      <button
+        type="button"
+        class="w-10 h-10 rounded-full border border-[#E5E7EB] flex items-center justify-center"
+      >
+        <i class="pi pi-linkedin text-[#1E3A5F]/60 text-sm"></i>
+      </button>
+    </div> -->
+
+    <!-- Bottom -->
+    <div
+      class="pt-8 border-t border-[#F3F4F6] flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+    >
+      <span class="text-[#1A1D23]/40 text-xs md:text-sm font-medium">
+        © 2026 SunuGestion. Tous droits réservés.
+      </span>
+
+      <div class="flex items-center gap-4 md:gap-8">
+        <span class="text-[#1A1D23]/40 text-xs md:text-sm font-medium"> Confidentialité </span>
+
+        <span class="text-[#1A1D23]/40 text-xs md:text-sm font-medium"> CGU </span>
+
+        <span class="hidden md:inline text-[#1A1D23]/40 text-sm font-medium">
+          Mentions légales
+        </span>
+      </div>
+    </div>
+  </footer>
+</div>

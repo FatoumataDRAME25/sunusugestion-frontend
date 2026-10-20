@@ -1,0 +1,652 @@
+<div class="relative flex bg-[#F7F8FA] lg:bg-fond-desktop min-h-screen">
+
+  <!-- Sidebar GIE réutilisable -->
+  <app-gie-sidebar></app-gie-sidebar>
+
+  <!-- ═══════════════════════════════════════
+       CONTENU PRINCIPAL
+  ════════════════════════════════════════ -->
+  <div class="flex-1 ml-0 lg:ml-[264px] min-w-0 flex flex-col">
+
+    <!-- Topbar réutilisable (desktop + mobile) -->
+    <app-navbar titre="Tableau de bord"></app-navbar>
+
+    <!-- BODY -->
+    <main class="p-4 lg:p-10 lg:pt-[120px] flex flex-col gap-6 lg:gap-10 pb-24 lg:pb-10">
+
+      <!-- Salutation DESKTOP -->
+      <div class="hidden lg:flex items-center justify-between gap-6">
+        <div class="flex flex-col gap-1">
+          <h2 class="text-3xl font-bold leading-9">
+            <span class="text-[#1E3A5F]">Bonjour </span>
+            <span class="text-[#2E7D5B]">{{ utilisateur()?.prenom }}</span>
+          </h2>
+          <p class="text-[#1A1D23]/50 text-base leading-6">Voici le résumé de l'activité de votre organisation pour aujourd'hui.</p>
+        </div>
+
+        @if (peutGenererRapport()) {
+          <button
+            type="button"
+            (click)="rapportOuvert.set(true)"
+            class="flex flex-shrink-0 items-center gap-2 border border-[#1E3A5F]/20 text-[#1E3A5F] font-semibold rounded-xl px-5 py-[10px] text-sm bg-white"
+          >
+            <i class="pi pi-file-pdf"></i>
+            Générer Rapport PDF
+          </button>
+        }
+      </div>
+
+      <!-- Salutation MOBILE -->
+      <div class="flex lg:hidden flex-col gap-1 pt-2">
+        <p class="text-[#1A1D23]/60 text-sm leading-5">Bonjour,</p>
+        <h2 class="text-[#1E3A5F] text-2xl font-bold leading-8">{{ utilisateur()?.prenom }} {{ utilisateur()?.nom }}</h2>
+        <span class="inline-flex self-start mt-1 px-2 py-[2px] bg-[#2E7D5B]/10 rounded-full text-[#2E7D5B] text-[10px] font-bold uppercase tracking-[1px]">{{ utilisateur()?.role }}</span>
+
+        @if (peutGenererRapport()) {
+          <button
+            type="button"
+            (click)="rapportOuvert.set(true)"
+            class="mt-md w-full border border-bleu-nuit/30 text-bleu-nuit font-semibold rounded-xl py-md flex items-center justify-center gap-sm bg-white"
+          >
+            <i class="pi pi-file-pdf"></i>
+            Générer Rapport PDF
+          </button>
+        }
+      </div>
+
+      <!-- Règles de prêt pas encore définies (président) -->
+      @if (reglesPretAbsentes()) {
+        <div class="flex flex-col gap-3 rounded-2xl border border-[#E8A020]/30 bg-[#E8A020]/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p class="text-sm font-semibold text-[#1E3A5F]">
+              <i class="pi pi-info-circle text-[#B7791F] mr-1"></i>
+              Les règles de prêt ne sont pas encore définies.
+            </p>
+            <p class="text-xs text-[#1A1D23]/60 mt-1">
+              Les membres ne pourront pas demander de prêt tant que vous ne les aurez pas définies.
+            </p>
+          </div>
+          <a routerLink="/mon-espace/prets/regles"
+            class="shrink-0 self-start sm:self-auto bg-[#1E3A5F] text-white font-semibold rounded-xl px-5 py-[10px] text-sm">
+            Définir maintenant
+          </a>
+        </div>
+      }
+
+      <!-- CARTES STATS DESKTOP -->
+      <div class="hidden lg:grid gap-6"
+           [class.grid-cols-5]="voitIndicateursPrets()"
+           [class.grid-cols-3]="!voitIndicateursPrets()">
+
+        <div class="col-span-1 min-h-[150px] p-6 bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col gap-1">
+          <div class="w-10 h-10 flex-shrink-0 bg-[#1E3A5F]/10 rounded-xl flex items-center justify-center">
+            <i class="pi pi-users text-[#1E3A5F] text-base"></i>
+          </div>
+          <p class="text-[#1A1D23]/50 text-sm font-medium pt-3">Membres actifs</p>
+          <p class="text-[#1E3A5F] text-2xl font-bold leading-8">{{ membresActifs() | number:'1.0-0' }}</p>
+        </div>
+
+        <div class="col-span-1 min-h-[150px] p-6 bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col gap-1">
+          <div class="w-10 h-10 flex-shrink-0 bg-[#2E7D5B]/10 rounded-xl flex items-center justify-center">
+            <i class="pi pi-wallet text-[#2E7D5B] text-base"></i>
+          </div>
+          <p class="text-[#1A1D23]/50 text-sm font-medium pt-3">Cotisations collectées</p>
+          <p class="text-[#1E3A5F] text-base font-bold leading-8">
+            @if (sessionActive()) { {{ sessionActive()!.totalCollecte | number:'1.0-0' }} FCFA }
+            @else { — }
+          </p>
+        </div>
+
+        @if (voitIndicateursPrets()) {
+          <div class="col-span-1 min-h-[150px] p-6 bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col gap-1">
+            <div class="w-10 h-10 flex-shrink-0 bg-red-500/10 rounded-xl flex items-center justify-center">
+              <i class="pi pi-exclamation-circle text-[#EB2528] text-base"></i>
+            </div>
+            <p class="text-[#1A1D23]/50 text-sm font-medium pt-3">Prêts en attente</p>
+            <p class="text-[#1E3A5F] text-2xl font-bold leading-8">{{ nbPretsEnAttente() }}</p>
+          </div>
+
+          <div class="col-span-1 min-h-[150px] p-6 bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col gap-1">
+            <div class="w-10 h-10 flex-shrink-0 bg-orange-500/10 rounded-xl flex items-center justify-center">
+              <i class="pi pi-credit-card text-[#EA580C] text-base"></i>
+            </div>
+            <p class="text-[#1A1D23]/50 text-sm font-medium pt-3">Prêts en retard</p>
+            <p class="text-[#1E3A5F] text-2xl font-bold leading-8">{{ pretsEnRetard().length }}</p>
+          </div>
+        }
+
+        <div class="col-span-1 p-6 bg-[#1E3A5F] rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col gap-1">
+          <p class="text-white/60 text-sm font-medium pt-3">Solde caisse</p>
+          @if (solde()) {
+            <p class="text-white text-2xl font-bold leading-8">{{ solde()!.solde | number:'1.0-0' }}<br/>FCFA</p>
+          } @else {
+            <p class="text-white/40 text-base">Chargement...</p>
+          }
+        </div>
+
+      </div>
+
+      <!-- CARTES STATS MOBILE -->
+      <div class="flex lg:hidden flex-col gap-3">
+        <div class="grid grid-cols-2 gap-3">
+          <div class="p-4 bg-white rounded-2xl shadow-sm flex flex-col gap-2">
+            <div class="w-8 h-8 flex-shrink-0 bg-[#1E3A5F]/10 rounded-xl flex items-center justify-center">
+              <i class="pi pi-users text-[#1E3A5F] text-sm"></i>
+            </div>
+            <p class="text-[#1A1D23]/50 text-xs font-medium">Membres</p>
+            <p class="text-[#1E3A5F] text-2xl font-bold leading-7">{{ membresActifs() | number:'1.0-0' }}</p>
+          </div>
+          <div class="p-4 bg-white rounded-2xl shadow-sm flex flex-col gap-2">
+            <div class="w-8 h-8 flex-shrink-0 bg-[#2E7D5B]/10 rounded-xl flex items-center justify-center">
+              <i class="pi pi-wallet text-[#2E7D5B] text-sm"></i>
+            </div>
+            <p class="text-[#1A1D23]/50 text-xs font-medium">Cotis. collectées</p>
+            @if (sessionActive()) {
+              <p class="text-[#1E3A5F] text-base font-bold leading-6">{{ sessionActive()!.totalCollecte | number:'1.0-0' }} F</p>
+            } @else {
+              <p class="text-[#1E3A5F] text-base font-bold leading-6">—</p>
+            }
+          </div>
+        </div>
+        <div class="p-5 bg-[#1E3A5F] rounded-2xl flex flex-col gap-1">
+          <p class="text-white/60 text-xs font-bold uppercase tracking-[0.8px]">Total caisse</p>
+          @if (solde()) {
+            <p class="text-white text-2xl font-bold leading-8">{{ solde()!.solde | number:'1.0-0' }} FCFA</p>
+          } @else {
+            <p class="text-white/40 text-base">Chargement...</p>
+          }
+        </div>
+      </div>
+
+      <!-- GRAPHIQUE (gauche) + WIDGETS (droite) -->
+      <div class="grid grid-cols-1 lg:grid-cols-[1.45fr_1fr] gap-6 lg:gap-8">
+
+        <!-- Graphique cotisations -->
+        <div class="min-w-0 p-6 lg:p-8 bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col gap-6 lg:gap-8">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-[#1E3A5F] text-base lg:text-xl font-bold leading-6 lg:leading-7">
+                <span class="hidden lg:inline">Historique des Cotisations</span>
+                <span class="lg:hidden">Flux financier</span>
+              </h3>
+              <p class="text-[#1A1D23]/50 text-xs lg:text-sm leading-4 lg:leading-5">Flux financier sur les 12 derniers mois</p>
+            </div>
+            <div class="flex gap-2">
+              <button class="px-3 lg:px-4 py-1.5 lg:py-2 bg-[#1E3A5F]/5 rounded-full text-[#1E3A5F] text-xs font-bold tracking-[0.12px]">Mensuel</button>
+              <button class="px-3 lg:px-4 py-1.5 lg:py-2 rounded-full text-[#1E3A5F]/40 text-xs font-bold tracking-[0.04px]">Annuel</button>
+            </div>
+          </div>
+          <div class="relative flex-1 min-h-[220px] lg:min-h-[380px] w-full">
+            <!-- Axe Y dynamique -->
+            <div class="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-right pr-2">
+              <span class="text-[#1E3A5F]/50 text-[10px] lg:text-[11px]">{{ labelAxeY(1) }}</span>
+              <span class="text-[#1E3A5F]/50 text-[10px] lg:text-[11px]">{{ labelAxeY(0.75) }}</span>
+              <span class="text-[#1E3A5F]/50 text-[10px] lg:text-[11px]">{{ labelAxeY(0.5) }}</span>
+              <span class="text-[#1E3A5F]/50 text-[10px] lg:text-[11px]">{{ labelAxeY(0.25) }}</span>
+              <span class="text-[#1E3A5F]/50 text-[10px] lg:text-[11px]">0</span>
+            </div>
+            <div class="absolute left-10 lg:left-12 right-0 top-0 bottom-0 flex items-end gap-1 lg:gap-2">
+              @if (donneesGraphique().length === 0) {
+                <div class="flex-1 flex items-center justify-center text-[#1E3A5F]/30 text-xs">Chargement...</div>
+              } @else {
+                @for (barre of donneesGraphique(); track barre.mois) {
+                  <div class="flex-1 h-full flex flex-col items-center justify-end gap-1">
+                    <div class="w-full bg-[#1E3A5F] rounded-t-sm transition-all duration-500"
+                         [style.height.%]="barre.hauteur"></div>
+                    <span class="text-[#1E3A5F]/50 text-[9px] lg:text-[11px] h-7 flex items-start">{{ barre.mois }}</span>
+                  </div>
+                }
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Colonne de droite DESKTOP : selon le rôle -->
+        <div class="hidden lg:flex min-w-0 flex-col gap-8">
+
+          @if (estPresident()) {
+            <!-- PRÉSIDENT : Prêts à valider + Prêts en retard -->
+
+            <!-- Prêts à valider -->
+            <div class="p-6 bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col gap-4">
+              <div class="flex items-center justify-between">
+                <h3 class="text-[#1E3A5F] text-base font-bold leading-6">Prêts à valider</h3>
+                @if (nbPretsEnAttente() > 0) {
+                  <span class="px-2 py-1 bg-[#FFEDD5] rounded-full text-[#EA580C] text-[10px] font-bold uppercase">{{ nbPretsEnAttente() }} Nouveau</span>
+                }
+              </div>
+              @if (pretsEnAttente().length === 0) {
+                <p class="text-[#1A1D23]/40 text-sm text-center py-4">Aucun prêt en attente</p>
+              } @else {
+                <div class="flex flex-col gap-4 pt-2">
+                  @for (pret of pretsEnAttente(); track pret.id) {
+                    <div class="flex items-center justify-between p-3 bg-white/40 rounded-xl outline outline-1 outline-white/50">
+                      <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
+                          <span class="text-[#1E3A5F] text-sm font-bold">{{ initiales2(pret.membre.prenom, pret.membre.nom) }}</span>
+                        </div>
+                        <div>
+                          <p class="text-[#1E3A5F] text-sm font-bold leading-5">{{ pret.membre.prenom }} {{ pret.membre.nom }}</p>
+                          <p class="text-[#1A1D23]/40 text-[10px] leading-[15px]">{{ formaterDate(pret.dateDemande) }}</p>
+                        </div>
+                      </div>
+                      <div class="flex flex-col items-end gap-1">
+                        <span class="text-[#1E3A5F] text-sm font-bold leading-5">{{ pret.montant | number:'1.0-0' }} F</span>
+                        <a routerLink="/mon-espace/prets/demandes-a-traiter" class="text-[#2E7D5B] text-[10px] font-bold leading-[15px]">Examiner</a>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+              <a routerLink="/mon-espace/prets/demandes-a-traiter" class="w-full py-2 rounded-2xl outline outline-1 outline-[#1E3A5F]/10 text-[#1E3A5F]/60 text-xs font-bold leading-4 text-center block">Voir tout</a>
+            </div>
+
+            <!-- Prêts en retard -->
+            <div class="p-6 bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col gap-6">
+              <h3 class="text-[#1E3A5F] text-base font-bold leading-6">Prêts en retard</h3>
+              @if (pretsEnRetard().length === 0) {
+                <p class="text-[#1A1D23]/40 text-sm text-center py-2">Aucun retard</p>
+              } @else {
+                <div class="flex flex-col gap-4">
+                  @for (pret of pretsEnRetard(); track pret.id) {
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
+                          <span class="text-[#1E3A5F] text-base font-bold">{{ initiales2(pret.membre.prenom, pret.membre.nom) }}</span>
+                        </div>
+                        <span class="text-[#1E3A5F] text-sm font-medium leading-5">{{ pret.membre.prenom }} {{ pret.membre.nom }}</span>
+                      </div>
+                      <span class="px-2 py-[2px] bg-[#C1654A] rounded-full text-white text-[10px] font-bold leading-[15px]">En retard</span>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+
+          @if (estTresorier()) {
+            <!-- TRÉSORIER : Retards de cotisation + Échéances à venir -->
+
+            <!-- Retards de cotisation -->
+            <div class="p-6 bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col gap-4">
+              <div class="flex items-center justify-between">
+                <h3 class="text-[#1E3A5F] text-base font-bold leading-6">Retards de cotisation</h3>
+                @if (totalRetardsCotisation() > 0) {
+                  <span class="text-[#C1654A] text-xs font-bold">Total : {{ totalRetardsCotisation() | number:'1.0-0' }} F</span>
+                }
+              </div>
+              @if (retardsCotisation().length === 0) {
+                <p class="text-[#1A1D23]/40 text-sm text-center py-4">Aucun retard</p>
+              } @else {
+                <div class="flex flex-col gap-3">
+                  @for (cot of retardsCotisation(); track cot.id) {
+                    <div class="flex items-center justify-between p-3 bg-white/40 rounded-xl outline outline-1 outline-white/50">
+                      <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                          <span class="text-[#1E3A5F] text-sm font-bold">{{ initiales2(cot.membre.prenom, cot.membre.nom) }}</span>
+                        </div>
+                        <div>
+                          <p class="text-[#1E3A5F] text-sm font-bold leading-5">{{ cot.membre.prenom }} {{ cot.membre.nom }}</p>
+                          <span class="text-[#C1654A] text-[9px] font-bold uppercase tracking-wide">En retard</span>
+                        </div>
+                      </div>
+                      <span class="text-[#1E3A5F] text-sm font-bold">{{ cot.session.montant | number:'1.0-0' }} F</span>
+                    </div>
+                  }
+                </div>
+              }
+              <button class="w-full py-2 rounded-2xl outline outline-1 outline-[#1E3A5F]/10 text-[#1E3A5F]/60 text-xs font-bold leading-4">Envoyer des rappels</button>
+            </div>
+
+            <!-- Échéances à venir -->
+            <div class="p-6 bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col gap-4">
+              <div class="flex items-center justify-between">
+                <h3 class="text-[#1E3A5F] text-base font-bold leading-6">Échéances à venir</h3>
+                <a routerLink="/mon-espace/prets" class="text-[#2E7D5B] text-xs font-bold">Voir tout</a>
+              </div>
+              @if (echeancesAVenir().length === 0) {
+                <p class="text-[#1A1D23]/40 text-sm text-center py-4">Aucune échéance à venir</p>
+              } @else {
+                <div class="flex flex-col gap-3">
+                  @for (pret of echeancesAVenir(); track pret.id; let last = $last) {
+                    <div class="flex items-center justify-between py-2" [class.border-b]="!last" [class.border-b-\[#1E3A5F\]\/5]="!last">
+                      <div class="flex items-start gap-3">
+                        <span class="text-[#1A1D23]/40 text-[10px] font-bold uppercase w-14 flex-shrink-0">{{ labelEcheance(pret.dateEcheance!) }}</span>
+                        <div>
+                          <p class="text-[#1E3A5F] text-sm font-bold leading-5">{{ pret.membre.prenom }} {{ pret.membre.nom }}</p>
+                          <span class="text-[#1A1D23]/40 text-[9px]">PRÊT-{{ pret.id }}</span>
+                        </div>
+                      </div>
+                      <span class="text-[#1E3A5F] text-sm font-bold">{{ pret.montant | number:'1.0-0' }} F</span>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+
+          @if (!voitIndicateursPrets()) {
+            <!-- SECRÉTAIRE / MEMBRE : ses cotisations et prêts -->
+            <div class="p-6 bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col gap-4">
+              <h3 class="text-[#1E3A5F] text-base font-bold leading-6">Mes cotisations et prêts</h3>
+              <ng-container *ngTemplateOutlet="mesCotisationsEtPrets"></ng-container>
+            </div>
+          }
+
+        </div>
+
+      </div>
+
+      <!-- SECTIONS MOBILES SELON LE RÔLE -->
+      @if (estPresident()) {
+        <!-- PRÉSIDENT MOBILE : Prêts à valider + Retards -->
+        <div class="flex lg:hidden flex-col gap-4 bg-white rounded-2xl p-4 shadow-sm">
+          <div class="flex items-center justify-between">
+            <h3 class="text-[#1E3A5F] text-base font-bold">Prêts à valider</h3>
+            @if (nbPretsEnAttente() > 0) {
+              <span class="px-2 py-1 bg-[#FFEDD5] rounded-full text-[#EA580C] text-[10px] font-bold uppercase">{{ nbPretsEnAttente() }} NOUVEAUX</span>
+            }
+          </div>
+          @if (pretsEnAttente().length === 0) {
+            <p class="text-[#1A1D23]/40 text-sm text-center py-3">Aucun prêt en attente</p>
+          } @else {
+            <div class="flex flex-col gap-3">
+              @for (pret of pretsEnAttente(); track pret.id; let last = $last) {
+                <div class="flex items-center justify-between py-2" [class.border-b]="!last">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                      <span class="text-[#1E3A5F] text-sm font-bold">{{ initiales2(pret.membre.prenom, pret.membre.nom) }}</span>
+                    </div>
+                    <div>
+                      <p class="text-[#1E3A5F] text-sm font-bold leading-5">{{ pret.membre.prenom }} {{ pret.membre.nom }}</p>
+                      <p class="text-[#1A1D23]/40 text-[10px]">{{ formaterDate(pret.dateDemande) }}</p>
+                    </div>
+                  </div>
+                  <div class="flex flex-col items-end gap-1">
+                    <span class="text-[#1E3A5F] text-sm font-bold">{{ pret.montant | number:'1.0-0' }} F</span>
+                    <a routerLink="/mon-espace/prets/demandes-a-traiter" class="text-[#2E7D5B] text-[10px] font-bold">GÉRER</a>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+          <a routerLink="/mon-espace/prets/demandes-a-traiter" class="w-full py-3 rounded-2xl outline outline-1 outline-[#1E3A5F]/10 text-[#1E3A5F]/60 text-xs font-bold text-center block">Voir toutes les demandes</a>
+        </div>
+
+        <div class="flex lg:hidden flex-col gap-4 bg-white rounded-2xl p-4 shadow-sm">
+          <h3 class="text-[#1E3A5F] text-base font-bold">Retards de paiement</h3>
+          @if (pretsEnRetard().length === 0) {
+            <p class="text-[#1A1D23]/40 text-sm text-center py-3">Aucun retard de paiement</p>
+          } @else {
+            <div class="flex flex-col gap-3">
+              @for (pret of pretsEnRetard(); track pret.id; let last = $last) {
+                <div class="flex items-center justify-between py-2" [class.border-b]="!last">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                      <span class="text-[#1E3A5F] text-sm font-bold">{{ initiales2(pret.membre.prenom, pret.membre.nom) }}</span>
+                    </div>
+                    <span class="text-[#1E3A5F] text-sm font-medium">{{ pret.membre.prenom }} {{ pret.membre.nom }}</span>
+                  </div>
+                  <span class="px-2 py-[2px] bg-[#C1654A] rounded-full text-white text-[10px] font-bold">En retard</span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      @if (estTresorier()) {
+        <!-- TRÉSORIER MOBILE : Retards de cotisation + Échéances -->
+        <div class="flex lg:hidden flex-col gap-4 bg-white rounded-2xl p-4 shadow-sm">
+          <div class="flex items-center justify-between">
+            <h3 class="text-[#1E3A5F] text-base font-bold">Retards de cotisation</h3>
+            @if (totalRetardsCotisation() > 0) {
+              <span class="text-[#C1654A] text-xs font-bold">{{ totalRetardsCotisation() | number:'1.0-0' }} F</span>
+            }
+          </div>
+          @if (retardsCotisation().length === 0) {
+            <p class="text-[#1A1D23]/40 text-sm text-center py-3">Aucun retard</p>
+          } @else {
+            <div class="flex flex-col gap-3">
+              @for (cot of retardsCotisation(); track cot.id; let last = $last) {
+                <div class="flex items-center justify-between py-2" [class.border-b]="!last">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                      <span class="text-[#1E3A5F] text-xs font-bold">{{ initiales2(cot.membre.prenom, cot.membre.nom) }}</span>
+                    </div>
+                    <div>
+                      <p class="text-[#1E3A5F] text-sm font-bold">{{ cot.membre.prenom }} {{ cot.membre.nom }}</p>
+                      <span class="text-[#C1654A] text-[9px] font-bold uppercase">En retard</span>
+                    </div>
+                  </div>
+                  <span class="text-[#1E3A5F] text-sm font-bold">{{ cot.session.montant | number:'1.0-0' }} F</span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="flex lg:hidden flex-col gap-4 bg-white rounded-2xl p-4 shadow-sm">
+          <h3 class="text-[#1E3A5F] text-base font-bold">Échéances à venir</h3>
+          @if (echeancesAVenir().length === 0) {
+            <p class="text-[#1A1D23]/40 text-sm text-center py-3">Aucune échéance</p>
+          } @else {
+            <div class="flex flex-col gap-3">
+              @for (pret of echeancesAVenir(); track pret.id; let last = $last) {
+                <div class="flex items-center justify-between py-2" [class.border-b]="!last">
+                  <div class="flex items-start gap-3">
+                    <span class="text-[#1A1D23]/40 text-[10px] font-bold uppercase w-12 flex-shrink-0">{{ labelEcheance(pret.dateEcheance!) }}</span>
+                    <p class="text-[#1E3A5F] text-sm font-bold">{{ pret.membre.prenom }} {{ pret.membre.nom }}</p>
+                  </div>
+                  <span class="text-[#1E3A5F] text-sm font-bold">{{ pret.montant | number:'1.0-0' }} F</span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      @if (!voitIndicateursPrets()) {
+        <!-- SECRÉTAIRE / MEMBRE MOBILE : ses cotisations et prêts -->
+        <div class="flex lg:hidden flex-col gap-4 bg-white rounded-2xl p-4 shadow-sm">
+          <h3 class="text-[#1E3A5F] text-base font-bold">Mes cotisations et prêts</h3>
+          <ng-container *ngTemplateOutlet="mesCotisationsEtPrets"></ng-container>
+        </div>
+      }
+
+      <!-- ACTIVITÉS + OPÉRATIONS DESKTOP -->
+      <div class="hidden lg:grid gap-8"
+           [class]="estPresident() ? 'grid-cols-1 lg:grid-cols-[1fr_1.5fr]' : 'grid-cols-1'">
+
+        <!-- Activités à venir (président uniquement) -->
+        @if (estPresident()) {
+          <div class="min-w-0 p-8 bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col gap-6">
+          <h3 class="text-[#1E3A5F] text-xl font-bold leading-7">Activités à venir</h3>
+          @if (activitesAVenir().length === 0) {
+            <p class="text-[#1A1D23]/40 text-sm text-center py-4">Aucune activité planifiée</p>
+          } @else {
+            <div class="flex flex-col gap-6">
+              @for (activite of activitesAVenir(); track activite.id; let first = $first) {
+                <div class="flex items-center gap-4 p-4 rounded-2xl"
+                     [class]="first ? 'bg-[#1E3A5F]/5' : 'outline outline-1 outline-[#1E3A5F]/20'">
+                  <div class="w-12 h-12 bg-white rounded-xl outline outline-1 outline-[#1E3A5F]/10 flex flex-col items-center justify-center flex-shrink-0">
+                    <span class="text-[#1E3A5F]/40 text-xs font-bold uppercase tracking-[0.64px]">{{ moisActivite(activite.dateActivite) }}</span>
+                    <span class="text-[#1E3A5F] text-lg font-bold leading-7">{{ jourActivite(activite.dateActivite) }}</span>
+                  </div>
+                  <div>
+                    <p class="text-[#1E3A5F] text-base font-bold leading-6">{{ activite.titre }}</p>
+                    <p class="text-[#1A1D23]/50 text-sm leading-5">{{ heureActivite(activite.dateActivite) }} • {{ activite.lieu }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+          </div>
+        } <!-- fin activités à venir président -->
+
+        <!-- Dernières opérations DESKTOP -->
+        <div class="min-w-0 pt-8 pb-14 px-8 bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col gap-6">
+          <div class="flex items-center justify-between">
+            <h3 class="text-[#1E3A5F] text-xl font-bold leading-7">
+              @if (estTresorier()) { Dernières opérations de caisse } @else { Dernières opérations }
+            </h3>
+            <a routerLink="/mon-espace/historiques" class="text-[#1E3A5F]/60 text-sm font-bold leading-5 cursor-pointer">Tout voir</a>
+          </div>
+
+          @if (estTresorier()) {
+            <!-- Vue trésorier : Date/Heure, Membre, Type badge, Mode, Montant -->
+            <div class="flex flex-col">
+              <div class="grid grid-cols-[1.4fr_1.8fr_1fr_1fr_1fr] pb-4 border-b border-[#1E3A5F]/5">
+                <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Date & Heure</span>
+                <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Membre</span>
+                <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Type</span>
+                <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Mode</span>
+                <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px] text-right">Montant</span>
+              </div>
+              @if (operationsRecentes().length === 0) {
+                <p class="text-[#1A1D23]/40 text-sm text-center py-4">Aucune opération</p>
+              } @else {
+                @for (op of operationsRecentes(); track op.id) {
+                  <div class="grid grid-cols-[1.4fr_1.8fr_1fr_1fr_1fr] py-[18px] items-center border-t border-[#1E3A5F]/5 first:border-t-0">
+                    <span class="text-[#1A1D23]/60 text-sm">{{ formaterDate(op.dateOperation) }}</span>
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+                           [class]="op.typeOperation === 'entree' ? 'bg-[#2E7D5B]/10' : 'bg-[#C1654A]/10'">
+                        <span class="text-[9px] font-bold" [class]="op.typeOperation === 'entree' ? 'text-[#2E7D5B]' : 'text-[#C1654A]'">
+                          {{ op.libelle.charAt(0).toUpperCase() }}
+                        </span>
+                      </div>
+                      <span class="text-[#1E3A5F] text-sm font-medium truncate">{{ libelleNettoye(op.libelle) }}</span>
+                    </div>
+                    <span>
+                      <span class="px-2 py-[3px] rounded-full text-[10px] font-bold"
+                            [class]="op.typeOperation === 'entree'
+                              ? 'bg-[#2E7D5B]/10 text-[#2E7D5B]'
+                              : 'bg-[#C1654A]/10 text-[#C1654A]'">
+                        {{ op.typeOperation === 'entree' ? 'Entrée' : 'Sortie' }}
+                      </span>
+                    </span>
+                    <span class="text-[#1A1D23]/60 text-sm">{{ modePaiement(op.libelle) }}</span>
+                    <span class="text-sm font-bold text-right" [class]="couleurOperation(op.typeOperation)">
+                      {{ prefixeOperation(op.typeOperation) }} {{ op.montant | number:'1.0-0' }} F
+                    </span>
+                  </div>
+                }
+              }
+            </div>
+          } @else {
+            <!-- Vue président : Date, Type, Libellé, Montant -->
+            @if (operationsRecentes().length === 0) {
+              <p class="text-[#1A1D23]/40 text-sm text-center py-4">Aucune opération</p>
+            } @else {
+              <div class="flex flex-col">
+                <div class="grid grid-cols-4 pb-4 border-b border-[#1E3A5F]/5">
+                  <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Date</span>
+                  <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Type</span>
+                  <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Libellé</span>
+                  <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px] text-right">Montant</span>
+                </div>
+                @for (op of operationsRecentes(); track op.id) {
+                  <div class="grid grid-cols-4 py-[18px] items-center border-t border-[#1E3A5F]/5 first:border-t-0">
+                    <span class="text-[#1A1D23]/60 text-sm">{{ formaterDate(op.dateOperation) }}</span>
+                    <span class="text-[#1A1D23]/60 text-sm capitalize">{{ op.typeOperation === 'entree' ? 'Entrée' : 'Sortie' }}</span>
+                    <span class="text-[#1E3A5F] text-sm font-medium truncate">{{ op.libelle }}</span>
+                    <span class="text-sm font-bold text-right" [class]="couleurOperation(op.typeOperation)">
+                      {{ prefixeOperation(op.typeOperation) }} {{ op.montant | number:'1.0-0' }} F
+                    </span>
+                  </div>
+                }
+              </div>
+            }
+          }
+        </div>
+
+      </div>
+
+      <!-- OPÉRATIONS RÉCENTES (mobile uniquement) -->
+      <div class="flex lg:hidden flex-col gap-4 bg-white rounded-2xl p-4 shadow-sm">
+        <div class="flex items-center justify-between">
+          <h3 class="text-[#1E3A5F] text-base font-bold">Opérations récentes</h3>
+          <a routerLink="/mon-espace/historiques" class="text-[#1E3A5F]/60 text-sm font-bold cursor-pointer">Tout voir</a>
+        </div>
+        @if (operationsRecentes().length === 0) {
+          <p class="text-[#1A1D23]/40 text-sm text-center py-3">Aucune opération</p>
+        } @else {
+          <div class="flex flex-col">
+            @for (op of operationsRecentes(); track op.id; let last = $last) {
+              <div class="flex items-center justify-between py-3" [class.border-b]="!last" [class.border-[#1E3A5F]/5]="!last">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                    [class]="op.typeOperation === 'entree' ? 'bg-[#2E7D5B]/10' : 'bg-[#C1654A]/10'">
+                    <i class="text-xs" [class]="op.typeOperation === 'entree' ? 'pi pi-arrow-down text-[#2E7D5B]' : 'pi pi-arrow-up text-[#C1654A]'"></i>
+                  </div>
+                  <div>
+                    <p class="text-[#1E3A5F] text-sm font-bold leading-5">{{ op.libelle }}</p>
+                    <p class="text-[#1A1D23]/40 text-[10px]">{{ op.typeOperation === 'entree' ? 'Entrée' : 'Sortie' }} • {{ formaterDate(op.dateOperation) }}</p>
+                  </div>
+                </div>
+                <span class="text-sm font-bold" [class]="couleurOperation(op.typeOperation)">
+                  {{ prefixeOperation(op.typeOperation) }} {{ op.montant | number:'1.0-0' }} F
+                </span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+    </main>
+
+    <!-- Bottom nav réutilisable -->
+    <app-bottom-nav></app-bottom-nav>
+
+  </div>
+
+</div>
+
+<!-- Fenêtre de génération du rapport périodique -->
+@if (rapportOuvert()) {
+  <app-rapport-modal (fermer)="rapportOuvert.set(false)"></app-rapport-modal>
+}
+
+<!-- Mes cotisations et prêts (secrétaire, membre simple) : contenu commun ordinateur / mobile -->
+<ng-template #mesCotisationsEtPrets>
+  @if (mesCotisationsNonPayees().length === 0 && mesPretsEnCours().length === 0) {
+    <p class="text-[#1A1D23]/40 text-sm text-center py-4">Aucune cotisation ni prêt en cours</p>
+  } @else {
+    <div class="flex flex-col gap-3">
+      @for (cotisation of mesCotisationsNonPayees(); track cotisation.id) {
+        <a [routerLink]="['/mon-espace/cotisations/payer', cotisation.id]"
+           class="flex items-center gap-3 p-3 bg-white rounded-xl shadow-sm">
+          <div class="w-10 h-10 rounded-full bg-[#E8A020]/10 flex items-center justify-center flex-shrink-0">
+            <i class="pi pi-wallet text-[#E8A020]"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[#1E3A5F] text-sm font-bold leading-5 truncate">Cotisation — {{ cotisation.session.libelle }}</p>
+            <p class="text-[#1A1D23]/50 text-xs">{{ cotisation.session.montant | number:'1.0-0' }} FCFA · Non payée</p>
+          </div>
+          <span class="text-[#2E7D5B] text-[10px] font-bold uppercase flex-shrink-0">Payer</span>
+        </a>
+      }
+
+      @for (pret of mesPretsEnCours(); track pret.id) {
+        <a [routerLink]="['/mon-espace/prets', pret.id]"
+           class="flex items-center gap-3 p-3 bg-white rounded-xl shadow-sm">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+               [class]="pret.statut === 'en_retard' ? 'bg-[#C1654A]/10' : 'bg-[#1E3A5F]/10'">
+            <i class="pi pi-credit-card" [class]="pret.statut === 'en_retard' ? 'text-[#C1654A]' : 'text-[#1E3A5F]'"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[#1E3A5F] text-sm font-bold leading-5">
+              {{ pret.statut === 'en_retard' ? 'Prêt en retard' : 'Prêt en cours' }}
+            </p>
+            <p class="text-[#1A1D23]/50 text-xs">
+              {{ pret.montant | number:'1.0-0' }} FCFA
+              @if (pret.dateEcheance) { · Échéance {{ pret.dateEcheance | date:'dd/MM/yyyy' }} }
+            </p>
+          </div>
+          <span class="text-[#2E7D5B] text-[10px] font-bold uppercase flex-shrink-0">Voir</span>
+        </a>
+      }
+    </div>
+  }
+</ng-template>

@@ -1,27 +1,32 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
+import { InputTextModule } from 'primeng/inputtext';
 import { InitialesPipe } from '../../../../../../shared/pipes/initiales-pipe';
 import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
 import { CotisationService } from '../../../../../../core/services/cotisation.service';
 import { AuthService } from '../../../../../../core/services/auth.service';
 import { Cotisation } from '../../../../../../core/models/cotisation.model';
 import { DialogModule } from 'primeng/dialog';
-
 import { Navbar } from '../../../../../../shared/ui/navbar/navbar';
+import { GieSidebar } from '../../../../../../shared/ui/gie-sidebar/gie-sidebar';
 
 @Component({
   selector: 'app-liste-cotisations',
+  styleUrl: './liste-cotisation.css',
   imports: [
     FormsModule,
+    ReactiveFormsModule,
     RouterLink,
     DatePipe,
     InitialesPipe,
     BottomNav,
     DialogModule,
     DecimalPipe,
-    Navbar
+    InputTextModule,
+    Navbar,
+    GieSidebar
   ],
   templateUrl: './liste-cotisation.html'
 })
@@ -30,15 +35,67 @@ export class ListeCotisations implements OnInit {
   protected service = inject(CotisationService);
   protected authService = inject(AuthService);
   private router = inject(Router);
+  private fb = inject(FormBuilder);
 
   // true si l'utilisateur connecté est trésorier
   estTresorier = computed(() => this.authService.currentUser()?.role === 'tresorier');
+
+  // Modal desktop Nouvelle session
+  modalSessionVisible = signal(false);
+  erreurDatesModal = signal<string | null>(null);
+
+  formSession: FormGroup = this.fb.group({
+    libelle:   ['', Validators.required],
+    montant:   [null, [Validators.required, Validators.min(1)]],
+    dateDebut: ['', Validators.required],
+    dateFin:   ['', Validators.required]
+  });
+
+  ouvrirModalSession(): void {
+    this.formSession.reset();
+    this.erreurDatesModal.set(null);
+    this.modalSessionVisible.set(true);
+  }
+
+  fermerModalSession(): void {
+    this.modalSessionVisible.set(false);
+    this.erreurDatesModal.set(null);
+  }
+
+  lancerSessionModal(): void {
+    if (this.formSession.invalid) {
+      this.formSession.markAllAsTouched();
+      return;
+    }
+    const aujourd_hui = new Date();
+    aujourd_hui.setHours(0, 0, 0, 0);
+    const dateDebut = new Date(this.formSession.value.dateDebut);
+    const dateFin = new Date(this.formSession.value.dateFin);
+    if (dateDebut < aujourd_hui) { this.erreurDatesModal.set("La date de début ne peut pas être dans le passé."); return; }
+    if (dateFin < aujourd_hui) { this.erreurDatesModal.set("La date de fin ne peut pas être dans le passé."); return; }
+    if (dateFin < dateDebut) { this.erreurDatesModal.set("La date de fin ne peut pas être antérieure à la date de début."); return; }
+    this.erreurDatesModal.set(null);
+    this.service.creerSession(this.formSession.value).subscribe({
+      next: () => {
+        this.fermerModalSession();
+        this.ngOnInit();
+      },
+      error: (e) => console.error(e)
+    });
+  }
 
   // true si une cotisation appartient à l'utilisateur connecté OU si c'est le trésorier
   peutPayer(cotisation: Cotisation): boolean {
     const userId = this.authService.currentUser()?.id;
     return cotisation.membre.id === userId || this.estTresorier();
   }
+
+  // true si le membre paye pour sa propre cotisation (Wave et Orange Money disponibles)
+  payePourSoiModal = computed(() => {
+    const cotisation = this.cotisationAPayer();
+    const userId = this.authService.currentUser()?.id;
+    return cotisation?.membre?.id === userId;
+  });
 
   filtreStatut = signal<string | null>(null);
   termeRecherche = signal('');
@@ -52,7 +109,7 @@ export class ListeCotisations implements OnInit {
   voirConfirmation = signal(false);
 
   optionsFiltres = [
-    { label: 'Tout', value: null },
+    { label: 'Tous', value: null },
     { label: 'Payés', value: 'paye' },
     { label: 'En cours', value: 'en_cours' },
     { label: 'En retard', value: 'en_retard' }
@@ -97,8 +154,34 @@ export class ListeCotisations implements OnInit {
   // -------------------------
 
   ouvrirConfirmationPaiement(cotisation: Cotisation): void {
-    // Naviguer vers la page de paiement
-    this.router.navigate(['/mon-espace/cotisations/payer', cotisation.id]);
+    // Sur desktop : ouvrir modal. Sur mobile : naviguer vers la page
+    if (window.innerWidth >= 768) {
+      this.cotisationAPayer.set(cotisation);
+      // Pré-sélectionner le bon mode selon qui paie
+      const userId = this.authService.currentUser()?.id;
+      const payePourSoi = cotisation.membre.id === userId;
+      this.modePaiementSelectionne.set(payePourSoi ? 'wave' : 'especes');
+      this.modalPaiementVisible.set(true);
+    } else {
+      this.router.navigate(['/mon-espace/cotisations/payer', cotisation.id]);
+    }
+  }
+
+  // Modal paiement desktop
+  modalPaiementVisible = signal(false);
+  modePaiementSelectionne = signal<'especes' | 'wave' | 'orange_money'>('especes');
+
+  confirmerPaiementModal(): void {
+    const cotisation = this.cotisationAPayer();
+    if (!cotisation) return;
+    this.service.payerCotisation(cotisation.id, this.modePaiementSelectionne()).subscribe({
+      next: () => {
+        this.modalPaiementVisible.set(false);
+        this.cotisationAPayer.set(null);
+        this.ngOnInit();
+      },
+      error: (err) => console.error('Erreur paiement:', err)
+    });
   }
 
   annulerPaiement(): void {
@@ -121,7 +204,6 @@ export class ListeCotisations implements OnInit {
 
       next: () => {
 
-        console.log('Cotisation payée avec succès');
 
         this.voirConfirmation.set(false);
         this.cotisationAPayer.set(null);

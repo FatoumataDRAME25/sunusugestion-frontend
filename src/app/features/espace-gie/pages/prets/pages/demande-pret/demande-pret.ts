@@ -5,11 +5,12 @@ import { DecimalPipe } from '@angular/common';
 import { PretService } from '../../../../../../core/services/pret.service';
 import { Navbar } from '../../../../../../shared/ui/navbar/navbar';
 import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
+import { GieSidebar } from '../../../../../../shared/ui/gie-sidebar/gie-sidebar';
 
 @Component({
   selector: 'app-demande-pret',
   templateUrl: './demande-pret.html',
-  imports: [RouterLink, FormsModule, DecimalPipe, Navbar, BottomNav],
+  imports: [RouterLink, FormsModule, DecimalPipe, Navbar, BottomNav, GieSidebar],
 })
 export class DemandePret implements OnInit {
 
@@ -23,7 +24,8 @@ export class DemandePret implements OnInit {
 
   ngOnInit(): void {
     this.service.errorMessage.set(null);
-    this.service.chargerRegle().subscribe();
+    // Un 404 signifie « aucune règle » : il alimente service.reglesAbsentes()
+    this.service.chargerRegle().subscribe({ error: () => {} });
   }
 
   envoyer(): void {

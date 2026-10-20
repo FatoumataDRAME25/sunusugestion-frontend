@@ -1,56 +1,82 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Component, HostListener, Input, OnInit, inject, computed, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-import { NotificationService } from '../../../core/services/notification.service';
+import { NotificationItem, NotificationService } from '../../../core/services/notification.service';
+import { AbonnementService } from '../../../core/services/abonnement.service';
 
 @Component({
-  imports: [RouterLink],
+  imports: [DatePipe, RouterLink],
   selector: 'app-navbar',
-  styleUrl: './navbar.css',
   templateUrl: './navbar.html',
 })
 export class Navbar implements OnInit {
 
-  private authService        = inject(AuthService);
-  private router             = inject(Router);
-  protected notifService     = inject(NotificationService);
+  @Input() titre: string = '';
 
-  menuOuvert = signal(false);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
-  estPresident = computed(() => this.authService.currentUser()?.role === 'president');
+  utilisateur = this.authService.currentUser;
+
+  nomComplet = computed(() => {
+    const u = this.utilisateur();
+    return u ? `${u.prenom} ${u.nom}` : '';
+  });
+
+  initiales = computed(() => {
+    const u = this.utilisateur();
+    if (!u) return '';
+    return `${u.prenom.charAt(0)}${u.nom.charAt(0)}`.toUpperCase();
+  });
+
+  // ── Notifications ─────────────────────────────────────────
+  protected notificationService = inject(NotificationService);
+
+  notificationsOuvertes = signal(false);
+
+  // Icône et couleur selon le module de la notification
+  readonly iconesModules: Record<string, string> = {
+    activites: 'pi-calendar',
+    cotisations: 'pi-wallet',
+    prets: 'pi-credit-card',
+    membres: 'pi-users',
+    general: 'pi-bell',
+  };
+
+  // ── Abonnement du groupement (bandeau d'alerte) ────────────
+  protected abonnementService = inject(AbonnementService);
+
+  bandeauAbonnement = computed(() => {
+    const role = this.utilisateur()?.role;
+    return this.abonnementService.messageBandeau(
+      this.abonnementService.abonnement(),
+      role === 'president' || role === 'tresorier'
+    );
+  });
 
   ngOnInit(): void {
-    // Charger les badges au démarrage de la navbar
-    this.notifService.getBadges().subscribe();
+    // Chaque page a sa barre du haut : les notifications sont donc
+    // rechargées à chaque changement de page, sans minuteur.
+    this.notificationService.rafraichir();
+    this.abonnementService.rafraichir();
   }
 
-  toggleMenu(): void {
-    this.menuOuvert.set(!this.menuOuvert());
+  ouvrirNotifications(): void {
+    this.notificationsOuvertes.set(true);
+    this.notificationService.rafraichir();
   }
 
-  fermerMenu(): void {
-    this.menuOuvert.set(false);
+  @HostListener('document:keydown.escape')
+  fermerNotifications(): void {
+    this.notificationsOuvertes.set(false);
   }
 
-  // Modules qui ont une page détail par ID dans Angular
-  private readonly MODULES_AVEC_DETAIL = new Set(['activites', 'prets']);
-
-  ouvrirModule(module: string, routeListe: string): void {
-    const badge = (this.notifService.badges() as any)[module];
-    const count = badge?.count ?? 0;
-    const objetId = badge?.dernierObjetId ?? null;
-
-    this.notifService.marquerModuleCommeLu(module).subscribe();
-    this.fermerMenu();
-
-    // 1 notification non lue + objet_id connu + module avec page détail
-    // → naviguer directement vers le détail
-    if (count === 1 && objetId && this.MODULES_AVEC_DETAIL.has(module)) {
-      this.router.navigate([`/mon-espace/${module}/${objetId}`]);
-    } else {
-      // Plusieurs notifications ou module sans détail → liste
-      this.router.navigate([routeListe]);
-    }
+  ouvrirNotification(notification: NotificationItem): void {
+    this.notificationService.marquerCommeLue(notification);
+    this.fermerNotifications();
+    this.router.navigateByUrl(this.notificationService.routeDe(notification));
   }
 
   deconnecter(): void {

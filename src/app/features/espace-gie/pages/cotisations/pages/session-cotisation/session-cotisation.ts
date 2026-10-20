@@ -7,9 +7,11 @@ import { DecimalPipe } from '@angular/common';
 import { InputTextModule } from 'primeng/inputtext';
 import { DialogModule } from 'primeng/dialog';
 import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
+import { Navbar } from '../../../../../../shared/ui/navbar/navbar';
+import { GieSidebar } from '../../../../../../shared/ui/gie-sidebar/gie-sidebar';
 
 @Component({
-  imports: [ReactiveFormsModule, RouterLink, DecimalPipe, InputTextModule, DialogModule, BottomNav],
+  imports: [ReactiveFormsModule, RouterLink, DecimalPipe, InputTextModule, DialogModule, BottomNav, Navbar, GieSidebar],
   selector: 'app-session-cotisation',
   styleUrl: './session-cotisation.css',
   templateUrl: './session-cotisation.html',

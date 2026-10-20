@@ -1,0 +1,573 @@
+<!-- Bouton flottant -->
+<button
+  type="button"
+  (click)="ouvrirChatbot()"
+  [attr.aria-expanded]="ouvert()"
+  aria-label="Ouvrir l'assistant financier"
+  class="fixed bottom-24 right-4 md:bottom-6 md:right-6
+         z-[9999] flex items-center gap-3 rounded-full
+         bg-[#1E3A5F] px-5 py-4 text-white shadow-xl
+         transition-all duration-200 hover:bg-[#2B527F]
+         hover:scale-105 focus:outline-none focus:ring-4
+         focus:ring-[#3B6EA5]/30"
+>
+  <i class="pi pi-sparkles text-xl"></i>
+  <span class="text-sm font-semibold">Assistant financier</span>
+</button>
+
+@if (ouvert()) {
+  <!-- Fenêtre du chatbot -->
+  <div
+    class="fixed inset-0 z-[10000] pointer-events-none
+           flex items-end justify-end
+           p-3 pb-36 md:p-6 md:pb-24"
+  >
+    <section
+      role="dialog"
+      aria-modal="false"
+      aria-labelledby="assistant-titre"
+      class="pointer-events-auto isolate relative
+             flex h-[min(680px,calc(100dvh-12rem))]
+             w-full max-w-[420px] flex-col
+             overflow-hidden rounded-2xl border border-gray-200
+             bg-white shadow-2xl"
+    >
+      <!-- En-tête -->
+      <header
+        class="relative z-10 flex shrink-0 items-center
+               justify-between gap-3 bg-[#1E3A5F]
+               px-4 py-4 text-white"
+      >
+        <div class="flex min-w-0 items-center gap-3">
+          <div
+            class="flex h-11 w-11 shrink-0 items-center
+                   justify-center rounded-full bg-white/15"
+          >
+            <i class="pi pi-sparkles text-xl"></i>
+          </div>
+
+          <div class="min-w-0">
+            <h2 id="assistant-titre" class="font-semibold">
+              Assistant financier
+            </h2>
+
+            <p class="text-xs text-white/80">
+              Votre diagnostic financier
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          (click)="fermerChatbot()"
+          aria-label="Fermer l'assistant"
+          class="flex h-9 w-9 shrink-0 items-center
+                 justify-center rounded-full
+                 transition hover:bg-white/15"
+        >
+          <i class="pi pi-times text-lg"></i>
+        </button>
+      </header>
+
+      <!-- Zone défilante : diagnostic et conversation -->
+      <div
+        class="relative z-0 flex-1 min-h-0
+               overflow-y-auto overscroll-contain
+               bg-[#F7F8FA] p-4"
+      >
+        <!-- Message d'accueil -->
+        <div class="mb-4 flex items-start gap-2">
+          <div
+            class="flex h-8 w-8 shrink-0 items-center
+                   justify-center rounded-full
+                   bg-[#1E3A5F] text-white"
+          >
+            <i class="pi pi-sparkles text-sm"></i>
+          </div>
+
+          <div
+            class="max-w-[90%] rounded-2xl rounded-tl-sm
+                   bg-white p-3 shadow-sm"
+          >
+            <p class="text-sm leading-relaxed text-[#1A1D23]">
+              Bonjour ! Je vous présente la situation financière
+              actuelle de votre organisation.
+            </p>
+          </div>
+        </div>
+
+        <!-- Chargement du diagnostic -->
+        @if (chargement()) {
+          <div class="rounded-xl bg-white p-5 text-center shadow-sm">
+            <i
+              class="pi pi-spin pi-spinner mb-3
+                     text-2xl text-[#3B6EA5]"
+            ></i>
+
+            <p class="text-sm text-[#4A5568]">
+              Analyse de vos données financières...
+            </p>
+          </div>
+        }
+
+        <!-- Erreur de chargement du diagnostic -->
+        @if (erreur()) {
+          <div class="mb-4 rounded-xl border border-red-200 bg-white p-4">
+            <div class="mb-2 flex items-center gap-2 text-red-600">
+              <i class="pi pi-exclamation-circle"></i>
+
+              <p class="text-sm font-semibold">
+                Chargement impossible
+              </p>
+            </div>
+
+            <p class="mb-4 text-sm text-[#4A5568]">
+              {{ erreur() }}
+            </p>
+
+            <button
+              type="button"
+              (click)="reessayer()"
+              class="rounded-lg bg-[#1E3A5F] px-4 py-2
+                     text-sm font-medium text-white
+                     transition hover:bg-[#2B527F]"
+            >
+              <i class="pi pi-refresh mr-2"></i>
+              Réessayer
+            </button>
+          </div>
+        }
+
+        <!-- Diagnostic financier -->
+        @if (diagnostic(); as resultat) {
+          <div class="space-y-4">
+
+            <!-- Date d'analyse -->
+            <div class="text-center">
+              <span
+                class="rounded-full bg-gray-200 px-3 py-1
+                       text-xs text-[#4A5568]"
+              >
+                Analyse du
+                {{ resultat.indicateurs.dateAnalyse | date:'dd/MM/yyyy' }}
+              </span>
+            </div>
+
+            <!-- Cotisations -->
+            <article class="rounded-xl bg-white p-4 shadow-sm">
+              <div class="mb-3 flex items-center gap-2">
+                <div
+                  class="flex h-9 w-9 items-center justify-center
+                         rounded-lg bg-green-50 text-[#2E7D5B]"
+                >
+                  <i class="pi pi-wallet"></i>
+                </div>
+
+                <h3 class="font-semibold text-[#1A1D23]">
+                  Cotisations
+                </h3>
+              </div>
+
+              <div class="mb-3">
+                <p class="text-xs text-[#4A5568]">
+                  Montant encaissé
+                </p>
+
+                <p class="text-xl font-bold text-[#2E7D5B]">
+                  {{ resultat.indicateurs.cotisations.montantPaye | number:'1.0-0' }}
+                  FCFA
+                </p>
+              </div>
+
+              <div class="grid grid-cols-3 gap-2">
+                <div class="rounded-lg bg-gray-50 p-2">
+                  <p class="text-lg font-semibold text-[#1A1D23]">
+                    {{ resultat.indicateurs.cotisations.nombrePayees }}
+                  </p>
+
+                  <p class="text-xs text-[#4A5568]">
+                    Payées
+                  </p>
+                </div>
+
+                <div class="rounded-lg bg-gray-50 p-2">
+                  <p class="text-lg font-semibold text-[#1A1D23]">
+                    {{ resultat.indicateurs.cotisations.nombreEnCours }}
+                  </p>
+
+                  <p class="text-xs text-[#4A5568]">
+                    En cours
+                  </p>
+                </div>
+
+                <div class="rounded-lg bg-gray-50 p-2">
+                  <p class="text-lg font-semibold text-red-600">
+                    {{ resultat.indicateurs.cotisations.nombreEnRetard }}
+                  </p>
+
+                  <p class="text-xs text-[#4A5568]">
+                    En retard
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <!-- Prêts -->
+            <article class="rounded-xl bg-white p-4 shadow-sm">
+              <div class="mb-3 flex items-center gap-2">
+                <div
+                  class="flex h-9 w-9 items-center justify-center
+                         rounded-lg bg-orange-50 text-[#C1654A]"
+                >
+                  <i class="pi pi-money-bill"></i>
+                </div>
+
+                <h3 class="font-semibold text-[#1A1D23]">
+                  Prêts
+                </h3>
+              </div>
+
+              <div class="space-y-3">
+                <div>
+                  <p class="text-xs text-[#4A5568]">
+                    Montant des prêts en cours
+                  </p>
+
+                  <p class="font-bold text-[#1A1D23]">
+                    {{ resultat.indicateurs.prets.montantEnCours | number:'1.0-0' }}
+                    FCFA
+                  </p>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2">
+                  <div class="rounded-lg bg-gray-50 p-2">
+                    <p class="text-lg font-semibold">
+                      {{ resultat.indicateurs.prets.nombreEnCours }}
+                    </p>
+
+                    <p class="text-xs text-[#4A5568]">
+                      En cours
+                    </p>
+                  </div>
+
+                  <div class="rounded-lg bg-gray-50 p-2">
+                    <p class="text-lg font-semibold text-red-600">
+                      {{ resultat.indicateurs.prets.nombreEnRetard }}
+                    </p>
+
+                    <p class="text-xs text-[#4A5568]">
+                      En retard
+                    </p>
+                  </div>
+
+                  <div class="rounded-lg bg-gray-50 p-2">
+                    <p class="text-lg font-semibold text-[#2E7D5B]">
+                      {{ resultat.indicateurs.prets.nombreRembourses }}
+                    </p>
+
+                    <p class="text-xs text-[#4A5568]">
+                      Remboursés
+                    </p>
+                  </div>
+                </div>
+
+                <div class="border-t border-gray-100 pt-3">
+                  <p class="text-xs text-[#4A5568]">
+                    Montant des prêts en retard
+                  </p>
+
+                  <p class="font-semibold text-red-600">
+                    {{ resultat.indicateurs.prets.montantEnRetard | number:'1.0-0' }}
+                    FCFA
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <!-- Trésorerie -->
+            <article class="rounded-xl bg-white p-4 shadow-sm">
+              <div class="mb-3 flex items-center gap-2">
+                <div
+                  class="flex h-9 w-9 items-center justify-center
+                         rounded-lg bg-blue-50 text-[#3B6EA5]"
+                >
+                  <i class="pi pi-chart-line"></i>
+                </div>
+
+                <h3 class="font-semibold text-[#1A1D23]">
+                  Trésorerie
+                </h3>
+              </div>
+
+              <div class="mb-3 rounded-lg bg-[#F7F8FA] p-3">
+                <p class="text-xs text-[#4A5568]">
+                  Solde actuel
+                </p>
+
+                <p
+                  class="text-xl font-bold"
+                  [class.text-red-600]="resultat.indicateurs.tresorerie.solde < 0"
+                  [style.color]="resultat.indicateurs.tresorerie.solde >= 0 ? '#2E7D5B' : null"
+                >
+                  {{ resultat.indicateurs.tresorerie.solde | number:'1.0-0' }}
+                  FCFA
+                </p>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <p class="text-xs text-[#4A5568]">
+                    Entrées
+                  </p>
+
+                  <p class="font-semibold text-[#2E7D5B]">
+                    {{ resultat.indicateurs.tresorerie.totalEntrees | number:'1.0-0' }}
+                    FCFA
+                  </p>
+                </div>
+
+                <div>
+                  <p class="text-xs text-[#4A5568]">
+                    Sorties
+                  </p>
+
+                  <p class="font-semibold text-red-600">
+                    {{ resultat.indicateurs.tresorerie.totalSorties | number:'1.0-0' }}
+                    FCFA
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <!-- Analyse IA -->
+            @if (
+              resultat.intelligenceArtificielle.disponible &&
+              resultat.intelligenceArtificielle.analyse;
+              as analyse
+            ) {
+              <!-- Résumé -->
+              <article class="rounded-xl bg-white p-4 shadow-sm">
+                <div class="mb-3 flex items-center gap-2">
+                  <i class="pi pi-sparkles text-[#3B6EA5]"></i>
+
+                  <h3 class="font-semibold text-[#1A1D23]">
+                    Résumé de l'analyse
+                  </h3>
+                </div>
+
+                <p class="text-sm leading-relaxed text-[#4A5568]">
+                  {{ analyse.resume }}
+                </p>
+              </article>
+
+              <!-- Points de vigilance -->
+              @if (analyse.risques) {
+                <article class="rounded-xl bg-white p-4 shadow-sm">
+                  <div class="mb-3 flex items-center gap-2">
+                    <i class="pi pi-exclamation-triangle text-orange-500"></i>
+
+                    <h3 class="font-semibold text-[#1A1D23]">
+                      Points de vigilance
+                    </h3>
+                  </div>
+
+                  @if (typeof analyse.risques === 'string') {
+                    <p class="text-sm leading-relaxed text-[#4A5568]">
+                      {{ analyse.risques }}
+                    </p>
+                  } @else {
+                    <ul class="space-y-2">
+                      @for (risque of analyse.risques; track $index) {
+                        <li
+                          class="flex items-start gap-2
+                                 text-sm text-[#4A5568]"
+                        >
+                          <i
+                            class="pi pi-circle-fill mt-1
+                                   text-[6px] text-orange-500"
+                          ></i>
+
+                          <span>{{ risque }}</span>
+                        </li>
+                      }
+                    </ul>
+                  }
+                </article>
+              }
+
+              <!-- Recommandations -->
+              @if (analyse.recommandations?.length) {
+                <article class="rounded-xl bg-white p-4 shadow-sm">
+                  <div class="mb-3 flex items-center gap-2">
+                    <i class="pi pi-lightbulb text-[#2E7D5B]"></i>
+
+                    <h3 class="font-semibold text-[#1A1D23]">
+                      Recommandations
+                    </h3>
+                  </div>
+
+                  <div class="space-y-3">
+                    @for (
+                      recommandation of analyse.recommandations;
+                      track $index
+                    ) {
+                      <div class="border-l-2 border-[#5FA98A] pl-3">
+                        @if (typeof recommandation === 'string') {
+                          <p class="text-sm leading-relaxed text-[#4A5568]">
+                            {{ recommandation }}
+                          </p>
+                        } @else {
+                          <p class="text-sm font-semibold text-[#1A1D23]">
+                            {{ recommandation.probleme }}
+                          </p>
+
+                          <p class="mt-1 text-sm text-[#4A5568]">
+                            <span class="font-medium">Action :</span>
+                            {{ recommandation.action }}
+                          </p>
+
+                          <p class="mt-1 text-sm text-[#4A5568]">
+                            <span class="font-medium">Objectif :</span>
+                            {{ recommandation.objectif }}
+                          </p>
+                        }
+                      </div>
+                    }
+                  </div>
+                </article>
+              }
+            } @else {
+              <!-- IA indisponible -->
+              <article class="rounded-xl bg-white p-4 shadow-sm">
+                <div class="mb-2 flex items-center gap-2">
+                  <i class="pi pi-info-circle text-[#3B6EA5]"></i>
+
+                  <h3 class="font-semibold text-[#1A1D23]">
+                    Analyse automatique
+                  </h3>
+                </div>
+
+                <p class="text-sm leading-relaxed text-[#4A5568]">
+                  Les indicateurs financiers sont disponibles, mais
+                  l'analyse par intelligence artificielle n'est pas
+                  disponible pour le moment.
+                </p>
+              </article>
+            }
+
+            <!-- Fin du diagnostic -->
+            <p class="pb-2 text-center text-xs text-[#4A5568]">
+              Les données présentées proviennent de votre organisation.
+            </p>
+          </div>
+        }
+
+        <!-- Conversation -->
+        @if (messages().length > 0) {
+          <div class="my-5 border-t border-gray-200 pt-4">
+            <h3 class="mb-3 text-sm font-semibold text-[#1E3A5F]">
+              Notre conversation
+            </h3>
+
+            <div class="space-y-3">
+              @for (message of messages(); track message.id) {
+                <div
+                  class="flex"
+                  [class.justify-end]="message.auteur === 'utilisateur'"
+                  [class.justify-start]="message.auteur === 'assistant'"
+                >
+                  <div
+                    class="max-w-[90%] rounded-2xl px-4 py-3 shadow-sm"
+                    [class.bg-[#1E3A5F]]="message.auteur === 'utilisateur'"
+                    [class.text-white]="message.auteur === 'utilisateur'"
+                    [class.bg-white]="message.auteur === 'assistant'"
+                    [class.text-[#1A1D23]]="message.auteur === 'assistant'"
+                  >
+                    <p
+                      class="whitespace-pre-wrap break-words text-sm leading-relaxed"
+                    >
+                      {{ message.contenu }}
+                    </p>
+
+                    <p
+                      class="mt-2 text-right text-xs"
+                      [class.text-white/70]="message.auteur === 'utilisateur'"
+                      [class.text-[#4A5568]]="message.auteur === 'assistant'"
+                    >
+                      {{ message.date | date:'HH:mm' }}
+                    </p>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Indicateur de réponse de l'assistant -->
+        @if (envoiEnCours()) {
+          <div class="flex items-start gap-2 pb-3">
+            <div
+              class="flex h-8 w-8 shrink-0 items-center
+                     justify-center rounded-full
+                     bg-[#1E3A5F] text-white"
+            >
+              <i class="pi pi-sparkles text-sm"></i>
+            </div>
+
+            <div
+              class="flex items-center gap-2 rounded-2xl
+                     rounded-tl-sm bg-white px-4 py-3 shadow-sm"
+              role="status"
+              aria-live="polite"
+            >
+              <i class="pi pi-spin pi-spinner text-[#3B6EA5]"></i>
+
+              <span class="text-sm text-[#4A5568]">
+                Je prépare ma réponse...
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Champ de saisie -->
+      <form
+        class="flex shrink-0 items-end gap-2 border-t border-gray-200
+               bg-white p-3"
+        (ngSubmit)="envoyerMessage()"
+      >
+        <textarea
+          name="question"
+          [(ngModel)]="question"
+          rows="1"
+          maxlength="1000"
+          placeholder="Posez une question sur vos finances..."
+          aria-label="Votre question financière"
+          class="max-h-28 min-h-11 flex-1 resize-y rounded-xl
+                 border border-gray-300 bg-[#F7F8FA] px-3 py-3
+                 text-sm text-[#1A1D23] outline-none
+                 transition placeholder:text-gray-400
+                 focus:border-[#3B6EA5] focus:ring-2
+                 focus:ring-[#3B6EA5]/20"
+        ></textarea>
+
+        <button
+          type="submit"
+          [disabled]="!question.trim() || envoiEnCours()"
+          aria-label="Envoyer la question"
+          class="flex h-11 w-11 shrink-0 items-center
+                 justify-center rounded-xl bg-[#1E3A5F]
+                 text-white transition hover:bg-[#2B527F]
+                 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          <i
+            class="pi"
+            [class.pi-send]="!envoiEnCours()"
+            [class.pi-spin]="envoiEnCours()"
+            [class.pi-spinner]="envoiEnCours()"
+          ></i>
+        </button>
+      </form>
+    </section>
+  </div>
+}

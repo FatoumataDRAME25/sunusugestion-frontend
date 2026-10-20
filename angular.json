@@ -85,8 +85,9 @@
           "builder": "@angular/build:dev-server",
 
           "options": {
+            "proxyConfig": "proxy.conf.json",
             "allowedHosts": [
-              "stitch-freebie-dreamless.ngrok-free.dev"
+              ".ngrok-free.dev"
             ]
           },
 

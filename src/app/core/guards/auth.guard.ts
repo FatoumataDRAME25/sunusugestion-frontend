@@ -10,8 +10,15 @@ export const authGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  if (authService.isAuthenticated()) {
+  // Un utilisateur mémorisé ne suffit pas : sans jeton de renouvellement,
+  // toutes les requêtes partiraient sans authentification.
+  if (authService.isAuthenticated() && authService.getRefreshToken()) {
     return true;
+  }
+
+  // Nettoie une éventuelle session à moitié effacée
+  if (authService.isAuthenticated()) {
+    authService.logout();
   }
 
   return router.createUrlTree(['/login']);

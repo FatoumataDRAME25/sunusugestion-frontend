@@ -1,15 +1,16 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DecimalPipe, DatePipe } from '@angular/common';
 import { HistoriqueOperationService } from '../../../../../../core/services/historique-operation.service';
 import { HistoriqueOperationDetail } from '../../../../../../core/models/historique-operation.model';
 import { Navbar } from '../../../../../../shared/ui/navbar/navbar';
 import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
+import { GieSidebar } from '../../../../../../shared/ui/gie-sidebar/gie-sidebar';
 
 @Component({
   selector: 'app-detail-operation',
   templateUrl: './detail-operation.html',
-  imports: [ DecimalPipe, DatePipe, Navbar, BottomNav],
+  imports: [ DecimalPipe, DatePipe, Navbar, BottomNav, GieSidebar],
 })
 export class DetailOperation implements OnInit {
 
@@ -33,6 +34,18 @@ export class DetailOperation implements OnInit {
         this.isLoading.set(false);
       }
     });
+  }
+
+  libelleStatutPret(statut: string): string {
+    const libelles: Record<string, string> = {
+      en_attente: 'En attente',
+      approuve: 'Approuvé',
+      en_cours: 'En cours',
+      rembourse: 'Remboursé',
+      refuse: 'Refusé',
+      en_retard: 'En retard',
+    };
+    return libelles[statut] ?? statut;
   }
 
   retour(): void {

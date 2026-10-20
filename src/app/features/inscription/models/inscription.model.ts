@@ -7,7 +7,6 @@ export interface CreerGieRequest {
   region: string;
   typeGie: TypeGie;
   telephone?: string;
-  photo?: string;
 }
 
 

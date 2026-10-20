@@ -1,283 +1,375 @@
-<app-navbar />
+<div class="relative flex bg-[#F7F8FA] lg:bg-fond-desktop min-h-screen">
+  <app-gie-sidebar></app-gie-sidebar>
+  <div class="flex-1 ml-0 lg:ml-[264px] min-w-0 flex flex-col">
+    <app-navbar titre="Demandes à traiter"></app-navbar>
 
-<div class="min-h-screen bg-gris-fond pb-24">
-  <div class="p-lg">
+    <main class="pb-24 lg:pb-8 lg:pt-20">
 
-    <!-- Retour -->
-    <a routerLink="/mon-espace/prets" class="text-anthracite/60 mb-md block">
-      <i class="pi pi-chevron-left text-lg"></i>
-    </a>
-    <h1 class="font-bold text-xl text-anthracite mb-md">Demandes à traiter</h1>
+      <!-- ════════════════════════════════
+           VERSION MOBILE
+      ════════════════════════════════ -->
+      <div class="lg:hidden min-h-screen bg-gris-fond pb-24">
+        <div class="p-lg">
 
-    @if (service.errorMessage()) {
-      <div class="bg-rouge-clair text-rouge-alerte text-sm rounded-xl p-md mb-md">
-        {{ service.errorMessage() }}
-      </div>
-    }
+          <a routerLink="/mon-espace/prets" class="text-anthracite/60 mb-md block">
+            <i class="pi pi-chevron-left text-lg"></i>
+          </a>
+          <h1 class="font-bold text-xl text-anthracite mb-md">Demandes à traiter</h1>
 
-    @if (service.isLoading()) {
-      <div class="flex justify-center py-xl">
-        <i class="pi pi-spin pi-spinner text-2xl text-bleu-nuit"></i>
-      </div>
-    }
+          @if (service.errorMessage()) {
+            <div class="bg-rouge-clair text-rouge-alerte text-sm rounded-xl p-md mb-md">
+              {{ service.errorMessage() }}
+            </div>
+          }
 
-    <!-- ── SECTION PRÉSIDENT : à approuver ── -->
-    @if (estPresident() && aApprouver().length > 0) {
+          @if (service.isLoading()) {
+            <div class="flex justify-center py-xl">
+              <i class="pi pi-spin pi-spinner text-2xl text-bleu-nuit"></i>
+            </div>
+          }
 
-      <div class="flex items-center gap-sm mb-md">
-        <div class="w-1 h-5 bg-bleu-nuit rounded-full"></div>
-        <p class="font-semibold text-anthracite">À approuver</p>
-        <span class="bg-bleu-nuit text-blanc-lait text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center ml-xs">
-          {{ aApprouver().length }}
-        </span>
-      </div>
-
-      <div class="flex flex-col gap-sm mb-xl">
-        @for (pret of aApprouver(); track pret.id) {
-          <div class="bg-white rounded-xl p-md shadow-sm">
-
-            <!-- Nom + badge cotisation -->
-            <div class="flex items-start justify-between mb-md">
-              <div>
-                <p class="font-bold text-anthracite">{{ pret.membre.prenom }} {{ pret.membre.nom }}</p>
-                <p class="text-xs text-anthracite/50">Demande du {{ pret.dateDemande | date:'dd/MM/yyyy' }}</p>
-              </div>
-              <span class="bg-vert-clair text-vert-foret text-xs font-semibold px-sm py-xs rounded-full flex items-center gap-xs">
-                <i class="pi pi-check text-xs"></i> COTISATION À JOUR
+          <!-- À approuver (président) -->
+          @if (estPresident() && aApprouver().length > 0) {
+            <div class="flex items-center gap-sm mb-md">
+              <div class="w-1 h-5 bg-bleu-nuit rounded-full"></div>
+              <p class="font-semibold text-anthracite">À approuver</p>
+              <span class="bg-bleu-nuit text-blanc-lait text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center ml-xs">
+                {{ aApprouver().length }}
               </span>
             </div>
-
-            <!-- Montants -->
-            <div class="grid grid-cols-2 gap-sm text-sm mb-md">
-              <div>
-                <p class="text-xs text-anthracite/50 uppercase">Montant</p>
-                <p class="font-bold text-anthracite">{{ +pret.montant | number:'1.0-0' }} FCFA</p>
-              </div>
-              @if (service.regle()) {
-                <div>
-                  <p class="text-xs text-anthracite/50 uppercase">Max autorisé</p>
-                  <p class="font-bold text-anthracite">{{ +service.regle()!.montantMax | number:'1.0-0' }} FCFA</p>
+            <div class="flex flex-col gap-sm mb-xl">
+              @for (pret of aApprouver(); track pret.id) {
+                <div class="bg-white rounded-xl p-md shadow-sm">
+                  <div class="flex items-start justify-between mb-md">
+                    <div>
+                      <p class="font-bold text-anthracite">{{ pret.membre.prenom }} {{ pret.membre.nom }}</p>
+                      <p class="text-xs text-anthracite/50">Demande du {{ pret.dateDemande | date:'dd/MM/yyyy' }}</p>
+                    </div>
+                    <span class="bg-vert-clair text-vert-foret text-xs font-semibold px-sm py-xs rounded-full flex items-center gap-xs">
+                      <i class="pi pi-check text-xs"></i> COTISATION À JOUR
+                    </span>
+                  </div>
+                  <div class="grid grid-cols-2 gap-sm text-sm mb-md">
+                    <div>
+                      <p class="text-xs text-anthracite/50 uppercase">Montant</p>
+                      <p class="font-bold text-anthracite">{{ +pret.montant | number:'1.0-0' }} FCFA</p>
+                    </div>
+                    @if (service.regle()) {
+                      <div>
+                        <p class="text-xs text-anthracite/50 uppercase">Max autorisé</p>
+                        <p class="font-bold text-anthracite">{{ +service.regle()!.montantMax | number:'1.0-0' }} FCFA</p>
+                      </div>
+                    }
+                  </div>
+                  <div class="flex gap-sm">
+                    <button (click)="voirDetail(pret.id)"
+                      class="flex-1 border border-anthracite/20 text-anthracite font-semibold rounded-xl py-sm text-sm flex items-center justify-center gap-xs">
+                      <i class="pi pi-eye text-xs"></i> Voir
+                    </button>
+                    <button class="flex-1 border border-rouge-alerte text-rouge-alerte font-semibold rounded-xl py-sm text-sm">Refuser</button>
+                    <button (click)="ouvrirApprouver(pret)"
+                      class="flex-1 bg-vert-foret text-blanc-lait font-semibold rounded-xl py-sm text-sm">
+                      Approuver
+                    </button>
+                  </div>
                 </div>
               }
             </div>
+          }
 
-            <!-- Actions -->
-            <div class="flex gap-sm">
-              <button (click)="voirDetail(pret.id)"
-                class="flex-1 border border-anthracite/20 text-anthracite font-semibold rounded-xl py-sm text-sm flex items-center justify-center gap-xs">
-                <i class="pi pi-eye text-xs"></i> Voir
-              </button>
-              <button
-                class="flex-1 border border-rouge-alerte text-rouge-alerte font-semibold rounded-xl py-sm text-sm">
-                Refuser
-              </button>
-              <button (click)="ouvrirApprouver(pret)"
-                class="flex-1 bg-vert-foret text-blanc-lait font-semibold rounded-xl py-sm text-sm">
-                Approuver
-              </button>
+          <!-- À décaisser (trésorier) -->
+          @if (estTresorier() && aDecaisser().length > 0) {
+            <div class="flex items-center gap-sm mb-md">
+              <div class="w-1 h-5 bg-or-senegal rounded-full"></div>
+              <p class="font-semibold text-anthracite">À décaisser</p>
+              <span class="bg-or-senegal text-blanc-lait text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center ml-xs">
+                {{ aDecaisser().length }}
+              </span>
             </div>
-
-          </div>
-        }
-      </div>
-
-    }
-
-    <!-- ── SECTION TRÉSORIER : à décaisser ── -->
-    @if (estTresorier() && aDecaisser().length > 0) {
-
-      <div class="flex items-center gap-sm mb-md">
-        <div class="w-1 h-5 bg-or-senegal rounded-full"></div>
-        <p class="font-semibold text-anthracite">À décaisser</p>
-        <span class="bg-or-senegal text-blanc-lait text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center ml-xs">
-          {{ aDecaisser().length }}
-        </span>
-      </div>
-
-      <div class="flex flex-col gap-sm">
-        @for (pret of aDecaisser(); track pret.id) {
-          <div class="bg-white rounded-xl p-md shadow-sm">
-            <div class="flex items-start justify-between mb-md">
-              <div>
-                <p class="font-bold text-anthracite">{{ pret.membre.prenom }} {{ pret.membre.nom }}</p>
-                <p class="text-xs text-anthracite/50">Approuvé le {{ pret.dateApprobation | date:'dd/MM/yyyy' }}</p>
-              </div>
-              <span class="bg-bleu-clair text-bleu-nuit text-xs font-semibold px-sm py-xs rounded-full">APPROUVÉ</span>
-            </div>
-
-            <div class="grid grid-cols-2 gap-sm text-sm mb-md">
-              <div>
-                <p class="text-xs text-anthracite/50 uppercase">Montant</p>
-                <p class="font-bold text-anthracite">{{ +pret.montant | number:'1.0-0' }} FCFA</p>
-              </div>
-              @if (pret.dureeMois) {
-                <div>
-                  <p class="text-xs text-anthracite/50 uppercase">Durée</p>
-                  <p class="font-bold text-anthracite">{{ pret.dureeMois }} mois</p>
+            <div class="flex flex-col gap-sm">
+              @for (pret of aDecaisser(); track pret.id) {
+                <div class="bg-white rounded-xl p-md shadow-sm">
+                  <div class="flex items-start justify-between mb-md">
+                    <div>
+                      <p class="font-bold text-anthracite">{{ pret.membre.prenom }} {{ pret.membre.nom }}</p>
+                      <p class="text-xs text-anthracite/50">Approuvé le {{ pret.dateApprobation | date:'dd/MM/yyyy' }}</p>
+                    </div>
+                    <span class="bg-bleu-clair text-bleu-nuit text-xs font-semibold px-sm py-xs rounded-full">APPROUVÉ</span>
+                  </div>
+                  <div class="grid grid-cols-2 gap-sm text-sm mb-md">
+                    <div>
+                      <p class="text-xs text-anthracite/50 uppercase">Montant</p>
+                      <p class="font-bold text-anthracite">{{ +pret.montant | number:'1.0-0' }} FCFA</p>
+                    </div>
+                    @if (pret.dureeMois) {
+                      <div>
+                        <p class="text-xs text-anthracite/50 uppercase">Durée</p>
+                        <p class="font-bold text-anthracite">{{ pret.dureeMois }} mois</p>
+                      </div>
+                    }
+                  </div>
+                  <div class="flex gap-sm">
+                    <button (click)="voirDetail(pret.id)"
+                      class="flex-1 border border-anthracite/20 text-anthracite font-semibold rounded-xl py-sm text-sm flex items-center justify-center gap-xs">
+                      <i class="pi pi-eye text-xs"></i> Voir
+                    </button>
+                    <button (click)="ouvrirDecaisser(pret)"
+                      class="flex-1 bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-sm text-sm flex items-center justify-center gap-xs">
+                      <i class="pi pi-send text-xs"></i> Décaisser
+                    </button>
+                  </div>
                 </div>
               }
             </div>
+          }
 
-            <div class="flex gap-sm">
-              <button (click)="voirDetail(pret.id)"
-                class="flex-1 border border-anthracite/20 text-anthracite font-semibold rounded-xl py-sm text-sm flex items-center justify-center gap-xs">
-                <i class="pi pi-eye text-xs"></i> Voir
-              </button>
-              <button (click)="ouvrirDecaisser(pret)"
-                class="flex-1 bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-sm text-sm flex items-center justify-center gap-xs">
-                <i class="pi pi-send text-xs"></i> Décaisser
-              </button>
+          @if (!service.isLoading() && aApprouver().length === 0 && aDecaisser().length === 0) {
+            <div class="flex flex-col items-center py-2xl text-center">
+              <i class="pi pi-check-circle text-4xl text-vert-foret/40 mb-md"></i>
+              <p class="font-semibold text-anthracite/60">Aucune demande à traiter</p>
+            </div>
+          }
+
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════
+           VERSION DESKTOP
+      ════════════════════════════════ -->
+      <div class="hidden lg:block p-10">
+
+        <div class="flex items-center gap-3 mb-8">
+          <a routerLink="/mon-espace/prets" class="text-[#1E3A5F]/50 hover:text-[#1E3A5F]">
+            <i class="pi pi-arrow-left text-sm"></i>
+          </a>
+          <div>
+            <h1 class="text-[#1E3A5F] text-2xl font-bold">Demandes à traiter</h1>
+            <p class="text-[#1A1D23]/50 text-sm mt-1">Approuvez ou décaissez les demandes en attente.</p>
+          </div>
+        </div>
+
+        @if (service.errorMessage()) {
+          <div class="bg-red-50 text-red-600 text-sm rounded-xl p-4 mb-6 flex items-center gap-2">
+            <i class="pi pi-exclamation-circle shrink-0"></i>
+            {{ service.errorMessage() }}
+          </div>
+        }
+
+        @if (service.isLoading()) {
+          <div class="flex justify-center py-16">
+            <i class="pi pi-spin pi-spinner text-2xl text-[#1E3A5F]/40"></i>
+          </div>
+        }
+
+        <!-- Section À approuver (président) -->
+        @if (estPresident() && aApprouver().length > 0) {
+          <div class="mb-8">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-1 h-5 bg-[#1E3A5F] rounded-full"></div>
+              <h2 class="font-bold text-[#1E3A5F]">À approuver</h2>
+              <span class="bg-[#1E3A5F] text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center">
+                {{ aApprouver().length }}
+              </span>
+            </div>
+            <div class="bg-white/60 rounded-3xl outline outline-1 outline-white/50 overflow-hidden">
+              <div class="grid grid-cols-[2fr_1fr_1fr_auto] px-8 py-4 border-b border-[#1E3A5F]/5">
+                <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Membre</span>
+                <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Montant demandé</span>
+                <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Date demande</span>
+                <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Actions</span>
+              </div>
+              @for (pret of aApprouver(); track pret.id) {
+                <div class="grid grid-cols-[2fr_1fr_1fr_auto] px-8 py-5 items-center border-t border-[#1E3A5F]/5">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-[#1E3A5F]/10 flex items-center justify-center shrink-0">
+                      <span class="text-[#1E3A5F] text-xs font-bold">{{ pret.membre.prenom[0] }}{{ pret.membre.nom[0] }}</span>
+                    </div>
+                    <div>
+                      <p class="text-[#1E3A5F] text-sm font-medium">{{ pret.membre.prenom }} {{ pret.membre.nom }}</p>
+                      <span class="text-[10px] font-semibold text-[#2E7D5B] flex items-center gap-1">
+                        <i class="pi pi-check text-[8px]"></i> Cotisation à jour
+                      </span>
+                    </div>
+                  </div>
+                  <span class="text-[#1E3A5F] text-sm font-bold">{{ +pret.montant | number:'1.0-0' }} FCFA</span>
+                  <span class="text-[#1A1D23]/50 text-sm">{{ pret.dateDemande | date:'dd/MM/yyyy' }}</span>
+                  <div class="flex items-center gap-2">
+                    <button (click)="voirDetail(pret.id)"
+                      class="text-[#1E3A5F]/50 text-xs font-bold hover:text-[#1E3A5F] whitespace-nowrap">
+                      Voir
+                    </button>
+                    <button (click)="ouvrirApprouver(pret)"
+                      class="bg-[#2E7D5B] text-white text-xs font-bold px-3 py-1.5 rounded-lg whitespace-nowrap">
+                      Approuver
+                    </button>
+                  </div>
+                </div>
+              }
             </div>
           </div>
         }
+
+        <!-- Section À décaisser (trésorier) -->
+        @if (estTresorier() && aDecaisser().length > 0) {
+          <div class="mb-8">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-1 h-5 bg-[#EA580C] rounded-full"></div>
+              <h2 class="font-bold text-[#1E3A5F]">À décaisser</h2>
+              <span class="bg-[#EA580C] text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center">
+                {{ aDecaisser().length }}
+              </span>
+            </div>
+            <div class="bg-white/60 rounded-3xl outline outline-1 outline-white/50 overflow-hidden">
+              <div class="grid grid-cols-[2fr_1fr_1fr_1fr_auto] px-8 py-4 border-b border-[#1E3A5F]/5">
+                <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Membre</span>
+                <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Montant</span>
+                <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Durée</span>
+                <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Approuvé le</span>
+                <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">Action</span>
+              </div>
+              @for (pret of aDecaisser(); track pret.id) {
+                <div class="grid grid-cols-[2fr_1fr_1fr_1fr_auto] px-8 py-5 items-center border-t border-[#1E3A5F]/5">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-[#1E3A5F]/10 flex items-center justify-center shrink-0">
+                      <span class="text-[#1E3A5F] text-xs font-bold">{{ pret.membre.prenom[0] }}{{ pret.membre.nom[0] }}</span>
+                    </div>
+                    <p class="text-[#1E3A5F] text-sm font-medium">{{ pret.membre.prenom }} {{ pret.membre.nom }}</p>
+                  </div>
+                  <span class="text-[#1E3A5F] text-sm font-bold">{{ +pret.montant | number:'1.0-0' }} FCFA</span>
+                  <span class="text-[#1A1D23]/50 text-sm">{{ pret.dureeMois ? pret.dureeMois + ' mois' : '—' }}</span>
+                  <span class="text-[#1A1D23]/50 text-sm">{{ pret.dateApprobation | date:'dd/MM/yyyy' }}</span>
+                  <button (click)="ouvrirDecaisser(pret)"
+                    class="bg-[#1E3A5F] text-white text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 whitespace-nowrap">
+                    <i class="pi pi-send text-[10px]"></i> Décaisser
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        @if (!service.isLoading() && aApprouver().length === 0 && aDecaisser().length === 0) {
+          <div class="flex flex-col items-center py-24 text-center">
+            <i class="pi pi-check-circle text-4xl text-[#2E7D5B]/30 mb-4"></i>
+            <p class="font-semibold text-[#1A1D23]/40">Aucune demande à traiter</p>
+          </div>
+        }
+
       </div>
 
-    }
-
-    <!-- Vide -->
-    @if (!service.isLoading() && aApprouver().length === 0 && aDecaisser().length === 0) {
-      <div class="flex flex-col items-center py-2xl text-center">
-        <i class="pi pi-check-circle text-4xl text-vert-foret/40 mb-md"></i>
-        <p class="font-semibold text-anthracite/60">Aucune demande à traiter</p>
-      </div>
-    }
-
+    </main>
+    <app-bottom-nav></app-bottom-nav>
   </div>
 </div>
 
-<!-- ── MODAL APPROBATION ── -->
+<!-- ════ Modal approbation ════ -->
 @if (modalApprouverVisible() && pretAApprouver()) {
-  <div class="fixed inset-0 z-50 flex items-end bg-black/50"
+  <!-- Mobile : bottom sheet -->
+  <div class="fixed inset-0 z-50 flex items-end lg:items-center justify-center bg-black/50"
        (click)="modalApprouverVisible.set(false)">
-    <div class="bg-white rounded-t-2xl w-full max-h-[85vh] overflow-y-auto p-lg"
+    <div class="bg-white rounded-t-2xl lg:rounded-2xl w-full lg:max-w-[448px] p-6"
          (click)="$event.stopPropagation()">
+      <div class="w-10 h-1 bg-[#1E3A5F]/20 rounded-full mx-auto mb-5 lg:hidden"></div>
+      <h2 class="font-bold text-lg text-[#1E3A5F] mb-1">Approuver la demande</h2>
+      <p class="text-sm text-[#1A1D23]/50 mb-4">Définissez les conditions finales du prêt.</p>
 
-      <div class="w-10 h-1 bg-anthracite/20 rounded-full mx-auto mb-lg"></div>
-      <h2 class="font-bold text-lg text-anthracite mb-xs">Approuver la demande</h2>
-      <p class="text-sm text-anthracite/60 mb-md">Veuillez définir les conditions finales du prêt.</p>
-
-      <!-- Résumé membre -->
-      <div class="bg-gris-fond rounded-xl p-md flex items-center gap-md mb-md">
-        <div class="w-10 h-10 rounded-full bg-bleu-clair flex items-center justify-center font-bold text-bleu-nuit shrink-0">
+      <div class="bg-[#F7F8FA] rounded-xl p-4 flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-full bg-[#1E3A5F]/10 flex items-center justify-center font-bold text-[#1E3A5F] shrink-0">
           {{ pretAApprouver()!.membre.prenom[0] }}{{ pretAApprouver()!.membre.nom[0] }}
         </div>
         <div>
-          <p class="font-semibold text-anthracite">{{ pretAApprouver()!.membre.prenom }} {{ pretAApprouver()!.membre.nom }}</p>
-          <p class="text-sm text-vert-foret font-semibold">{{ +pretAApprouver()!.montant | number:'1.0-0' }} FCFA</p>
+          <p class="font-semibold text-[#1E3A5F]">{{ pretAApprouver()!.membre.prenom }} {{ pretAApprouver()!.membre.nom }}</p>
+          <p class="text-sm text-[#2E7D5B] font-semibold">{{ +pretAApprouver()!.montant | number:'1.0-0' }} FCFA</p>
         </div>
       </div>
 
-      <!-- Durée -->
-      <label class="text-xs font-semibold text-anthracite/60 uppercase mb-sm block">Durée du prêt (en mois)</label>
-      <div class="flex items-center border border-anthracite/20 rounded-xl overflow-hidden mb-sm">
+      <label class="text-xs font-semibold text-[#1E3A5F]/50 uppercase mb-2 block">Durée du prêt (en mois)</label>
+      <div class="flex items-center border border-[#1E3A5F]/20 rounded-xl overflow-hidden mb-2">
         <input type="number" min="1"
           [ngModel]="dureeApprouver()" (ngModelChange)="dureeApprouver.set(+$event)"
-          class="flex-1 px-md py-sm text-anthracite text-base outline-none bg-white" />
-        <span class="px-md py-sm text-sm text-anthracite/50 border-l border-anthracite/20">mois</span>
+          class="flex-1 px-4 py-3 text-[#1E3A5F] outline-none bg-white" />
+        <span class="px-4 py-3 text-sm text-[#1E3A5F]/50 border-l border-[#1E3A5F]/20">mois</span>
       </div>
       @if (service.regle()) {
-        <p class="text-xs text-bleu-nuit mb-md flex items-center gap-xs">
-          <i class="pi pi-info-circle"></i>
-          Durée maximale autorisée : {{ service.regle()!.dureeMaxMois }} mois
+        <p class="text-xs text-[#1E3A5F]/50 mb-4 flex items-center gap-1">
+          <i class="pi pi-info-circle"></i> Durée max : {{ service.regle()!.dureeMaxMois }} mois
         </p>
       }
 
-      <div class="flex flex-col gap-sm pb-safe">
-        <button (click)="confirmerApprobation()"
-          [disabled]="service.isLoading()"
-          class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-50">
+      <div class="flex flex-col gap-2">
+        <button (click)="confirmerApprobation()" [disabled]="service.isLoading()"
+          class="w-full bg-[#1E3A5F] text-white font-semibold rounded-xl py-3 flex items-center justify-center gap-2 disabled:opacity-50">
           @if (service.isLoading()) { <i class="pi pi-spin pi-spinner"></i> }
           @else { <i class="pi pi-check"></i> }
           Confirmer l'approbation
         </button>
         <button (click)="modalApprouverVisible.set(false)"
-          class="w-full text-anthracite font-semibold py-sm">
+          class="w-full text-[#1E3A5F]/60 font-semibold py-3">
           Annuler
         </button>
       </div>
-
     </div>
   </div>
 }
 
-<!-- ── MODAL DÉCAISSEMENT ── -->
+<!-- ════ Modal décaissement ════ -->
 @if (modalDecaisserVisible() && pretADecaisser()) {
-  <div class="fixed inset-0 z-50 flex items-end bg-black/50"
+  <div class="fixed inset-0 z-50 flex items-end lg:items-center justify-center bg-black/50"
        (click)="modalDecaisserVisible.set(false)">
-    <div class="bg-white rounded-t-2xl w-full max-h-[85vh] overflow-y-auto p-lg"
+    <div class="bg-white rounded-t-2xl lg:rounded-2xl w-full lg:max-w-[448px] p-6"
          (click)="$event.stopPropagation()">
+      <div class="w-10 h-1 bg-[#1E3A5F]/20 rounded-full mx-auto mb-5 lg:hidden"></div>
 
-      <div class="w-10 h-1 bg-anthracite/20 rounded-full mx-auto mb-lg"></div>
+      <div class="flex justify-center mb-4">
+        <div class="w-12 h-12 rounded-full bg-[#1E3A5F]/10 flex items-center justify-center">
+          <i class="pi pi-send text-[#1E3A5F] text-xl"></i>
+        </div>
+      </div>
+      <h2 class="font-bold text-lg text-[#1E3A5F] text-center mb-1">Confirmer le décaissement</h2>
+      <p class="text-sm text-[#1A1D23]/50 text-center mb-4">Validez les détails du paiement</p>
 
-      <div class="flex justify-center mb-md">
-        <div class="w-14 h-14 rounded-full bg-bleu-clair flex items-center justify-center">
-          <i class="pi pi-send text-bleu-nuit text-2xl"></i>
+      <div class="bg-[#F7F8FA] rounded-xl p-4 mb-4 flex flex-col gap-2 text-sm">
+        <div class="flex justify-between">
+          <span class="text-[#1E3A5F]/60">Bénéficiaire</span>
+          <span class="font-bold text-[#1E3A5F]">{{ pretADecaisser()!.membre.prenom }} {{ pretADecaisser()!.membre.nom }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-[#1E3A5F]/60">Montant à décaisser</span>
+          <span class="font-bold text-[#1E3A5F]">{{ +pretADecaisser()!.montant | number:'1.0-0' }} FCFA</span>
         </div>
       </div>
 
-      <h2 class="font-bold text-lg text-anthracite mb-xs text-center">Confirmer le décaissement</h2>
-      <p class="text-sm text-anthracite/60 mb-lg text-center">Veuillez valider les détails du paiement</p>
-
-      <!-- Résumé -->
-      <div class="bg-gris-fond rounded-xl p-md mb-lg flex flex-col gap-sm text-sm">
-        <div class="flex justify-between">
-          <span class="text-anthracite/60">Bénéficiaire</span>
-          <span class="font-bold text-anthracite">{{ pretADecaisser()!.membre.prenom }} {{ pretADecaisser()!.membre.nom }}</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-anthracite/60">Montant à décaisser</span>
-          <span class="font-bold text-anthracite">{{ pretADecaisser()!.montant | number:'1.0-0' }} FCFA</span>
-        </div>
-      </div>
-
-      <!-- Mode paiement -->
-      <p class="text-xs font-semibold text-anthracite/60 uppercase mb-sm">Mode de paiement</p>
-      <div class="flex flex-col gap-sm mb-lg">
+      <p class="text-xs font-semibold text-[#1E3A5F]/50 uppercase mb-3">Mode de paiement</p>
+      <div class="flex flex-col gap-2 mb-4">
         @for (mode of modesPaiement; track mode.value) {
           <button (click)="modePaiementDecaissement.set(mode.value)"
-            [class]="modePaiementDecaissement() === mode.value
-              ? 'flex items-center gap-md p-md rounded-xl border-2 border-bleu-nuit bg-bleu-clair/20'
-              : 'flex items-center gap-md p-md rounded-xl border border-anthracite/20 bg-white'">
-            <div class="w-10 h-10 rounded-full bg-gris-fond flex items-center justify-center shrink-0">
-              @if (mode.logo) {
-                <img [src]="mode.logo" [alt]="mode.label" class="h-6 object-contain" />
-              } @else {
-                <i [class]="mode.icone + ' text-anthracite'"></i>
-              }
+            class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all"
+            [class]="modePaiementDecaissement() === mode.value ? 'border-[#1E3A5F] bg-[#1E3A5F]/5' : 'border-[#1E3A5F]/10 bg-white'">
+            <div class="w-9 h-9 rounded-xl bg-[#F7F8FA] flex items-center justify-center shrink-0">
+              @if (mode.logo) { <img [src]="mode.logo" [alt]="mode.label" class="h-6 object-contain" /> }
+              @else { <i [class]="mode.icone + ' text-[#1E3A5F]'"></i> }
             </div>
-            <div class="flex-1 text-left">
-              <p class="font-semibold text-anthracite text-sm">{{ mode.label }}</p>
-              <p class="text-xs text-anthracite/50">
-                {{ mode.value === 'especes' ? 'Remise en main propre' : mode.value === 'wave' ? 'Transfert instantané' : 'Portefeuille électronique' }}
-              </p>
-            </div>
-            <div [class]="modePaiementDecaissement() === mode.value
-              ? 'w-5 h-5 rounded-full border-2 border-bleu-nuit bg-bleu-nuit flex items-center justify-center'
-              : 'w-5 h-5 rounded-full border-2 border-anthracite/30'">
-              @if (modePaiementDecaissement() === mode.value) {
-                <div class="w-2 h-2 rounded-full bg-blanc-lait"></div>
-              }
+            <span class="flex-1 font-semibold text-[#1E3A5F] text-sm text-left">{{ mode.label }}</span>
+            <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0"
+                 [class]="modePaiementDecaissement() === mode.value ? 'bg-[#1E3A5F] border-[#1E3A5F]' : 'border-[#1E3A5F]/30'">
+              @if (modePaiementDecaissement() === mode.value) { <i class="pi pi-check text-white text-[8px]"></i> }
             </div>
           </button>
         }
       </div>
 
-      <div class="flex flex-col gap-sm">
-        <button (click)="confirmerDecaissement()"
-          [disabled]="service.isLoading()"
-          class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm disabled:opacity-50">
+      <div class="flex flex-col gap-2">
+        <button (click)="confirmerDecaissement()" [disabled]="service.isLoading()"
+          class="w-full bg-[#1E3A5F] text-white font-semibold rounded-xl py-3 flex items-center justify-center gap-2 disabled:opacity-50">
           @if (service.isLoading()) { <i class="pi pi-spin pi-spinner"></i> }
           @else { <i class="pi pi-check"></i> }
           Valider le décaissement
         </button>
         <button (click)="modalDecaisserVisible.set(false)"
-          class="w-full text-anthracite font-semibold py-md">
+          class="w-full text-[#1E3A5F]/60 font-semibold py-3">
           Annuler
         </button>
       </div>
-
     </div>
   </div>
 }
-
-<app-bottom-nav />

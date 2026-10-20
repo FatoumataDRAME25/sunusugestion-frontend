@@ -7,7 +7,7 @@
 <button
   type="button"
   routerLink="/mon-espace/membres"
-  class="text-anthracite/60 mb-lg block"
+  class="text-anthracite/60 mb-lg block lg:hidden"
 >
   <i class="pi pi-chevron-left text-lg"></i>
 </button>
@@ -249,6 +249,7 @@
 <p-dialog
 [(visible)]="modalSuccesVisible"
 [modal]="true"
+[dismissableMask]="true"
 [closable]="false"
 [draggable]="false"
 [style]="{
@@ -266,7 +267,7 @@ width: '90vw',
 
   <!-- Icône succès -->
   <div
-    class="w-20 h-20 rounded-full bg-vert-succes flex items-center justify-center"
+    class="w-20 h-20 rounded-full bg-vert-foret flex items-center justify-center"
   >
     <i class="pi pi-check text-3xl text-blanc-lait"></i>
   </div>

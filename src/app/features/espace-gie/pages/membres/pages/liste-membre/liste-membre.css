@@ -1,0 +1,38 @@
+/* Écrase le min-h-screen et le fond gris des composants ajouter/importer
+   quand ils sont rendus à l'intérieur d'un modal desktop */
+
+.modal-ajouter-content ::ng-deep > div,
+.modal-importer-content ::ng-deep > div {
+  min-height: unset !important;
+  height: auto !important;
+  background: transparent !important;
+  padding-bottom: 0 !important;
+  overflow: visible !important;
+}
+
+/* Cache le bouton retour et le titre de l'en-tête (déjà dans le header du modal) */
+.modal-ajouter-content ::ng-deep > div > div:first-child,
+.modal-importer-content ::ng-deep > div > div:first-child {
+  display: none !important;
+}
+
+/* Cache le bottom-nav et la navbar à l'intérieur du modal */
+.modal-ajouter-content ::ng-deep app-bottom-nav,
+.modal-ajouter-content ::ng-deep app-navbar,
+.modal-importer-content ::ng-deep app-bottom-nav,
+.modal-importer-content ::ng-deep app-navbar {
+  display: none !important;
+}
+
+/* Retire les marges latérales du formulaire dans le modal */
+.modal-ajouter-content ::ng-deep form,
+.modal-importer-content ::ng-deep .mx-lg {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Empêche le scroll interne dans le wrapper modal */
+.modal-ajouter-content,
+.modal-importer-content {
+  overflow: hidden;
+}

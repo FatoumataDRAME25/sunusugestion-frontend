@@ -1,4 +1,5 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { environment } from '../../../../../../../environments/environment';
+import { Component, inject, input, output, signal, OnInit } from '@angular/core';
 import { MembresService } from '../../../../../../core/services/membres.service';
 import { OcrService } from '../../../../../../core/services/ocr.service';
 import { Router, RouterLink } from '@angular/router';
@@ -20,6 +21,11 @@ export class ImporterMembre implements OnInit {
   protected service = inject(MembresService);
   private ocrService = inject(OcrService);
   private router = inject(Router);
+
+  // Vrai quand l'import est affiché dans la modale de la liste des membres (desktop)
+  dansModale = input(false);
+  // Demande à la liste des membres de fermer la modale
+  annuler = output<void>();
 
   // Mode d'import : excel ou image
   modeImport = signal<'excel' | 'image'>('excel');
@@ -47,10 +53,11 @@ export class ImporterMembre implements OnInit {
 
   modalSuccesVisible = signal(false);
 
-  readonly rolesDisponibles = ['president', 'tresorier', 'secretaire', 'membre'];
+  // La présidence se transmet par passation, jamais à l'import
+  readonly rolesDisponibles = ['tresorier', 'secretaire', 'membre'];
 
   // URL de base pour les liens d'activation (même valeur que ajouter-membre.ts)
-  private readonly urlNgrok = 'https://stitch-freebie-dreamless.ngrok-free.dev';
+  private readonly urlNgrok = environment.URL_PUBLIQUE;
 
   ngOnInit(): void {
     this.service.reinitialiserExcel();
@@ -84,7 +91,9 @@ export class ImporterMembre implements OnInit {
     if (!fichier) return;
     this.service.analyserExcel(fichier).subscribe({
       next: () => this.etape.set('verification'),
-      error: (err) => this.service.errorMessage.set(err?.error?.detail ?? 'Fichier invalide')
+      error: (err) => this.service.errorMessage.set(
+        err?.error?.detail ?? err?.error?.fichier?.[0] ?? err?.error?.[0] ?? 'Fichier invalide'
+      )
     });
   }
 
@@ -163,7 +172,7 @@ export class ImporterMembre implements OnInit {
       erreurs.push('Format invalide — doit commencer par 70, 71, 75, 76, 77 ou 78');
     }
     if (!this.rolesDisponibles.includes(edite.role ?? '')) {
-      erreurs.push('Rôle invalide — valeurs autorisées : president, tresorier, secretaire, membre');
+      erreurs.push('Rôle invalide — valeurs autorisées : tresorier, secretaire, membre');
     }
 
     // Met à jour le membre dans le signal avec le nouveau statut
@@ -217,7 +226,7 @@ export class ImporterMembre implements OnInit {
       `et configurer votre code PIN d'accès, veuillez cliquer ` +
       `sur ce lien sécurisé : ${lienActivation}`;
 
-    window.open(`https://wa.me/${numTel}?text=${encodeURIComponent(message)}`, '_blank');
+    window.open(`https://wa.me/${numTel}?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
   }
 
   retourSelection(): void {
@@ -231,6 +240,19 @@ export class ImporterMembre implements OnInit {
     this.indexEnEdition.set(-1);
     this.membreEnEdition.set(null);
     this.service.reinitialiserExcel();
+  }
+
+  /** Bouton « Annuler » avant l'analyse : vide la sélection et quitte l'import */
+  annulerImport(): void {
+    this.retourSelection();
+    this.service.errorMessage.set(null);
+    this.modeImport.set('excel');
+
+    if (this.dansModale()) {
+      this.annuler.emit();
+    } else {
+      this.router.navigate(['/mon-espace/membres']);
+    }
   }
 
   voirLesMembres(): void {

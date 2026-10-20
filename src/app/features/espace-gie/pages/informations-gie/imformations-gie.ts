@@ -6,9 +6,12 @@ import { BottomNav } from '../../../../shared/ui/bottom-nav/bottom-nav';
 import { InputTextModule } from 'primeng/inputtext';
 import { DatePipe, NgClass } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { Navbar } from '../../../../shared/ui/navbar/navbar';
+import { GieSidebar } from '../../../../shared/ui/gie-sidebar/gie-sidebar';
+import { CarteAbonnement } from './carte-abonnement/carte-abonnement';
 
 @Component({
-  imports: [BottomNav, ReactiveFormsModule, RouterLink, DatePipe, InputTextModule, NgClass],
+  imports: [BottomNav, ReactiveFormsModule, RouterLink, DatePipe, InputTextModule, NgClass, Navbar, GieSidebar, CarteAbonnement],
   selector: 'app-imformations-gie',
   styleUrl: './imformations-gie.css',
   templateUrl: './imformations-gie.html',
@@ -28,19 +31,37 @@ export class InformationsGie {
   form: FormGroup = this.fb.group({
     nom: [''],
     region: [''],
-    secteur: [''],
+    typeGie: [''],
     telephone: [''],
     description: ['']
   });
 
+  // Mêmes limites que le serveur, vérifiées avant l'envoi
+  readonly typesLogo = ['image/jpeg', 'image/png', 'image/webp'];
+  private readonly tailleMaxLogo = 2 * 1024 * 1024;
+
+  // Mêmes types d'organisation que ceux proposés à l'inscription
+  readonly typesOrganisation = [
+    { label: 'Association', value: 'association' },
+    { label: 'Organisation communautaire', value: 'organisation_communautaire' },
+    { label: 'Groupement', value: 'groupement' },
+    { label: 'Autre', value: 'autre' },
+  ];
+
   ngOnInit(): void {
+    // Seul le président peut changer le type d'organisation
+    if (!this.estPresident) {
+      this.form.get('typeGie')!.disable();
+    }
+
+
     this.gieService.chargerInfos().subscribe({
       next: (infos) => {
         // Pré-remplir le formulaire avec les données reçues
         this.form.patchValue({
           nom: infos.nom,
           region: infos.region,
-          secteur: infos.typeGie,
+          typeGie: infos.typeGie,
           telephone: infos.telephone ?? '',
         });
       }
@@ -50,12 +71,46 @@ export class InformationsGie {
   enregistrer(): void {
     if (this.form.pristine) return; // rien n'a changé
 
-    this.gieService.modifierInfos(this.form.value).subscribe({
+    const { nom, region, typeGie, telephone } = this.form.value;
+
+    this.gieService.modifierInfos({ nom, region, typeGie, telephone }).subscribe({
       next: () => {
-        this.succes.set(true);
         this.form.markAsPristine();
-        setTimeout(() => this.succes.set(false), 3000);
+        this.afficherSucces();
       }
     });
+  }
+
+  choisirLogo(evenement: Event): void {
+    const champ = evenement.target as HTMLInputElement;
+    const fichier = champ.files?.[0];
+    champ.value = ''; // permet de choisir à nouveau le même fichier
+    if (!fichier) return;
+
+    if (!this.typesLogo.includes(fichier.type)) {
+      this.gieService.errorMessage.set('Le logo doit être une image JPEG, PNG ou WebP.');
+      return;
+    }
+    if (fichier.size > this.tailleMaxLogo) {
+      this.gieService.errorMessage.set('Le logo ne doit pas dépasser 2 Mo.');
+      return;
+    }
+
+    this.gieService.modifierLogo(fichier).subscribe({
+      next: () => this.afficherSucces(),
+      error: () => {} // message affiché par le service
+    });
+  }
+
+  retirerLogo(): void {
+    this.gieService.retirerLogo().subscribe({
+      next: () => this.afficherSucces(),
+      error: () => {}
+    });
+  }
+
+  private afficherSucces(): void {
+    this.succes.set(true);
+    setTimeout(() => this.succes.set(false), 3000);
   }
 }

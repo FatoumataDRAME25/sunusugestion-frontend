@@ -2,7 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { OcrResult, ProcessDocumentResponse } from '../models/ocr.model';
+import { ProcessDocumentResponse } from '../models/ocr.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class OcrService {
@@ -10,7 +11,8 @@ export class OcrService {
   private http = inject(HttpClient);
 
   // Base URL du service OCR — séparé de l'API Django
-  private readonly OCR_BASE_URL = 'http://localhost:8000';
+  // Racine du backend déduite de l'API : '' en développement (proxy), adresse complète sinon
+  private readonly OCR_BASE_URL = environment.API_URL.replace(/\/api\/?$/, '');
 
   // Contraintes identiques au backend OCR
   readonly FORMATS_ACCEPTES = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
@@ -27,16 +29,6 @@ export class OcrService {
     return null;
   }
 
-  /** OCR brut — retourne uniquement le texte extrait */
-  extractText(file: File): Observable<OcrResult> {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    return this.http
-      .post<OcrResult>(`${this.OCR_BASE_URL}/api/ocr`, formData)
-      .pipe(catchError(this.gererErreur));
-  }
-
   /** OCR + validation des champs membres via n8n */
   processDocument(file: File): Observable<ProcessDocumentResponse> {
     const formData = new FormData();
@@ -44,13 +36,6 @@ export class OcrService {
 
     return this.http
       .post<ProcessDocumentResponse>(`${this.OCR_BASE_URL}/api/process-document`, formData)
-      .pipe(catchError(this.gererErreur));
-  }
-
-  /** Vérifie que le service OCR est disponible */
-  healthCheck(): Observable<{ status: string }> {
-    return this.http
-      .get<{ status: string }>(`${this.OCR_BASE_URL}/ocr/health`)
       .pipe(catchError(this.gererErreur));
   }
 

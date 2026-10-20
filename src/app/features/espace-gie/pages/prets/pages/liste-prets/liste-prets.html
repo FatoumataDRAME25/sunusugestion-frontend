@@ -1,138 +1,694 @@
-<app-navbar />
+<div class="relative flex bg-[#F7F8FA] lg:bg-fond-desktop min-h-screen">
+  <app-gie-sidebar></app-gie-sidebar>
 
-<div class="min-h-screen bg-gris-fond pb-24">
+  <div class="flex-1 ml-0 lg:ml-[264px] min-w-0 flex flex-col">
+    <app-navbar titre="Prêts"></app-navbar>
 
-  <!-- En-tête -->
-  <div class="p-lg">
-    <div class="flex items-center gap-md mb-lg">
-      <a routerLink="/mon-espace" class="text-anthracite/60">
-        <i class="pi pi-chevron-left text-lg"></i>
-      </a>
-      <h1 class="font-bold text-2xl text-anthracite">Prêts</h1>
-    </div>
+    <main class="pb-24 lg:pb-8 lg:pt-20">
+      <!-- ════════════════════════════════
+           VERSION MOBILE
+      ════════════════════════════════ -->
 
-    <!-- Stats -->
-    <div class="grid grid-cols-3 gap-sm mb-lg">
-      <div class="bg-white rounded-xl p-md text-center shadow-sm">
-        <p class="text-xs text-anthracite/50 mb-xs">En attente</p>
-        <p class="font-bold text-xl text-anthracite">{{ service.statsEnAttente() }}</p>
-      </div>
-      <div class="bg-white rounded-xl p-md text-center shadow-sm">
-        <p class="text-xs text-anthracite/50 mb-xs">Approuvés</p>
-        <p class="font-bold text-xl text-bleu-nuit">{{ service.statsApprouve() }}</p>
-      </div>
-      <div class="bg-white rounded-xl p-md text-center shadow-sm">
-        <p class="text-xs text-anthracite/50 mb-xs">En cours</p>
-        <p class="font-bold text-xl text-vert-foret">{{ service.statsEnCours() }}</p>
-      </div>
-    </div>
+      <div class="lg:hidden">
+        <div class="min-h-screen bg-gris-fond pb-24">
+          <div class="p-lg">
+            <div class="flex items-center gap-md mb-lg">
+              <a routerLink="/mon-espace" class="text-anthracite/60">
+                <i class="pi pi-chevron-left text-lg"></i>
+              </a>
+              <h1 class="font-bold text-2xl text-anthracite">Prêts</h1>
+            </div>
 
-    <!-- Bouton demander (tous les membres du GIE) -->
-    @if (peutDemanderPret()) {
-      <a routerLink="/mon-espace/prets/demande"
-        class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm mb-lg">
-        <i class="pi pi-plus"></i>
-        Demander un prêt
-      </a>
-    }
+            <!-- Statistiques -->
+            <div class="grid grid-cols-2 gap-sm mb-lg">
+              <div class="bg-white rounded-xl p-md text-center shadow-sm">
+                <p class="text-xs text-anthracite/50 mb-xs">En attente</p>
+                <p class="font-bold text-xl text-anthracite">
+                  {{ service.statsEnAttente() }}
+                </p>
+              </div>
 
-    <!-- Bouton demandes à traiter (président uniquement) -->
-    @if (estPresident()) {
-      <a routerLink="/mon-espace/prets/demandes-a-traiter"
-        class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm mb-lg">
-        <i class="pi pi-list-check"></i>
-        Demandes à traiter
-      </a>
-    }
+              <div class="bg-white rounded-xl p-md text-center shadow-sm">
+                <p class="text-xs text-anthracite/50 mb-xs">Approuvés</p>
+                <p class="font-bold text-xl text-bleu-nuit">
+                  {{ service.statsApprouve() }}
+                </p>
+              </div>
 
-    <!-- Recherche -->
-    <div class="flex items-center gap-sm bg-white rounded-xl px-md py-sm shadow-sm mb-md">
-      <i class="pi pi-search text-anthracite/40"></i>
-      <input type="text"
-        [ngModel]="termeRecherche()"
-        (ngModelChange)="termeRecherche.set($event)"
-        placeholder="Rechercher un membre ou un prêt..."
-        class="flex-1 bg-transparent outline-none text-sm text-anthracite placeholder:text-anthracite/40" />
-    </div>
+              <div class="bg-white rounded-xl p-md text-center shadow-sm">
+                <p class="text-xs text-anthracite/50 mb-xs">En cours</p>
+                <p class="font-bold text-xl text-vert-foret">
+                  {{ service.statsEnCours() }}
+                </p>
+              </div>
 
-    <!-- Filtres -->
-    <div class="flex gap-sm justify-center pb-xs">
-      @for (f of filtres; track f.label) {
-        <button (click)="filtreStatut.set(f.value)"
-          [class]="filtreStatut() === f.value
-            ? 'px-lg py-sm rounded-full bg-bleu-nuit text-blanc-lait font-semibold text-sm whitespace-nowrap'
-            : 'px-lg py-sm rounded-full bg-white text-anthracite/60 text-sm border border-anthracite/10 whitespace-nowrap'">
-          {{ f.label }}
-        </button>
-      }
-    </div>
-  </div>
+              <div class="bg-white rounded-xl p-md text-center shadow-sm">
+                <p class="text-xs text-anthracite/50 mb-xs">En retard</p>
+                <p class="font-bold text-xl text-rouge-alerte">
+                  {{ service.statsEnRetard() }}
+                </p>
+              </div>
+            </div>
 
-  <!-- Liste -->
-  <div class="px-lg flex flex-col gap-sm">
+            <!-- Règles de prêt pas encore définies -->
+            @if (service.reglesAbsentes()) {
+              <div class="bg-or-clair/40 border border-or-senegal/30 rounded-xl p-md mb-lg flex flex-col gap-sm">
+                <p class="text-sm font-semibold text-anthracite">
+                  <i class="pi pi-info-circle text-or-senegal mr-xs"></i>
+                  Les règles de prêt ne sont pas encore définies.
+                </p>
+                @if (estPresident()) {
+                  <p class="text-xs text-anthracite/60">Les membres ne peuvent pas demander de prêt tant qu'elles ne le sont pas.</p>
+                  <a routerLink="/mon-espace/prets/regles"
+                    class="self-start bg-bleu-nuit text-blanc-lait font-semibold rounded-lg px-md py-sm text-sm">
+                    Définir maintenant
+                  </a>
+                } @else {
+                  <p class="text-xs text-anthracite/60">Les prêts seront disponibles dès que le président aura défini les règles.</p>
+                }
+              </div>
+            }
 
-    @if (service.isLoading()) {
-      <div class="flex justify-center py-xl">
-        <i class="pi pi-spin pi-spinner text-2xl text-bleu-nuit"></i>
-      </div>
-    }
+            <!-- Bouton demander un prêt -->
+            @if (peutDemanderPret()) {
+              @if (service.reglesAbsentes()) {
+                <div class="w-full bg-anthracite/10 text-anthracite/50 font-semibold rounded-xl py-md flex items-center justify-center gap-sm mb-lg">
+                  <i class="pi pi-plus"></i>
+                  Demander un prêt
+                </div>
+              } @else {
+                <a
+                  routerLink="/mon-espace/prets/demande"
+                  class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm mb-lg"
+                >
+                  <i class="pi pi-plus"></i>
+                  Demander un prêt
+                </a>
+              }
+            }
 
-    @if (!service.isLoading() && pretsFiltres().length === 0) {
-      <div class="flex flex-col items-center py-2xl text-center">
-        <i class="pi pi-inbox text-4xl text-anthracite/30 mb-md"></i>
-        <p class="font-semibold text-anthracite/60">Aucun prêt trouvé</p>
-      </div>
-    }
+            <!-- Bouton demandes à traiter -->
+            @if (estPresident()) {
+              <a
+                routerLink="/mon-espace/prets/demandes-a-traiter"
+                class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm mb-lg"
+              >
+                <i class="pi pi-list-check"></i>
+                Demandes à traiter
+              </a>
+            }
 
-    @for (pret of pretsFiltres(); track pret.id) {
-      <a [routerLink]="['/mon-espace/prets', pret.id]"
-        class="bg-white rounded-xl p-md shadow-sm block">
+            <!-- Règles de prêt : consultables par tous, modifiables par le président -->
+            <a
+              routerLink="/mon-espace/prets/regles"
+              class="w-full bg-white border border-anthracite/20 text-anthracite font-semibold rounded-xl py-md flex items-center justify-center gap-sm mb-lg"
+            >
+              <i class="pi pi-sliders-h"></i>
+              Règles de prêt
+            </a>
 
-        <!-- Membre + statut -->
-        <div class="flex items-center gap-md mb-sm">
-          <div class="w-10 h-10 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-sm text-bleu-nuit shrink-0">
-            {{ pret.membre.prenom?.[0] ?? '?' }}{{ pret.membre.nom?.[0] ?? '?' }}
+            <!-- Recherche -->
+            <div class="flex items-center gap-sm bg-white rounded-xl px-md py-sm shadow-sm mb-md">
+              <i class="pi pi-search text-anthracite/40"></i>
+
+              <input
+                type="text"
+                [ngModel]="termeRecherche()"
+                (ngModelChange)="termeRecherche.set($event)"
+                placeholder="Rechercher un membre ou un prêt..."
+                class="flex-1 bg-transparent outline-none text-sm text-anthracite placeholder:text-anthracite/40"
+              />
+            </div>
+
+            <!-- Filtres -->
+            <div class="flex gap-sm overflow-x-auto pb-xs">
+              @for (f of filtres; track f.label) {
+                <button
+                  (click)="filtreStatut.set(f.value)"
+                  [class]="
+                    filtreStatut() === f.value
+                      ? 'px-lg py-sm rounded-full bg-bleu-nuit text-blanc-lait font-semibold text-sm whitespace-nowrap'
+                      : 'px-lg py-sm rounded-full bg-white text-anthracite/60 text-sm border border-anthracite/10 whitespace-nowrap'
+                  "
+                >
+                  {{ f.label }}
+                </button>
+              }
+            </div>
           </div>
-          <div class="flex-1 min-w-0">
-            <p class="font-semibold text-anthracite truncate">{{ pret.membre.prenom }} {{ pret.membre.nom }}</p>
-            <p class="text-xs text-anthracite/50">Demandé le {{ pret.dateDemande | date:'dd/MM/yyyy' }}</p>
+
+          <!-- Liste des prêts sur mobile -->
+          <div class="px-lg flex flex-col gap-sm">
+            @if (service.isLoading()) {
+              <div class="flex justify-center py-xl">
+                <i class="pi pi-spin pi-spinner text-2xl text-bleu-nuit"></i>
+              </div>
+            }
+
+            @if (!service.isLoading() && pretsFiltres().length === 0) {
+              <div class="flex flex-col items-center py-2xl text-center">
+                <i class="pi pi-inbox text-4xl text-anthracite/30 mb-md"></i>
+                <p class="font-semibold text-anthracite/60">Aucun prêt trouvé</p>
+              </div>
+            }
+
+            @for (pret of pretsFiltres(); track pret.id) {
+              <a
+                [routerLink]="['/mon-espace/prets', pret.id]"
+                class="bg-white rounded-xl p-md shadow-sm block"
+              >
+                <div class="flex items-center gap-md mb-sm">
+                  <div
+                    class="w-10 h-10 rounded-full bg-bleu-clair flex items-center justify-center font-semibold text-sm text-bleu-nuit shrink-0"
+                  >
+                    {{ pret.membre.prenom?.[0] ?? '?' }}{{ pret.membre.nom?.[0] ?? '?' }}
+                  </div>
+
+                  <div class="flex-1 min-w-0">
+                    <p class="font-semibold text-anthracite truncate">
+                      {{ pret.membre.prenom }} {{ pret.membre.nom }}
+                    </p>
+
+                    <p class="text-xs text-anthracite/50">
+                      Demandé le {{ pret.dateDemande | date: 'dd/MM/yyyy' }}
+                    </p>
+                  </div>
+
+                  <span
+                    [class]="
+                      'text-xs font-semibold px-sm py-xs rounded-full ' + badgeStatut(pret.statut)
+                    "
+                  >
+                    {{ labelStatut(pret.statut) }}
+                  </span>
+                </div>
+
+                <div class="flex justify-between text-xs border-t border-anthracite/10 pt-sm">
+                  <div>
+                    <p class="text-anthracite/50">MONTANT</p>
+                    <p class="font-bold text-anthracite">
+                      {{ +pret.montant | number: '1.0-0' }} FCFA
+                    </p>
+                  </div>
+
+                  @if (pret.statut === 'en_cours' && pret.dateEcheance) {
+                    <div class="text-right">
+                      <p class="text-anthracite/50">ÉCHÉANCE</p>
+                      <p class="font-bold text-anthracite">
+                        {{ pret.dateEcheance | date: 'dd/MM/yyyy' }}
+                      </p>
+                    </div>
+                  }
+
+                  @if (pret.statut === 'approuve' && pret.dureeMois) {
+                    <div class="text-right">
+                      <p class="text-anthracite/50">DURÉE</p>
+                      <p class="font-bold text-anthracite">{{ pret.dureeMois }} mois</p>
+                    </div>
+                  }
+                </div>
+              </a>
+            }
           </div>
-          <span [class]="'text-xs font-semibold px-sm py-xs rounded-full ' + badgeStatut(pret.statut)">
-            {{ labelStatut(pret.statut) }}
-          </span>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════
+           VERSION DESKTOP
+      ════════════════════════════════ -->
+
+      <div class="hidden lg:block p-10">
+        <!-- En-tête -->
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <h3 class="text-[#1E3A5F] text-xl font-bold leading-8">Suivi des demandes et remboursements de prêts.</h3>
+
+          </div>
+
+          <div class="flex items-center gap-3">
+            <a
+              routerLink="/mon-espace/prets/regles"
+              class="flex items-center gap-2 border border-[#1E3A5F]/20 text-[#1E3A5F] font-semibold rounded-xl px-5 py-[10px] text-sm hover:bg-[#1E3A5F]/5"
+            >
+              <i class="pi pi-sliders-h"></i>
+              Règles de prêt
+            </a>
+
+            @if (estPresident()) {
+              <a
+                routerLink="/mon-espace/prets/demandes-a-traiter"
+                class="flex items-center gap-2 border border-[#1E3A5F]/20 text-[#1E3A5F] font-semibold rounded-xl px-5 py-[10px] text-sm hover:bg-[#1E3A5F]/5"
+              >
+                <i class="pi pi-list-check"></i>
+                Demandes à traiter
+              </a>
+            }
+
+            @if (peutDemanderPret()) {
+              <button
+                type="button"
+                (click)="ouvrirModalDemande()"
+                [disabled]="service.reglesAbsentes()"
+                [title]="service.reglesAbsentes() ? 'Les règles de prêt ne sont pas encore définies' : ''"
+                class="flex items-center gap-2 bg-[#1E3A5F] text-white font-semibold rounded-xl px-5 py-[10px] text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <i class="pi pi-plus"></i>
+                Demander un prêt
+              </button>
+            }
+          </div>
         </div>
 
-        <!-- Montant + info contextuelle -->
-        <div class="flex justify-between text-xs border-t border-anthracite/10 pt-sm">
-          <div>
-            <p class="text-anthracite/50">MONTANT</p>
-            <p class="font-bold text-anthracite">{{ +pret.montant | number:'1.0-0' }} FCFA</p>
-          </div>
-          @if (pret.statut === 'en_cours' && pret.dateEcheance) {
-            <div class="text-right">
-              <p class="text-anthracite/50">ÉCHÉANCE</p>
-              <p class="font-bold text-anthracite">
-                {{ pret.dateEcheance | date:'dd/MM/yyyy' }}
+        <!-- Règles de prêt pas encore définies -->
+        @if (service.reglesAbsentes()) {
+          <div class="mb-6 flex items-center justify-between gap-4 rounded-2xl border border-[#E8A020]/30 bg-[#E8A020]/10 px-5 py-4">
+            <div>
+              <p class="text-sm font-semibold text-[#1E3A5F]">
+                <i class="pi pi-info-circle text-[#B7791F] mr-1"></i>
+                Les règles de prêt ne sont pas encore définies.
+              </p>
+              <p class="text-xs text-[#1A1D23]/60 mt-1">
+                @if (estPresident()) {
+                  Les membres ne peuvent pas demander de prêt tant qu'elles ne le sont pas.
+                } @else {
+                  Les prêts seront disponibles dès que le président aura défini les règles.
+                }
               </p>
             </div>
-          }
-          @if (pret.statut === 'approuve' && pret.dureeMois) {
-            <div class="text-right">
-              <p class="text-anthracite/50">DURÉE</p>
-              <p class="font-bold text-anthracite">{{ pret.dureeMois }} mois</p>
+            @if (estPresident()) {
+              <a routerLink="/mon-espace/prets/regles"
+                class="shrink-0 bg-[#1E3A5F] text-white font-semibold rounded-xl px-5 py-[10px] text-sm">
+                Définir maintenant
+              </a>
+            }
+          </div>
+        }
+
+        <!-- Statistiques -->
+        <div class="grid grid-cols-4 gap-4 mb-8">
+          <div class="bg-white/60 rounded-2xl p-5 outline outline-1 outline-white/50">
+            <p class="text-[#1A1D23]/40 text-xs font-bold uppercase tracking-wide mb-1">
+              En attente
+            </p>
+            <p class="font-bold text-2xl text-[#EA580C]">
+              {{ service.statsEnAttente() }}
+            </p>
+          </div>
+
+          <div class="bg-white/60 rounded-2xl p-5 outline outline-1 outline-white/50">
+            <p class="text-[#1A1D23]/40 text-xs font-bold uppercase tracking-wide mb-1">
+              Approuvés
+            </p>
+            <p class="font-bold text-2xl text-[#1E3A5F]">
+              {{ service.statsApprouve() }}
+            </p>
+          </div>
+
+          <div class="bg-white/60 rounded-2xl p-5 outline outline-1 outline-white/50">
+            <p class="text-[#1A1D23]/40 text-xs font-bold uppercase tracking-wide mb-1">En cours</p>
+            <p class="font-bold text-2xl text-[#2E7D5B]">
+              {{ service.statsEnCours() }}
+            </p>
+          </div>
+
+          <div class="bg-white/60 rounded-2xl p-5 outline outline-1 outline-white/50">
+            <p class="text-[#1A1D23]/40 text-xs font-bold uppercase tracking-wide mb-1">En retard</p>
+            <p class="font-bold text-2xl text-[#C1654A]">
+              {{ service.statsEnRetard() }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Tableau -->
+        <div
+          class="bg-white/60 rounded-3xl outline outline-1 outline-white/50 backdrop-blur-[8px] flex flex-col overflow-hidden"
+        >
+          <!-- Barre de recherche et filtres -->
+          <div class="flex items-center gap-4 px-8 py-5 border-b border-[#1E3A5F]/5">
+            <div
+              class="flex items-center gap-2 bg-[#1E3A5F]/5 rounded-full px-4 py-4 min-w-0 flex-1"
+            >
+              <i class="pi pi-search text-[#1E3A5F]/40 text-sm flex-shrink-0"></i>
+
+              <input
+                type="text"
+                [ngModel]="termeRecherche()"
+                (ngModelChange)="termeRecherche.set($event)"
+                placeholder="Rechercher un membre..."
+                class="bg-transparent outline-none text-sm text-[#1E3A5F] placeholder:text-[#1E3A5F]/40 min-w-0 w-full"
+              />
             </div>
-          }
-          @if (pret.statut === 'rembourse' && pret.dateRemboursement) {
-            <div class="text-right">
-              <p class="text-anthracite/50">DATE REMBOURSEMENT</p>
-              <p class="font-bold text-anthracite">{{ pret.dateRemboursement | date:'dd/MM/yyyy' }}</p>
+
+            <div class="flex items-center gap-2 flex-shrink-0">
+              @for (f of filtres; track f.label) {
+                <button
+                  (click)="filtreStatut.set(f.value)"
+                  class="px-4 py-4 rounded-full text-xs font-bold transition-all whitespace-nowrap"
+                  [class]="
+                    filtreStatut() === f.value
+                      ? 'bg-[#1E3A5F] text-white'
+                      : 'bg-[#1E3A5F]/5 text-[#1E3A5F]/60 hover:bg-[#1E3A5F]/10'
+                  "
+                >
+                  {{ f.label }}
+                </button>
+              }
             </div>
+          </div>
+
+          <!-- En-tête des colonnes -->
+          <div
+            class="grid grid-cols-[1.5fr_1fr_1fr_1fr_auto] px-8 py-4 border-b border-[#1E3A5F]/5" >
+            <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">
+              Membre
+            </span>
+
+            <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">
+              Montant
+            </span>
+
+            <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">
+              Date demande
+            </span>
+
+            <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">
+              Statut
+            </span>
+
+            <span class="text-[#1A1D23]/30 text-[10px] font-bold uppercase tracking-[1px]">
+              Action
+            </span>
+          </div>
+
+          @if (service.isLoading()) {
+            <div class="flex justify-center py-16">
+              <i class="pi pi-spin pi-spinner text-2xl text-[#1E3A5F]/40"></i>
+            </div>
+          } @else if (pretsFiltres().length === 0) {
+            <div class="flex flex-col items-center justify-center py-16 text-center">
+              <i class="pi pi-inbox text-3xl text-[#1E3A5F]/20 mb-3"></i>
+              <p class="text-[#1A1D23]/40 font-semibold">Aucun prêt trouvé</p>
+            </div>
+          } @else {
+            @for (pret of pretsFiltres(); track pret.id) {
+              <!-- Ligne du tableau -->
+              <div
+                class="grid grid-cols-[1.5fr_1fr_1fr_1fr_auto] px-8 py-[18px] items-center border-t border-[#1E3A5F]/5"
+              >
+                <!-- Membre -->
+                <div class="flex items-center gap-3 min-w-0">
+                  <div
+                    class="w-9 h-9 rounded-full bg-[#1E3A5F]/10 flex items-center justify-center flex-shrink-0"
+                  >
+                    <span class="text-[#1E3A5F] text-xs font-bold">
+                      {{ pret.membre.prenom + ' ' + pret.membre.nom | initiales }}
+                    </span>
+                  </div>
+
+                  <span class="text-[#1E3A5F] text-sm font-medium truncate min-w-0">
+                    {{ pret.membre.prenom }} {{ pret.membre.nom }}
+                  </span>
+                </div>
+
+                <!-- Montant -->
+                <span class="text-[#1E3A5F] text-sm font-medium">
+                  {{ +pret.montant | number: '1.0-0' }} F
+                </span>
+
+                <!-- Date -->
+                <span class="text-[#1A1D23]/60 text-sm">
+                  {{ pret.dateDemande | date: 'dd/MM/yyyy' }}
+                </span>
+
+                <!-- Statut -->
+                <span
+                  class="w-fit inline-flex items-center px-2 py-[3px] rounded-full text-[10px] font-bold"
+                  [class]="badgeClass(pret.statut)"
+                >
+                  {{ labelStatut(pret.statut) }}
+                </span>
+
+                <!-- Action -->
+                <button
+                  type="button"
+                  (click)="ouvrirDetail(pret)"
+                  class="text-[#1E3A5F] text-xs font-bold cursor-pointer whitespace-nowrap hover:text-[#1E3A5F]/60"
+                >
+                  Détail
+                </button>
+              </div>
+            }
           }
         </div>
-      </a>
-    }
+      </div>
+    </main>
 
+    <app-bottom-nav></app-bottom-nav>
   </div>
 </div>
 
-<app-bottom-nav />
+<!-- ════ Modal détail prêt (desktop) ════ -->
+
+<p-dialog
+  [(visible)]="modalDetailVisible"
+  [modal]="true"
+  [dismissableMask]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  [style]="{ width: '560px' }"
+  [contentStyle]="{ padding: '24px' }"
+  header="Détail du prêt"
+>
+  @if (pretDetail(); as p) {
+    <div class="flex flex-col gap-5">
+      <!-- Membre -->
+      <div class="bg-[#F7F8FA] rounded-2xl p-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 rounded-full bg-[#1E3A5F]/10 flex items-center justify-center font-bold text-sm text-[#1E3A5F] shrink-0"
+          >
+            {{ p.membre.prenom + ' ' + p.membre.nom | initiales }}
+          </div>
+
+          <div>
+            <p class="font-bold text-[#1E3A5F]">{{ p.membre.prenom }} {{ p.membre.nom }}</p>
+
+            <p class="text-xs text-[#1E3A5F]/50">
+              Demandé le {{ p.dateDemande | date: 'dd/MM/yyyy' }}
+            </p>
+          </div>
+        </div>
+
+        <span
+          class="inline-flex items-center px-2 py-[3px] rounded-full text-[10px] font-bold"
+          [class]="badgeClass(p.statut)"
+        >
+          {{ labelStatut(p.statut) }}
+        </span>
+      </div>
+
+      <!-- Informations du prêt -->
+      <div class="grid grid-cols-2 gap-4 text-sm">
+        <div>
+          <p class="text-[#1E3A5F]/50 text-xs uppercase mb-1">Montant</p>
+          <p class="font-bold text-[#1E3A5F]">{{ +p.montant | number: '1.0-0' }} FCFA</p>
+        </div>
+
+        @if (p.dureeMois) {
+          <div>
+            <p class="text-[#1E3A5F]/50 text-xs uppercase mb-1">Durée</p>
+            <p class="font-bold text-[#1E3A5F]">{{ p.dureeMois }} mois</p>
+          </div>
+        }
+
+        @if (p.dateApprobation) {
+          <div>
+            <p class="text-[#1E3A5F]/50 text-xs uppercase mb-1">Approuvé le</p>
+            <p class="font-semibold text-[#1E3A5F]">
+              {{ p.dateApprobation | date: 'dd/MM/yyyy' }}
+            </p>
+          </div>
+        }
+
+        @if (p.dateEcheance) {
+          <div>
+            <p class="text-[#1E3A5F]/50 text-xs uppercase mb-1">Échéance</p>
+            <p class="font-bold text-[#C1654A]">
+              {{ p.dateEcheance | date: 'dd/MM/yyyy' }}
+            </p>
+          </div>
+        }
+
+        @if (p.dateRemboursement) {
+          <div>
+            <p class="text-[#1E3A5F]/50 text-xs uppercase mb-1">Remboursé le</p>
+            <p class="font-semibold text-[#2E7D5B]">
+              {{ p.dateRemboursement | date: 'dd/MM/yyyy' }}
+            </p>
+          </div>
+        }
+
+        @if (p.modePaiement) {
+          <div>
+            <p class="text-[#1E3A5F]/50 text-xs uppercase mb-1">Mode paiement</p>
+            <p class="font-semibold text-[#1E3A5F]">
+              {{
+                p.modePaiement === 'especes'
+                  ? 'Espèces'
+                  : p.modePaiement === 'wave'
+                    ? 'Wave'
+                    : 'Orange Money'
+              }}
+            </p>
+          </div>
+        }
+      </div>
+
+      <!-- Lien vers le détail complet -->
+      <a
+        [routerLink]="['/mon-espace/prets', p.id]"
+        class="w-full border border-[#1E3A5F]/20 text-[#1E3A5F] font-semibold rounded-xl py-3 flex items-center justify-center gap-2 text-sm hover:bg-[#1E3A5F]/5"
+      >
+        <i class="pi pi-external-link text-xs"></i>
+        Voir le détail complet
+      </a>
+    </div>
+  }
+</p-dialog>
+
+<!-- ════ Modal demande de prêt (desktop) ════ -->
+
+<p-dialog
+  [(visible)]="modalDemandeVisible"
+  [modal]="true"
+  [dismissableMask]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  (onHide)="fermerModalDemande()"
+  [style]="{ width: '560px' }"
+  [contentStyle]="{ overflow: 'visible', padding: '24px' }"
+  header="Demander un prêt"
+>
+  <div class="flex flex-col gap-5">
+    @if (succesDemandeVisible()) {
+      <!-- Succès -->
+      <div class="flex flex-col items-center text-center gap-4 py-4">
+        <div class="w-16 h-16 rounded-full bg-[#2E7D5B]/10 flex items-center justify-center">
+          <i class="pi pi-check text-[#2E7D5B] text-2xl"></i>
+        </div>
+
+        <div>
+          <p class="font-bold text-[#1E3A5F] text-lg">Demande envoyée avec succès</p>
+          <p class="text-sm text-[#1A1D23]/50 mt-1">En attente d'approbation par le président.</p>
+        </div>
+
+        <button
+          type="button"
+          (click)="fermerModalDemande()"
+          class="w-full bg-[#1E3A5F] text-white font-semibold rounded-xl py-3"
+        >
+          Fermer
+        </button>
+      </div>
+    } @else {
+      <!-- Conditions du prêt -->
+      @if (service.regle(); as regle) {
+        <div class="bg-[#F7F8FA] rounded-2xl p-4">
+          <div class="flex items-center gap-2 mb-3">
+            <i class="pi pi-info-circle text-[#1E3A5F] text-sm"></i>
+            <p class="font-semibold text-xs text-[#1E3A5F]/70 uppercase tracking-wide">
+              Conditions
+            </p>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <div class="flex justify-between text-sm">
+              <span class="text-[#1E3A5F]/60">Montant maximum</span>
+              <span class="font-bold text-[#1E3A5F]">
+                {{ +regle.montantMax | number: '1.0-0' }} FCFA
+              </span>
+            </div>
+
+            <div class="flex justify-between text-sm">
+              <span class="text-[#1E3A5F]/60">Durée maximale</span>
+              <span class="font-bold text-[#1E3A5F]"> {{ regle.dureeMaxMois }} mois </span>
+            </div>
+
+            <div class="flex justify-between text-sm">
+              <span class="text-[#1E3A5F]/60">Prêts simultanés</span>
+              <span class="font-bold text-[#1E3A5F]">
+                {{ regle.nombrePretsSimultanes }}
+              </span>
+            </div>
+
+            <div class="flex justify-between text-sm">
+              <span class="text-[#1E3A5F]/60">Cotisation à jour</span>
+              <span
+                class="font-bold"
+                [class]="regle.cotisationAJourObligatoire ? 'text-[#2E7D5B]' : 'text-[#1A1D23]/40'"
+              >
+                {{ regle.cotisationAJourObligatoire ? 'Oui ✓' : 'Non' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Montant demandé -->
+      <div class="flex flex-col gap-1.5">
+        <label class="text-sm font-medium text-[#1E3A5F]"> Montant demandé </label>
+
+        <div class="relative">
+          <input
+            pInputText
+            type="number"
+            min="0"
+            [ngModel]="montantDemande()"
+            (ngModelChange)="montantDemande.set($event)"
+            placeholder="Ex: 250 000"
+            class="w-full pr-16"
+          />
+
+          <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-[#1E3A5F]/50">
+            FCFA
+          </span>
+        </div>
+
+        @if (erreurMontantDemande()) {
+          <span class="text-xs text-red-500">
+            {{ erreurMontantDemande() }}
+          </span>
+        }
+
+        @if (service.regle()) {
+          <span class="text-xs text-[#1E3A5F]/40">
+            Maximum : {{ +service.regle()!.montantMax | number: '1.0-0' }} FCFA
+          </span>
+        }
+      </div>
+
+      <!-- Message d'erreur -->
+      @if (service.errorMessage()) {
+        <div class="bg-red-50 text-red-600 text-sm rounded-xl p-3 flex items-center gap-2">
+          <i class="pi pi-exclamation-circle shrink-0"></i>
+          {{ service.errorMessage() }}
+        </div>
+      }
+
+      <!-- Envoyer la demande -->
+      <button
+        type="button"
+        (click)="envoyerDemande()"
+        [disabled]="service.isLoading() || !montantDemande()"
+        class="w-full bg-[#1E3A5F] text-white font-semibold rounded-xl py-3.5 flex items-center justify-center gap-2 disabled:opacity-50"
+      >
+        @if (service.isLoading()) {
+          <i class="pi pi-spin pi-spinner"></i>
+        }
+        Envoyer la demande
+      </button>
+    }
+  </div>
+</p-dialog>

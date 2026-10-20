@@ -6,13 +6,14 @@ import { PretService } from '../../../../../../core/services/pret.service';
 import { AuthService } from '../../../../../../core/services/auth.service';
 import { Navbar } from '../../../../../../shared/ui/navbar/navbar';
 import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
+import { GieSidebar } from '../../../../../../shared/ui/gie-sidebar/gie-sidebar';
 
 type Mode = 'vue' | 'creation' | 'modification' | 'succes';
 
 @Component({
   selector: 'app-regles-pret',
   templateUrl: './regles-pret.html',
-  imports: [RouterLink, DecimalPipe, FormsModule, Navbar, BottomNav],
+  imports: [RouterLink, DecimalPipe, FormsModule, Navbar, BottomNav, GieSidebar],
 })
 export class ReglesPret implements OnInit {
 
@@ -32,13 +33,20 @@ export class ReglesPret implements OnInit {
 
   ngOnInit(): void {
     this.service.errorMessage.set(null);
+    // Sans règle, seul le président voit le formulaire de création ;
+    // les autres membres voient « Aucune règle configurée ».
+    const sansRegle = () => this.mode.set(this.estPresident() ? 'creation' : 'vue');
+
     this.service.chargerRegle().subscribe({
       next: () => {
-        // Si règle existe → vue, sinon → création
-        this.mode.set(this.service.regle() ? 'vue' : 'creation');
+        if (this.service.regle()) {
+          this.mode.set('vue');
+        } else {
+          sansRegle();
+        }
         this._remplirFormulaire();
       },
-      error: () => this.mode.set('creation')
+      error: () => sansRegle()
     });
   }
 
@@ -47,7 +55,19 @@ export class ReglesPret implements OnInit {
     this.mode.set('modification');
   }
 
+  readonly DUREE_MAX = 120;
+
   enregistrer(): void {
+    // Mêmes limites que le serveur, pour prévenir avant l'envoi
+    if (!(+this.montantMax() > 0)) {
+      this.service.errorMessage.set('Le montant maximum doit être supérieur à 0.');
+      return;
+    }
+    if (!(this.dureeMax() >= 1 && this.dureeMax() <= this.DUREE_MAX)) {
+      this.service.errorMessage.set(`La durée maximale doit être comprise entre 1 et ${this.DUREE_MAX} mois.`);
+      return;
+    }
+
     const body = {
       montantMax: this.montantMax(),
       dureeMaxMois: this.dureeMax(),
