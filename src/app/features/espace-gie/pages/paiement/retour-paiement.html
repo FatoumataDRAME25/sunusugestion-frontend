@@ -1,6 +1,8 @@
 <app-navbar />
 
-<div class="min-h-screen bg-gris-fond flex flex-col items-center justify-center px-lg text-center gap-xl pb-24">
+<div class="min-h-screen bg-gris-fond flex flex-col items-center justify-center px-lg text-center pb-24">
+  <!-- Largeur limitée comme la page « Paiement annulé » (sinon le bouton s'étire sur ordinateur) -->
+  <div class="w-full max-w-[420px] flex flex-col items-center gap-xl">
 
   <!-- Chargement -->
   @if (statut() === 'chargement') {
@@ -80,6 +82,7 @@
     </button>
   }
 
+  </div>
 </div>
 
 <app-bottom-nav />

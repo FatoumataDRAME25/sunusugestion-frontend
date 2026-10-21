@@ -295,7 +295,10 @@
                   }
                 </div>
               }
-              <button class="w-full py-2 rounded-2xl outline outline-1 outline-[#1E3A5F]/10 text-[#1E3A5F]/60 text-xs font-bold leading-4">Envoyer des rappels</button>
+              @if (retardsCotisation().length > 0) {
+                <a routerLink="/mon-espace/cotisations" [queryParams]="{ statut: 'en_retard' }"
+                  class="w-full py-2 rounded-2xl outline outline-1 outline-[#1E3A5F]/10 text-[#1E3A5F]/60 text-xs font-bold leading-4 text-center block">Voir plus</a>
+              }
             </div>
 
             <!-- Échéances à venir -->
@@ -423,6 +426,8 @@
                 </div>
               }
             </div>
+            <a routerLink="/mon-espace/cotisations" [queryParams]="{ statut: 'en_retard' }"
+              class="w-full py-2 rounded-2xl outline outline-1 outline-[#1E3A5F]/10 text-[#1E3A5F]/60 text-xs font-bold text-center block">Voir plus</a>
           }
         </div>
 

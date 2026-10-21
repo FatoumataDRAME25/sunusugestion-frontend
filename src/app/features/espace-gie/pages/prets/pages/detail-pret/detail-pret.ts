@@ -43,9 +43,13 @@ export class DetailPret implements OnInit {
     return this.pret()?.membre?.id === userId;
   });
 
-  // Modes selon règle : paie pour soi → Wave/Orange Money, pour un autre → Espèces
+  // Modes selon règle : le trésorier rembourse toujours en espèces (son propre
+  // prêt comme celui d'un membre) ; un membre qui rembourse pour lui-même passe
+  // par Wave ou Orange Money
+  remboursementEnEspeces = computed(() => this.estTresorier() || !this.estMonPret());
+
   modesPaiementRemboursement = computed(() => {
-    if (!this.estMonPret()) {
+    if (this.remboursementEnEspeces()) {
       return this.modesPaiement.filter(m => m.value === 'especes');
     }
     return this.modesPaiement.filter(m => m.value === 'wave' || m.value === 'orange_money');
@@ -64,8 +68,8 @@ export class DetailPret implements OnInit {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.service.chargerPret(id).subscribe({
       next: () => {
-        // Initialiser le mode selon contexte : soi → wave, autre → especes
-        this.modePaiementSelectionne.set(this.estMonPret() ? 'wave' : 'especes');
+        // Initialiser le mode selon contexte : trésorier ou autre → especes, soi → wave
+        this.modePaiementSelectionne.set(this.remboursementEnEspeces() ? 'especes' : 'wave');
       }
     });
     this.service.chargerRegle().subscribe();

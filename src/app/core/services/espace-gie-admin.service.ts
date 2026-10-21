@@ -44,7 +44,7 @@ export class EspacesGieService {
     },
     error: (erreur) => {
       console.error(
-        'Erreur lors du chargement des espaces GIE',
+        'Erreur lors du chargement des organisations',
         erreur
       );
     }

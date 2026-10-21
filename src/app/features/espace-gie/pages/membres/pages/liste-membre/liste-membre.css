@@ -26,9 +26,10 @@
   display: none !important;
 }
 
-/* Retire les marges latérales du formulaire dans le modal */
-.modal-ajouter-content ::ng-deep form,
-.modal-importer-content ::ng-deep .mx-lg {
+/* Retire les marges latérales du formulaire dans le modal (il a son propre
+   espacement intérieur). L'import garde les siennes : sans elles, ses boutons
+   touchent les bords du modal. */
+.modal-ajouter-content ::ng-deep form {
   margin-left: 0 !important;
   margin-right: 0 !important;
 }

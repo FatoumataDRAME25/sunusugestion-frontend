@@ -35,19 +35,28 @@ export class PayerCotisation implements OnInit {
     return this.cotisation()?.membre?.id === userId;
   });
 
-  // Modes disponibles selon contexte
+  estTresorier = computed(() => this.authService.currentUser()?.role === 'tresorier');
+
+  // Modes disponibles : le trésorier enregistre toujours en espèces (sa propre
+  // cotisation comme celle d'un membre) ; un membre qui paie pour lui-même
+  // passe par Wave ou Orange Money
   modesDisponibles = computed<ModePaiementCotisation[]>(() => {
-    return this.payePourSoi() ? ['wave', 'orange_money'] : ['especes'];
+    if (this.estTresorier() || !this.payePourSoi()) {
+      return ['especes'];
+    }
+    return ['wave', 'orange_money'];
   });
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    // Chercher la cotisation dans le signal existant du service
-    const found = this.service.cotisations().find(c => c.id === id) ?? null;
+    // Chercher la cotisation dans les listes déjà chargées : session affichée,
+    // ou retards des sessions terminées (filtre « En retard »)
+    const found = this.service.cotisations().find(c => c.id === id)
+      ?? this.service.cotisationsEnRetard().find(c => c.id === id)
+      ?? null;
     this.cotisation.set(found);
     // Pré-sélectionner le premier mode disponible
-    const modes = this.payePourSoi() ? ['wave'] : ['especes'];
-    this.modePaiement.set(modes[0] as ModePaiementCotisation);
+    this.modePaiement.set(this.modesDisponibles()[0]);
   }
 
   ouvrirConfirmation(): void {

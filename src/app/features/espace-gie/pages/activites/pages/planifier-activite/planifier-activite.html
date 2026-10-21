@@ -68,7 +68,7 @@
           </label>
           <input type="text"
             [ngModel]="titre()" (ngModelChange)="titre.set($event)"
-            placeholder="Exemple : Réunion mensuelle du GIE"
+            placeholder="Exemple : Réunion mensuelle de l'organisation"
             [class]="estEnErreur('titre')
               ? 'w-full border border-rouge-alerte rounded-xl px-md py-sm text-anthracite outline-none bg-white'
               : 'w-full border border-anthracite/20 rounded-xl px-md py-sm text-anthracite outline-none bg-white focus:border-bleu-nuit'" />
@@ -144,7 +144,7 @@
             <i class="pi pi-map-marker absolute left-md top-1/2 -translate-y-1/2 text-anthracite/40 pointer-events-none"></i>
             <input type="text"
               [ngModel]="lieu()" (ngModelChange)="lieu.set($event)"
-              placeholder="Exemple : Siège du GIE"
+              placeholder="Exemple : Siège de l'organisation"
               [class]="estEnErreur('lieu')
                 ? 'w-full border border-rouge-alerte rounded-xl pl-9 pr-md py-sm text-anthracite outline-none bg-white'
                 : 'w-full border border-anthracite/20 rounded-xl pl-9 pr-md py-sm text-anthracite outline-none bg-white focus:border-bleu-nuit'" />

@@ -102,7 +102,7 @@
               </div>
             </div>
             <button (click)="ouvrirConfirmation()" class="w-full bg-bleu-nuit text-blanc-lait font-semibold rounded-xl py-md flex items-center justify-center gap-sm">
-              {{ payePourSoi() ? 'Continuer le paiement' : 'Enregistrer le paiement' }}
+              {{ modePaiement() === 'especes' ? 'Enregistrer le paiement' : 'Continuer le paiement' }}
             </button>
           } @else {
             <div class="flex flex-col items-center py-2xl text-center">
@@ -234,7 +234,7 @@
 
               <button (click)="ouvrirConfirmation()"
                 class="w-full bg-[#1E3A5F] text-white font-semibold rounded-xl py-3.5 flex items-center justify-center gap-2">
-                {{ payePourSoi() ? 'Continuer le paiement' : 'Enregistrer le paiement' }}
+                {{ modePaiement() === 'especes' ? 'Enregistrer le paiement' : 'Continuer le paiement' }}
               </button>
 
             </div>

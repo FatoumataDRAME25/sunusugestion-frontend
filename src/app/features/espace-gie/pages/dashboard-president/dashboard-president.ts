@@ -93,17 +93,12 @@ export class DashboardPresident implements OnInit {
       .slice(0, 3)
   );
 
-  // ── Retards cotisation (trésorier) : cotisations non payées ─────────────────
-  retardsCotisation = computed(() =>
-    this.cotisationService.cotisations()
-      .filter(c => c.statut !== 'paye')
-      .slice(0, 3)
-  );
+  // ── Retards cotisation (trésorier) : règle définie dans CotisationService ───
+  retardsCotisation = computed(() => this.cotisationService.cotisationsEnRetard().slice(0, 3));
 
+  // L'API renvoie les montants en texte (« 5000 ») : conversion avant l'addition
   totalRetardsCotisation = computed(() =>
-    this.cotisationService.cotisations()
-      .filter(c => c.statut !== 'paye')
-      .reduce((sum, c) => sum + (c.session?.montant ?? 0), 0)
+    this.cotisationService.cotisationsEnRetard().reduce((somme, c) => somme + Number(c.session?.montant ?? 0), 0)
   );
 
   // ── Opérations récentes ───────────────────────────────────
@@ -143,6 +138,11 @@ export class DashboardPresident implements OnInit {
             error: (err) => console.error('[Dashboard] erreur cotisations:', err)
           });
         }
+
+        // Retards : sessions terminées qui ont encore des impayés
+        this.cotisationService.chargerRetards(sessions).subscribe({
+          error: (err) => console.error('[Dashboard] erreur retards cotisations:', err)
+        });
       },
       error: (err) => console.error('[Dashboard] erreur sessions:', err)
     });
