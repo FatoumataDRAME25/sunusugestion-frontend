@@ -27,6 +27,19 @@
                 placeholder="Rechercher une cotisation..."
                 class="flex-1 bg-transparent outline-none text-sm text-anthracite placeholder:text-anthracite/40" />
             </div>
+
+            <!-- Sélecteur de session -->
+            @if (service.sessions().length > 0) {
+              <label for="session-mobile" class="block text-xs font-semibold text-anthracite/60 mb-xs">Session</label>
+              <select id="session-mobile"
+                [ngModel]="sessionChoisieId()"
+                (ngModelChange)="choisirSession($event)"
+                class="w-full bg-white border border-anthracite/10 rounded-xl px-md py-sm text-sm text-anthracite shadow-sm">
+                @for (s of service.sessions(); track s.id) {
+                  <option [ngValue]="s.id">{{ s.libelle }} ({{ s.dateDebut | date:'dd/MM' }} – {{ s.dateFin | date:'dd/MM/yyyy' }}){{ s.statut === 'cloturee' ? ' · clôturée' : '' }}</option>
+                }
+              </select>
+            }
           </div>
 
           <div class="px-lg flex flex-col gap-lg">
@@ -41,6 +54,10 @@
                 </button>
               }
             </div>
+
+            @if (filtreStatut() === 'en_retard') {
+              <p class="text-xs text-anthracite/60 -mt-sm">Retards de toutes les sessions terminées.</p>
+            }
 
             @if (cotisationsFiltrees().length === 0) {
               <div class="flex flex-col items-center py-2xl text-center">
@@ -109,8 +126,25 @@
 
         <!-- En-tête desktop -->
         <div class="flex items-center justify-between mb-8">
-          <div>
-            <h3 class="text-[#1E3A5F] text-xl font-bold leading-8">Gérez les cotisations de la session active.</h3>
+          <div class="flex flex-col gap-3">
+            <h3 class="text-[#1E3A5F] text-xl font-bold leading-8">Gérez les cotisations de vos sessions.</h3>
+            <!-- Sélecteur de session -->
+            @if (service.sessions().length > 0) {
+              <div class="flex items-center gap-3">
+                <label for="session-ordinateur" class="text-[#1A1D23]/50 text-sm font-semibold">Session</label>
+                <select id="session-ordinateur"
+                  [ngModel]="sessionChoisieId()"
+                  (ngModelChange)="choisirSession($event)"
+                  class="w-[500px] max-w-full bg-white border border-[#1E3A5F]/10 rounded-xl px-4 py-[10px] text-sm text-[#1E3A5F]">
+                  @for (s of service.sessions(); track s.id) {
+                    <option [ngValue]="s.id">{{ s.libelle }} ({{ s.dateDebut | date:'dd/MM' }} – {{ s.dateFin | date:'dd/MM/yyyy' }}){{ s.statut === 'cloturee' ? ' · clôturée' : '' }}</option>
+                  }
+                </select>
+              </div>
+            }
+            @if (filtreStatut() === 'en_retard') {
+              <p class="text-[#1A1D23]/50 text-sm">Retards de toutes les sessions terminées.</p>
+            }
           </div>
           @if (estTresorier()) {
             <button type="button" (click)="ouvrirModalSession()"
@@ -469,12 +503,19 @@
         </div>
       </div>
 
+      @if (erreurPaiementModal()) {
+        <div class="mb-3 bg-[#FDECEA] text-[#C0392B] text-sm rounded-xl p-3 flex items-start gap-2">
+          <i class="pi pi-exclamation-triangle shrink-0 mt-[2px]"></i>
+          <span>{{ erreurPaiementModal() }}</span>
+        </div>
+      }
+
       <!-- Bouton confirmer -->
       <button type="button" (click)="confirmerPaiementModal()"
-        [disabled]="service.isLoading()"
+        [disabled]="paiementEnCours()"
         class="w-full bg-[#2E7D5B] text-white font-semibold rounded-xl py-3.5 flex items-center justify-center gap-2 disabled:opacity-50">
-        @if (service.isLoading()) { <i class="pi pi-spin pi-spinner"></i> }
-        Confirmer le paiement
+        @if (paiementEnCours()) { <i class="pi pi-spin pi-spinner"></i> }
+        {{ paiementEnCours() && modePaiementSelectionne() !== 'especes' ? 'Redirection vers le paiement…' : 'Confirmer le paiement' }}
       </button>
 
     </div>

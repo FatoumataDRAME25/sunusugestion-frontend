@@ -3,7 +3,6 @@ import { Component, inject, input, output, signal, OnInit } from '@angular/core'
 import { MembresService } from '../../../../../../core/services/membres.service';
 import { OcrService } from '../../../../../../core/services/ocr.service';
 import { Router, RouterLink } from '@angular/router';
-import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { UpperCasePipe } from '@angular/common';
@@ -11,7 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { MembreExcel, MembreImporte } from '../../../../../../core/models/membre.model';
 
 @Component({
-  imports: [BottomNav, RouterLink, ButtonModule, DialogModule, UpperCasePipe, FormsModule],
+  imports: [RouterLink, ButtonModule, DialogModule, UpperCasePipe, FormsModule],
   selector: 'app-importer-membre',
   styleUrl: './importer-membre.css',
   templateUrl: './importer-membre.html',

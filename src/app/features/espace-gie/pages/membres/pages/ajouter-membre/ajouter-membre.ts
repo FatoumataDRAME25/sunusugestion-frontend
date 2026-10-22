@@ -10,7 +10,6 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { MembresService } from '../../../../../../core/services/membres.service';
 import { RoleMembre } from '../../../../../../core/models/membre.model';
-import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
 
 @Component({
   selector: 'app-ajouter-membre',
@@ -22,8 +21,7 @@ import { BottomNav } from '../../../../../../shared/ui/bottom-nav/bottom-nav';
     DialogModule,
     IconFieldModule,
     InputIconModule,
-    RouterLink,
-    BottomNav
+    RouterLink
   ],
   templateUrl: './ajouter-membre.html'
 })

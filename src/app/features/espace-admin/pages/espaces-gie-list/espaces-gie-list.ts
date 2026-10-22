@@ -123,10 +123,10 @@ export class EspacesGieList implements OnInit{
   const estActif = gie.statut === 'actif';
 
   this.confirmationService.confirm({
-    header: estActif ? 'Désactiver cet espace GIE ?' : 'Activer cet espace GIE ?',
+    header: estActif ? 'Désactiver cette organisation ?' : 'Activer cette organisation ?',
     message: estActif
-      ? "Voulez-vous vraiment désactiver cet espace GIE ? La désactivation bloque temporairement l'accès à l'espace GIE mais ne supprime aucune donnée."
-      : 'Cet espace GIE pourra de nouveau être accessible à ses utilisateurs. Toutes les fonctionnalités seront rétablies.',
+      ? "Voulez-vous vraiment désactiver cette organisation ? La désactivation bloque temporairement l'accès à son espace mais ne supprime aucune donnée."
+      : 'Cette organisation pourra de nouveau être accessible à ses utilisateurs. Toutes les fonctionnalités seront rétablies.',
     icon: estActif ? 'pi pi-ban' : 'pi pi-check-circle',
     type: estActif ? 'danger' : 'success',
     acceptButtonProps: {

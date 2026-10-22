@@ -6,7 +6,7 @@
     <!-- Image -->
     <img
       src="images/sunugestion.png"
-      alt="Réunion GIE"
+      alt="Réunion d'une organisation"
       class="absolute inset-0 w-full h-full object-cover object-top"
     />
 
@@ -220,12 +220,13 @@
           <span class="hidden md:inline">Créer mon organisation</span>
         </a>
 
-        <a
-          href="#fonctionnalites"
+        <button
+          type="button"
+          (click)="scrollVers('demo')"
           class="w-full md:w-auto px-4 md:px-8 py-4 bg-white/70 border border-white/60 backdrop-blur-[14px] rounded-2xl text-[#1E3A5F] text-base md:text-lg leading-6 md:leading-7 font-bold text-center"
         >
           Voir la démo
-        </a>
+        </button>
       </div>
     </div>
   </section>
@@ -477,98 +478,21 @@
       </p>
     </div>
 
-    <div
-      class="flex flex-col md:grid md:grid-cols-3 gap-12 md:gap-12 max-w-[1100px] w-full mx-auto"
-    >
-      <!-- Étape 1 -->
-      <article class="flex flex-col items-center text-center gap-3">
-        <div
-          class="w-16 h-16 bg-[#2E7D5B] rounded-full flex items-center justify-center text-white text-2xl font-bold"
-        >
-          1
-        </div>
-
-        <div
-          class="w-40 h-[260px] md:w-48 md:h-80 p-3 md:p-4 bg-white rounded-[24px] md:rounded-[32px] border-[6px] md:border-[8px] border-[#111827] flex items-center justify-center"
-        >
-          <div
-            class="w-full h-full bg-[#1E3A5F]/10 rounded-2xl flex flex-col items-center justify-center gap-3"
-          >
-            <i class="pi pi-building text-[#1E3A5F] text-3xl md:text-4xl"></i>
-
-            <span class="w-20 h-3 bg-[#1E3A5F]/20 rounded"></span>
-            <span class="w-14 h-3 bg-[#1E3A5F]/20 rounded"></span>
-          </div>
-        </div>
-
-        <h3 class="pt-5 md:pt-7 text-[#1A1D23] text-lg md:text-xl leading-7 font-bold">
-          Créez votre profil
-        </h3>
-
-        <p class="max-w-[280px] text-[#1A1D23]/60 text-sm md:text-base leading-5 md:leading-6">
-          Remplissez les informations de base de votre organisation et ses statuts.
-        </p>
-      </article>
-
-      <!-- Étape 2 -->
-      <article class="flex flex-col items-center text-center gap-3">
-        <div
-          class="w-16 h-16 bg-[#2E7D5B] rounded-full flex items-center justify-center text-white text-2xl font-bold"
-        >
-          2
-        </div>
-
-        <div
-          class="w-40 h-[260px] md:w-48 md:h-80 p-3 md:p-4 bg-white rounded-[24px] md:rounded-[32px] border-[6px] md:border-[8px] border-[#111827] flex items-center justify-center"
-        >
-          <div
-            class="w-full h-full bg-[#2E7D5B]/10 rounded-2xl flex flex-col items-center justify-center gap-3"
-          >
-            <i class="pi pi-users text-[#2E7D5B] text-3xl md:text-4xl"></i>
-
-            <span class="w-20 h-3 bg-[#2E7D5B]/20 rounded"></span>
-            <span class="w-14 h-3 bg-[#2E7D5B]/20 rounded"></span>
-          </div>
-        </div>
-
-        <h3 class="pt-5 md:pt-7 text-[#1A1D23] text-lg md:text-xl leading-7 font-bold">
-          Importez vos membres
-        </h3>
-
-        <p class="max-w-[280px] text-[#1A1D23]/60 text-sm md:text-base leading-5 md:leading-6">
-          Ajoutez manuellement ou via Excel la liste de vos adhérents et leurs rôles.
-        </p>
-      </article>
-
-      <!-- Étape 3 -->
-      <article class="flex flex-col items-center text-center gap-3">
-        <div
-          class="w-16 h-16 bg-[#2E7D5B] rounded-full flex items-center justify-center text-white text-2xl font-bold"
-        >
-          3
-        </div>
-
-        <div
-          class="w-40 h-[260px] md:w-48 md:h-80 p-3 md:p-4 bg-white rounded-[24px] md:rounded-[32px] border-[6px] md:border-[8px] border-[#111827] flex items-center justify-center"
-        >
-          <div
-            class="w-full h-full bg-blue-50 rounded-2xl flex flex-col items-center justify-center gap-3"
-          >
-            <i class="pi pi-check-circle text-blue-500 text-3xl md:text-4xl"></i>
-
-            <span class="w-20 h-3 bg-blue-100 rounded"></span>
-            <span class="w-14 h-3 bg-blue-100 rounded"></span>
-          </div>
-        </div>
-
-        <h3 class="pt-5 md:pt-7 text-[#1A1D23] text-lg md:text-xl leading-7 font-bold">
-          Gérez sereinement
-        </h3>
-
-        <p class="max-w-[280px] text-[#1A1D23]/60 text-sm md:text-base leading-5 md:leading-6">
-          Enregistrez les cotisations et partagez les rapports en un clic.
-        </p>
-      </article>
+    <!-- Vidéo de démonstration (cible du bouton « Voir la démo ») -->
+    <div id="demo" class="scroll-mt-24 md:scroll-mt-36 flex flex-col items-center gap-4">
+      <video
+        class="w-full max-w-[300px] md:max-w-[360px] aspect-[9/16] rounded-[28px] bg-[#1E3A5F] shadow-2xl"
+        src="videos/demo-sunugestion.mp4"
+        poster="videos/demo-sunugestion.jpg"
+        controls
+        playsinline
+        preload="none"
+      >
+        Votre navigateur ne peut pas lire cette vidéo.
+      </video>
+      <p class="text-[#1A1D23]/60 text-sm md:text-base">
+        Découvrez SunuGestion en 45 secondes.
+      </p>
     </div>
   </section>
 
@@ -686,9 +610,9 @@
     <!-- Image -->
     <div class="flex-1 w-full relative">
       <img
-        src="images/sunugestion.png"
+        src="images/mokup.png"
         alt="SunuGestion en action"
-        class="relative z-10 w-full h-[266px] md:h-[500px] object-cover rounded-3xl"
+        class="relative z-10 w-full h-[266px] md:h-[500px] object-fit-cover rounded-3xl"
       />
     </div>
   </section>

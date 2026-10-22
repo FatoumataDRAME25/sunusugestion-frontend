@@ -62,7 +62,7 @@ chargerEvolution(): void {
     },
     error: (erreur) => {
       console.error(
-        'Erreur lors du chargement de l’évolution des GIE',
+        'Erreur lors du chargement de l’évolution des organisations',
         erreur
       );
     }

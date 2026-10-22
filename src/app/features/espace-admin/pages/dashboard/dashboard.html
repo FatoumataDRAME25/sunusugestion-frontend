@@ -26,12 +26,12 @@
     </div>
     <div class="bg-white rounded-lg p-lg text-center">
       <!-- <i class="pi pi-check-circle text-vert-clair text-xl mb-sm"></i> -->
-      <p class="text-sm text-anthracite/60">organisations actives</p>
+      <p class="text-sm text-anthracite/60">Organisations actives</p>
       <p class="text-2xl font-semibold text-anthracite">{{ dashboardService.stats().gieActifs }}</p>
     </div>
     <div class="bg-white rounded-lg p-lg text-center">
       <!--<i class="pi pi-ban text-rouge-clair text-xl mb-sm"></i> -->
-      <p class="text-sm text-anthracite/60">organisations inactives</p>
+      <p class="text-sm text-anthracite/60">Organisations inactives</p>
       <p class="text-2xl font-semibold text-anthracite">{{ dashboardService.stats().gieInactifs }}</p>
     </div>
     <div class="bg-white rounded-lg p-lg text-center">
@@ -77,7 +77,7 @@
   <div class="grid grid-cols-2 gap-lg">
     <div class="bg-white rounded-lg p-lg">
       <div class="flex justify-between items-center mb-md">
-        <h2 class="font-sans font-medium text-lg text-anthracite">organisation récemment activées</h2>
+        <h2 class="font-sans font-medium text-lg text-anthracite">Organisations récemment activées</h2>
         <a class="text-sm text-bleu-nuit cursor-pointer">Voir tout</a>
       </div>
       <p-table [value]="dashboardService.gieRecentsActives()">
@@ -102,13 +102,13 @@
 
     <div class="bg-white rounded-lg p-lg">
       <div class="flex justify-between items-center mb-md">
-        <h2 class="font-sans font-medium text-lg text-anthracite">organisations récemment désactivées</h2>
+        <h2 class="font-sans font-medium text-lg text-anthracite">Organisations récemment désactivées</h2>
         <a class="text-sm text-bleu-nuit cursor-pointer">Voir tout</a>
       </div>
       <p-table [value]="dashboardService.gieRecentsDesactives()">
         <ng-template pTemplate="header">
           <tr>
-            <th>organisation</th>
+            <th>Organisation</th>
             <th>Région</th>
             <th>Date</th>
             <th>Statut</th>

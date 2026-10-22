@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { FormsModule, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { InputTextModule } from 'primeng/inputtext';
 import { InitialesPipe } from '../../../../../../shared/pipes/initiales-pipe';
@@ -35,6 +35,7 @@ export class ListeCotisations implements OnInit {
   protected service = inject(CotisationService);
   protected authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
 
   // true si l'utilisateur connecté est trésorier
@@ -90,15 +91,30 @@ export class ListeCotisations implements OnInit {
     return cotisation.membre.id === userId || this.estTresorier();
   }
 
-  // true si le membre paye pour sa propre cotisation (Wave et Orange Money disponibles)
+  // true si Wave et Orange Money sont proposés : un membre qui paie sa propre
+  // cotisation. Le trésorier enregistre toujours en espèces, même pour lui.
   payePourSoiModal = computed(() => {
     const cotisation = this.cotisationAPayer();
     const userId = this.authService.currentUser()?.id;
-    return cotisation?.membre?.id === userId;
+    return cotisation?.membre?.id === userId && !this.estTresorier();
   });
 
   filtreStatut = signal<string | null>(null);
   termeRecherche = signal('');
+
+  // Session affichée (sélecteur) : par défaut la plus récente des sessions
+  // ouvertes, sinon la plus récente tout court
+  sessionChoisieId = signal<number | null>(null);
+
+  choisirSession(id: number | string): void {
+    const sessionId = Number(id);
+    this.sessionChoisieId.set(sessionId);
+    // Le filtre « En retard » couvre toutes les sessions : on revient à la session choisie
+    if (this.filtreStatut() === 'en_retard') {
+      this.filtreStatut.set(null);
+    }
+    this.service.getCotisations(sessionId).subscribe();
+  }
 
   // Cotisation sélectionnée pour le détail
   cotisationSelectionnee = signal<Cotisation | null>(null);
@@ -120,7 +136,12 @@ export class ListeCotisations implements OnInit {
     const statut = this.filtreStatut();
     const terme = this.termeRecherche().toLowerCase();
 
-    return this.service.cotisations().filter(c => {
+    // « En retard » : retards de toutes les sessions terminées (déjà filtrés par
+    // le service), pas seulement ceux de la session affichée
+    const enRetard = statut === 'en_retard';
+    const source = enRetard ? this.service.cotisationsEnRetard() : this.service.cotisations();
+
+    return source.filter(c => {
 
       const nom =
         `${c.membre.prenom} ${c.membre.nom}`.toLowerCase();
@@ -129,7 +150,7 @@ export class ListeCotisations implements OnInit {
         !terme || nom.includes(terme);
 
       const correspondStatut =
-        !statut || c.statut === statut;
+        !statut || enRetard || c.statut === statut;
 
       return correspondNom && correspondStatut;
     });
@@ -160,7 +181,8 @@ export class ListeCotisations implements OnInit {
       // Pré-sélectionner le bon mode selon qui paie
       const userId = this.authService.currentUser()?.id;
       const payePourSoi = cotisation.membre.id === userId;
-      this.modePaiementSelectionne.set(payePourSoi ? 'wave' : 'especes');
+      this.modePaiementSelectionne.set(payePourSoi && !this.estTresorier() ? 'wave' : 'especes');
+      this.erreurPaiementModal.set(null);
       this.modalPaiementVisible.set(true);
     } else {
       this.router.navigate(['/mon-espace/cotisations/payer', cotisation.id]);
@@ -170,17 +192,38 @@ export class ListeCotisations implements OnInit {
   // Modal paiement desktop
   modalPaiementVisible = signal(false);
   modePaiementSelectionne = signal<'especes' | 'wave' | 'orange_money'>('especes');
+  paiementEnCours = signal(false);
+  erreurPaiementModal = signal<string | null>(null);
 
   confirmerPaiementModal(): void {
     const cotisation = this.cotisationAPayer();
-    if (!cotisation) return;
+    if (!cotisation || this.paiementEnCours()) return;
+    this.paiementEnCours.set(true);
+    this.erreurPaiementModal.set(null);
     this.service.payerCotisation(cotisation.id, this.modePaiementSelectionne()).subscribe({
-      next: () => {
+      next: (reponse) => {
+        // Wave / Orange Money : le paiement se fait sur la page PayDunya,
+        // qui ramène ensuite sur /paiement/retour
+        if (reponse?.urlPaiement) {
+          window.location.href = reponse.urlPaiement;
+          return;
+        }
+        // Espèces : paiement enregistré
+        this.paiementEnCours.set(false);
         this.modalPaiementVisible.set(false);
         this.cotisationAPayer.set(null);
         this.ngOnInit();
       },
-      error: (err) => console.error('Erreur paiement:', err)
+      error: (err) => {
+        this.paiementEnCours.set(false);
+        const e = err?.error;
+        this.erreurPaiementModal.set(
+          e?.detail
+          ?? (Array.isArray(e?.modePaiement) ? e.modePaiement[0] : null)
+          ?? (Array.isArray(e?.nonFieldErrors) ? e.nonFieldErrors[0] : null)
+          ?? 'Le paiement n\'a pas pu être lancé. Veuillez réessayer.'
+        );
+      }
     });
   }
 
@@ -222,16 +265,32 @@ export class ListeCotisations implements OnInit {
 
   ngOnInit(): void {
 
-    // Charge la session active puis ses cotisations
+    // Filtre demandé dans l'adresse (ex. « Voir plus » des retards : ?statut=en_retard)
+    const statutDemande = this.route.snapshot.queryParamMap.get('statut');
+    if (this.optionsFiltres.some(o => o.value === statutDemande)) {
+      this.filtreStatut.set(statutDemande);
+    }
+
+    // Charge les sessions, puis les cotisations de la session choisie (conservée
+    // après un paiement), et les retards des sessions terminées
     this.service.getSessions().subscribe({
 
-      next: () => {
+      next: (sessions) => {
 
-        const session = this.service.sessionActive();
+        const session = sessions.find(s => s.id === this.sessionChoisieId())
+          ?? this.service.sessionActive()
+          ?? sessions[0]
+          ?? null;
+
+        this.sessionChoisieId.set(session?.id ?? null);
 
         if (session) {
           this.service.getCotisations(session.id).subscribe();
+        } else {
+          this.service.cotisations.set([]);
         }
+
+        this.service.chargerRetards(sessions).subscribe();
 
       }
 

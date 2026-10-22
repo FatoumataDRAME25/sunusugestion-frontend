@@ -1,4 +1,7 @@
-<div class="min-h-screen bg-gris-fond pb-20">
+<!-- pb-40 : la barre de navigation et le bouton de l'assistant restent
+     fixés en bas de l'écran ; cette marge permet de faire défiler la page
+     au-dessus d'eux sur mobile -->
+<div class="min-h-screen bg-gris-fond pb-40">
 
   <!-- En-tête -->
   <div class="p-lg pt-xl">
@@ -574,7 +577,7 @@
       <div>
         <h2 style="font-weight:700; font-size:1.2rem;">Import réussi</h2>
         <p style="font-size:0.875rem; color:#6b7280; margin-top:4px;">
-          <strong>{{ service.nombreMembresImportes() }} membre(s)</strong> ajouté(s) à votre GIE.
+          <strong>{{ service.nombreMembresImportes() }} membre(s)</strong> ajouté(s) à votre organisation.
         </p>
       </div>
     </div>
@@ -615,5 +618,3 @@
 
   </div>
 </p-dialog>
-
-<app-bottom-nav />

@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
@@ -24,6 +24,15 @@ export class RetourPaiement implements OnInit {
   token     = signal<string>('');
 
   private readonly BASE_URL = environment.API_URL;
+
+  // Nouvelles vérifications en attendant le callback PayDunya (5 × 2 s)
+  private static readonly ESSAIS_MAX = 5;
+  private essais = 0;
+  private detruit = false;
+
+  constructor() {
+    inject(DestroyRef).onDestroy(() => this.detruit = true);
+  }
 
   ngOnInit(): void {
     // PayDunya renvoie le token et le type dans l'URL de retour
@@ -66,10 +75,19 @@ export class RetourPaiement implements OnInit {
     this.http.get<any>(url).subscribe({
       next: (objet) => {
         const s = objet?.statut ?? '';
-        if (s === 'paye' || s === 'rembourse' || s === 'en_cours') {
+        // Le paiement n'est confirmé qu'à réception du callback PayDunya :
+        // cotisation « payée », prêt « remboursé ». Avant, l'objet reste « en cours ».
+        if (s === 'paye' || s === 'rembourse') {
           this.statut.set('confirme');
-        } else if (s === 'en_attente_paiement' || s === 'en_attente_decaissement') {
-          this.statut.set('en_attente');
+        } else if (s === 'en_cours' || s === 'en_retard') {
+          // PayDunya peut ramener ici avant d'avoir prévenu le backend :
+          // on revérifie quelques fois avant d'afficher « en attente »
+          if (this.essais < RetourPaiement.ESSAIS_MAX && !this.detruit) {
+            this.essais++;
+            setTimeout(() => this._verifierStatut(type, id), 2000);
+          } else {
+            this.statut.set('en_attente');
+          }
         } else {
           this.statut.set('echoue');
         }

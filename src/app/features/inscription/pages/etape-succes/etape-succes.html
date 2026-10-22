@@ -6,9 +6,9 @@
       <i class="pi pi-check text-blanc-lait text-3xl"></i>
     </div>
 
-    <h1 class="font-sans font-semibold text-2xl text-bleu-nuit mb-sm">Votre espace GIE est prêt !</h1>
+    <h1 class="font-sans font-semibold text-2xl text-bleu-nuit mb-sm">Votre espace est prêt !</h1>
     <p class="text-sm text-anthracite/60 mb-xl">
-      Félicitations, votre espace numérique a été créé avec succès. Vous pouvez maintenant commencer à gérer votre GIE.
+      Félicitations, votre espace numérique a été créé avec succès. Vous pouvez maintenant commencer à gérer votre organisation.
     </p>
 
     @if (service.gieFinalise(); as gie) {
@@ -28,9 +28,9 @@
       </div>
     }
 
-    <p class="text-xs text-anthracite/50 mb-xl">
-      Conservez votre code GIE. Il pourra être utilisé pour rejoindre votre espace.
-    </p>
+    <!-- <p class="text-xs text-anthracite/50 mb-xl">
+      Conservez votre code d'organisation. Il pourra être utilisé pour rejoindre votre espace.
+    </p> -->
 
     <p-button label="Accéder à mon espace" icon="pi pi-arrow-right" iconPos="right" styleClass="w-full" (onClick)="accederAMonEspace()" />
   </div>

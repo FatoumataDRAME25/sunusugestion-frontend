@@ -1,8 +1,10 @@
 /* Écrase le min-h-screen et le fond gris des composants ajouter/importer
-   quand ils sont rendus à l'intérieur d'un modal desktop */
+   quand ils sont rendus à l'intérieur d'un modal desktop.
+   La racine visée est le <div> du composant, pas le composant lui-même
+   (enfant direct du wrapper) : sans ce niveau, aucune règle ne s'applique. */
 
-.modal-ajouter-content ::ng-deep > div,
-.modal-importer-content ::ng-deep > div {
+.modal-ajouter-content ::ng-deep > app-ajouter-membre > div,
+.modal-importer-content ::ng-deep > app-importer-membre > div {
   min-height: unset !important;
   height: auto !important;
   background: transparent !important;
@@ -11,8 +13,8 @@
 }
 
 /* Cache le bouton retour et le titre de l'en-tête (déjà dans le header du modal) */
-.modal-ajouter-content ::ng-deep > div > div:first-child,
-.modal-importer-content ::ng-deep > div > div:first-child {
+.modal-ajouter-content ::ng-deep > app-ajouter-membre > div > div:first-child,
+.modal-importer-content ::ng-deep > app-importer-membre > div > div:first-child {
   display: none !important;
 }
 
@@ -24,9 +26,10 @@
   display: none !important;
 }
 
-/* Retire les marges latérales du formulaire dans le modal */
-.modal-ajouter-content ::ng-deep form,
-.modal-importer-content ::ng-deep .mx-lg {
+/* Retire les marges latérales du formulaire dans le modal (il a son propre
+   espacement intérieur). L'import garde les siennes : sans elles, ses boutons
+   touchent les bords du modal. */
+.modal-ajouter-content ::ng-deep form {
   margin-left: 0 !important;
   margin-right: 0 !important;
 }
